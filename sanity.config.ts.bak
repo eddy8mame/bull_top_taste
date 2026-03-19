@@ -1,0 +1,32 @@
+import { defineConfig } from "sanity"
+import { structureTool } from "sanity/structure"
+import { menuItemSchema } from "@/sanity/schema/menuItem"
+import { specialSchema }  from "@/sanity/schema/special"
+
+export default defineConfig({
+  name:      "bulltoptaste",
+  title:     "Bull Top Taste",
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+  dataset:   process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production",
+  basePath:  "/studio",
+
+  plugins: [
+    structureTool({
+      structure: S =>
+        S.list()
+          .title("Content")
+          .items([
+            S.listItem()
+              .title("Menu Items")
+              .child(S.documentTypeList("menuItem").title("Menu Items")),
+            S.listItem()
+              .title("Weekly Specials")
+              .child(S.documentTypeList("special").title("Weekly Specials")),
+          ]),
+    }),
+  ],
+
+  schema: {
+    types: [menuItemSchema, specialSchema],
+  },
+})
