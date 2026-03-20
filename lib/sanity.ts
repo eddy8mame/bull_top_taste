@@ -1,15 +1,35 @@
 import { createClient } from "@sanity/client"
 import type { MenuItem, Special, SiteSettings, ModifierGroup } from "@/types"
 
+// ─── Client factory ───────────────────────────────────────────────────────────
+
+const SHARED_CONFIG = {
+  dataset:    process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production",
+  apiVersion: "2024-01-01",
+} as const
+
+// Read-only client (CDN-backed, no token required). Used for data fetching.
 function getSanityClient() {
   const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
   if (!projectId) return null
-  return createClient({
-    projectId,
-    dataset:    process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production",
-    apiVersion: "2024-01-01",
-    useCdn:     true,
-  })
+  return createClient({ ...SHARED_CONFIG, projectId, useCdn: true })
+}
+
+// Write client (bypasses CDN, requires SANITY_API_WRITE_TOKEN).
+// Used in API routes that mutate Sanity documents (order creation, status patches).
+// Returns null and logs a warning when the token is absent — callers must handle
+// the null case gracefully so the user-facing flow is never blocked by a missing key.
+export function getSanityWriteClient() {
+  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+  const token     = process.env.SANITY_API_WRITE_TOKEN
+  if (!projectId || !token) {
+    console.warn(
+      "[Sanity] Write client unavailable — set NEXT_PUBLIC_SANITY_PROJECT_ID " +
+      "and SANITY_API_WRITE_TOKEN in your environment."
+    )
+    return null
+  }
+  return createClient({ ...SHARED_CONFIG, projectId, useCdn: false, token })
 }
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
@@ -86,6 +106,12 @@ export async function getLocationBySlug(slug: string): Promise<LocationMeta | nu
     }`,
     { slug }
   )
+}
+
+// Exported alias used by admin API routes that only need read access.
+// Uses the CDN-backed client; does not require SANITY_API_WRITE_TOKEN.
+export function getSanityReadClient() {
+  return getSanityClient()
 }
 
 // ─── Shared modifier groups ───────────────────────────────────────────────────

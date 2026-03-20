@@ -229,6 +229,17 @@ export const locationSchema = defineType({
       initialValue: "15–20 min",
     }),
 
+    defineField({
+      name:         "kitchenOpen",
+      title:        "Kitchen Open",
+      type:         "boolean",
+      group:        "hours",
+      description:
+        "Controls the Kitchen Closed banner on the ordering page. " +
+        "Toggle off to temporarily stop accepting new orders (e.g. end of service).",
+      initialValue: true,
+    }),
+
     // ── Theme & Branding ──────────────────────────────────────────────────────
     // Theme is a preset token rather than free-form hex codes.
     // This prevents per-location colour drift while still allowing visual variety.

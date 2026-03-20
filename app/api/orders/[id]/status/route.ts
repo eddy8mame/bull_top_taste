@@ -1,19 +1,36 @@
-import { NextRequest, NextResponse } from "next/server"
-import { orderStore }               from "@/lib/orderStore"
-import type { OrderStatus }         from "@/lib/orderStore"
+import { NextRequest, NextResponse }  from "next/server"
+import { getSanityWriteClient }       from "@/lib/sanity"
+import type { OrderStatus }           from "@/types"
 
-// POST /api/orders/[id]/status — update order status (preparing, completed)
+// POST /api/orders/[id]/status — generic status update (pending, kitchen, completed).
+// The "floor" transition goes through /api/orders/[id]/ready instead, since that
+// route also fires the customer-ready SMS.
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id }                  = await params
+  const { id }                          = await params
   const { status }: { status: OrderStatus } = await req.json()
-  const order = orderStore.updateStatus(id, status)
+  const client                          = getSanityWriteClient()
 
-  if (!order) {
+  if (!client) {
+    console.warn("[status] Sanity write client unavailable — status not persisted")
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 })
+  }
+
+  // Verify the order exists before patching
+  const exists = await client.fetch<string | null>(
+    `*[_type == "order" && _id == $id][0]._id`,
+    { id }
+  )
+  if (!exists) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 })
   }
 
-  return NextResponse.json(order)
+  const updated = await client
+    .patch(id)
+    .set({ status })
+    .commit()
+
+  return NextResponse.json(updated)
 }

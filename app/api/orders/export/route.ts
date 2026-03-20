@@ -1,11 +1,54 @@
-import { NextResponse } from "next/server"
-import { orderStore }  from "@/lib/orderStore"
+import { NextResponse }          from "next/server"
+import { getSanityReadClient }   from "@/lib/sanity"
+import type { AdminOrder, AdminOrderItem } from "@/types"
 
-// GET /api/orders/export — full order history as CSV
-// Strategy: one row per order. Items expanded into separate columns
-// (item name, modifiers, sub-modifiers). Timestamps in ET.
+// GET /api/orders/export — full order history as CSV, sourced from Sanity.
+// One row per order; modifiers are pre-formatted strings stored in Sanity
+// (collapsed from SelectedModifier[] at order-write time).
+
+const LOCATION_ID = process.env.SANITY_LOCATION_ID
+
 export async function GET() {
-  const orders = orderStore.getAll()
+  const client = getSanityReadClient()
+  if (!client) {
+    console.warn("[export] Sanity read client unavailable — exporting empty CSV")
+  }
+
+  let orders: AdminOrder[] = []
+
+  if (client) {
+    const filter = LOCATION_ID
+      ? `_type == "order" && location._ref == $locationId`
+      : `_type == "order"`
+
+    const params = LOCATION_ID ? { locationId: LOCATION_ID } : {}
+
+    orders = await client.fetch<AdminOrder[]>(
+      `*[${filter}] | order(createdAt desc) {
+        _id,
+        status,
+        type,
+        customerName,
+        customerEmail,
+        customerPhone,
+        notes,
+        total,
+        createdAt,
+        readyAt,
+        pickedUpAt,
+        items[] {
+          _key,
+          itemName,
+          quantity,
+          basePrice,
+          effectivePrice,
+          modifiers[] { _key, groupName, selections },
+          specialInstructions
+        }
+      }`,
+      params
+    )
+  }
 
   const header = [
     "Order ID",
@@ -25,41 +68,42 @@ export async function GET() {
   ].join(",")
 
   const rows = orders.map(o => {
-    // Items column: "2x Jerk Chicken; 1x Festival"
+    // Items: "2x Jerk Chicken; 1x Festival"
     const itemsStr = o.items
-      .map(i => `${i.quantity}x ${i.name}`)
+      .map((i: AdminOrderItem) => `${i.quantity}x ${i.itemName}`)
       .join("; ")
 
-    // Modifiers column: one entry per item, each entry lists all selected modifiers
-    // Format: "Jerk Chicken: [Size Choice: Large +$3.50] [Side Choice: White Rice, Rice & Peas]"
+    // Modifiers: each item's groups on one line.
+    // selections is already a pre-formatted string (e.g. "Large +$3.50, Rice & Peas")
     const modifiersStr = o.items
-      .map(i => {
-        if (!i.selectedModifiers?.length && !i.specialInstructions) return ""
-        const mods = (i.selectedModifiers ?? [])
-          .map(m => {
-            const opts = m.selections
-              .map(s => s.priceAdjustment > 0 ? `${s.name} +$${s.priceAdjustment.toFixed(2)}` : s.name)
-              .join(", ")
-            return `[${m.groupName}: ${opts}]`
-          })
+      .map((i: AdminOrderItem) => {
+        if (!i.modifiers?.length && !i.specialInstructions) return ""
+        const mods = (i.modifiers ?? [])
+          .map(m => `[${m.groupName}: ${m.selections}]`)
           .join(" ")
         const note = i.specialInstructions ? ` [Note: ${i.specialInstructions}]` : ""
-        return `${i.name}: ${mods}${note}`
+        return `${i.itemName}: ${mods}${note}`
       })
       .filter(Boolean)
       .join("; ")
 
-    // Pickup timestamps
-    const readyAt    = o.readyAt    ? new Date(o.readyAt).toLocaleString("en-US",    { timeZone: "America/New_York" }) : ""
-    const pickedUpAt = o.pickedUpAt ? new Date(o.pickedUpAt).toLocaleString("en-US", { timeZone: "America/New_York" }) : ""
+    // Timestamps in ET
+    const readyAt    = o.readyAt
+      ? new Date(o.readyAt).toLocaleString("en-US",    { timeZone: "America/New_York" })
+      : ""
+    const pickedUpAt = o.pickedUpAt
+      ? new Date(o.pickedUpAt).toLocaleString("en-US", { timeZone: "America/New_York" })
+      : ""
 
-    // Lag = time from order placed to pickup (minutes)
+    // Lag = minutes from order placed to pickup
     const lag = (o.readyAt && o.pickedUpAt)
-      ? String(Math.round((new Date(o.pickedUpAt).getTime() - new Date(o.createdAt).getTime()) / 60000))
+      ? String(Math.round(
+          (new Date(o.pickedUpAt).getTime() - new Date(o.createdAt).getTime()) / 60000
+        ))
       : ""
 
     const cols = [
-      o.id,
+      o._id,
       new Date(o.createdAt).toLocaleString("en-US", { timeZone: "America/New_York" }),
       o.status,
       o.customerName,

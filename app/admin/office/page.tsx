@@ -5,7 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid,
 } from "recharts"
-import type { StoredOrder } from "@/lib/orderStore"
+import type { AdminOrder, AdminOrderItem } from "@/types"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -29,7 +29,7 @@ function fmtLag(readyAt?: string, pickedUpAt?: string): string {
   return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`
 }
 
-function deriveRevenueByDay(orders: StoredOrder[]) {
+function deriveRevenueByDay(orders: AdminOrder[]) {
   const map = new Map<string, number>()
   for (const o of orders) {
     const date = o.createdAt.split("T")[0]
@@ -40,14 +40,14 @@ function deriveRevenueByDay(orders: StoredOrder[]) {
     .sort((a, b) => a.date.localeCompare(b.date))
 }
 
-function deriveItemSales(orders: StoredOrder[]) {
+function deriveItemSales(orders: AdminOrder[]) {
   const map = new Map<string, { count: number; revenue: number }>()
   for (const o of orders)
-    for (const item of o.items) {
-      const e = map.get(item.name) ?? { count: 0, revenue: 0 }
-      map.set(item.name, {
+    for (const item of o.items as AdminOrderItem[]) {
+      const e = map.get(item.itemName) ?? { count: 0, revenue: 0 }
+      map.set(item.itemName, {
         count:   e.count + item.quantity,
-        revenue: e.revenue + (item.price ?? 0) * item.quantity,
+        revenue: e.revenue + (item.basePrice ?? 0) * item.quantity,
       })
     }
   return Array.from(map.entries())
@@ -58,12 +58,12 @@ function deriveItemSales(orders: StoredOrder[]) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function OfficeDashboard() {
-  const [orders,  setOrders]  = useState<StoredOrder[]>([])
+  const [orders,  setOrders]  = useState<AdminOrder[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchOrders = useCallback(async () => {
     const res  = await fetch("/api/orders")
-    const data: StoredOrder[] = await res.json()
+    const data: AdminOrder[] = await res.json()
     setOrders(data)
     setLoading(false)
   }, [])
@@ -197,7 +197,7 @@ export default function OfficeDashboard() {
               </thead>
               <tbody className="divide-y divide-white/5">
                 {orders.map(o => (
-                  <tr key={o.id}>
+                  <tr key={o._id}>
                     <td className="py-2.5 pr-4 text-white/50 whitespace-nowrap">{fmtDate(o.createdAt)}</td>
                     <td className="py-2.5 pr-4 text-white/50 whitespace-nowrap">{fmtTime(o.createdAt)}</td>
                     <td className="py-2.5 pr-4">
@@ -205,7 +205,7 @@ export default function OfficeDashboard() {
                       <p className="text-white/30 text-xs">{o.customerEmail}</p>
                     </td>
                     <td className="py-2.5 pr-4 text-white/50 text-xs">
-                      {o.items.map(i => `${i.quantity}× ${i.name}`).join(", ")}
+                      {o.items.map((i: AdminOrderItem) => `${i.quantity}× ${i.itemName}`).join(", ")}
                     </td>
                     <td className="py-2.5 pr-4 text-right font-semibold text-brand-gold whitespace-nowrap">
                       ${o.total.toFixed(2)}
