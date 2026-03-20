@@ -209,6 +209,26 @@ export const menuItemSchema = defineType({
       of: [modifierGroupDef],
     }),
 
+    // ── Locations ────────────────────────────────────────────────────────────
+    // An item can belong to one or more physical locations.
+    // Leave empty to make the item available to all locations (global fallback).
+    defineField({
+      name:        "locations",
+      title:       "Available At",
+      type:        "array",
+      group:       "basics",
+      description:
+        "Which locations carry this item. " +
+        "Leave empty to make it available at all locations (global fallback).",
+      of: [
+        defineArrayMember({
+          type:    "reference",
+          to:      [{ type: "location" }],
+          options: { disableNew: true },  // locations must be created separately
+        }),
+      ],
+    }),
+
     // ── Meta ─────────────────────────────────────────────────────────────────
     defineField({
       name:        "orderCount",

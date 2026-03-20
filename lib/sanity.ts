@@ -62,6 +62,32 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   `)
 }
 
+// ─── Location (multi-tenant) ──────────────────────────────────────────────────
+
+// Minimal shape needed by the root layout for theming + metadata.
+// Expand this interface as more fields are consumed by server components.
+export interface LocationMeta {
+  restaurantName: string
+  theme:          "tropical" | "midnight" | "spice" | "ocean"
+  metaTitle?:     string
+  metaDescription?: string
+  tagline?:       string
+}
+
+export async function getLocationBySlug(slug: string): Promise<LocationMeta | null> {
+  const client = getSanityClient()
+  if (!client) {
+    console.warn(`[Sanity] Client not configured — cannot resolve location "${slug}". Falling back to default theme.`)
+    return null
+  }
+  return client.fetch<LocationMeta | null>(
+    `*[_type == "location" && slug.current == $slug][0] {
+      restaurantName, theme, metaTitle, metaDescription, tagline
+    }`,
+    { slug }
+  )
+}
+
 // ─── Shared modifier groups ───────────────────────────────────────────────────
 
 const SIZE_CHOICE: ModifierGroup = {

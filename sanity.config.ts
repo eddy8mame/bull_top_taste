@@ -1,12 +1,17 @@
 import { defineConfig }       from "sanity"
 import { structureTool }      from "sanity/structure"
+import { locationSchema }     from "@/sanity/schema/location"
 import { menuItemSchema }     from "@/sanity/schema/menuItem"
+import { orderSchema }        from "@/sanity/schema/order"
 import { specialSchema }      from "@/sanity/schema/special"
+// siteSettings is kept in schema registration for backwards compatibility with
+// any existing documents, but it is no longer surfaced in the Studio sidebar.
+// Migrate existing data to the new `location` document type, then remove this import.
 import { siteSettingsSchema } from "@/sanity/schema/siteSettings"
 
 export default defineConfig({
   name:      "bulltoptaste",
-  title:     "Bull Top Taste",
+  title:     "Bull Top Taste — Studio",
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset:   process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production",
   basePath:  "/studio",
@@ -17,30 +22,75 @@ export default defineConfig({
         S.list()
           .title("Content")
           .items([
-            // Singleton — fixed documentId means only one can ever exist
+
+            // ── Locations ───────────────────────────────────────────────────
+            // Each document = one physical restaurant location / franchise unit.
+            // The slug field determines which location the frontend loads.
             S.listItem()
-              .title("Site Settings")
-              .id("siteSettings")
+              .title("Locations")
+              .icon(() => "📍")
               .child(
-                S.document()
-                  .schemaType("siteSettings")
-                  .documentId("siteSettings")
+                S.documentTypeList("location")
+                  .title("Locations")
+                  .defaultOrdering([{ field: "restaurantName", direction: "asc" }])
               ),
 
             S.divider(),
 
+            // ── Menu ────────────────────────────────────────────────────────
             S.listItem()
               .title("Menu Items")
-              .child(S.documentTypeList("menuItem").title("Menu Items")),
+              .icon(() => "🍽")
+              .child(
+                S.documentTypeList("menuItem")
+                  .title("Menu Items")
+                  .defaultOrdering([{ field: "section", direction: "asc" }])
+              ),
 
             S.listItem()
               .title("Weekly Specials")
+              .icon(() => "⭐")
               .child(S.documentTypeList("special").title("Weekly Specials")),
+
+            S.divider(),
+
+            // ── Orders ──────────────────────────────────────────────────────
+            // Split into active (pending/kitchen/floor) and completed views
+            // so Studio doesn't paginate completed orders into the live board.
+            S.listItem()
+              .title("Orders — Active")
+              .icon(() => "⏳")
+              .child(
+                S.documentTypeList("order")
+                  .title("Active Orders")
+                  .filter('_type == "order" && status in ["pending", "kitchen", "floor"]')
+                  .defaultOrdering([{ field: "createdAt", direction: "desc" }])
+              ),
+
+            S.listItem()
+              .title("Orders — Completed")
+              .icon(() => "✅")
+              .child(
+                S.documentTypeList("order")
+                  .title("Completed Orders")
+                  .filter('_type == "order" && status == "completed"')
+                  .defaultOrdering([{ field: "createdAt", direction: "desc" }])
+              ),
+
           ]),
     }),
   ],
 
   schema: {
-    types: [siteSettingsSchema, menuItemSchema, specialSchema],
+    types: [
+      // Active schemas
+      locationSchema,
+      menuItemSchema,
+      orderSchema,
+      specialSchema,
+      // Deprecated — kept for safe migration; remove once all siteSettings
+      // documents have been re-created as location documents.
+      siteSettingsSchema,
+    ],
   },
 })

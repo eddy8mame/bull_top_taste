@@ -1,28 +1,153 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   THEME ENGINE
+   ───────────────────────────────────────────────────────────────────────────────
+   How it works:
+
+   1. @theme inline maps every Tailwind colour/font token to a semantic CSS
+      variable (e.g. --color-brand-green → var(--theme-primary)).
+
+      Because of the `inline` keyword, Tailwind does NOT write these to :root.
+      Instead it inlines the var() reference directly into each compiled utility
+      class, e.g.:
+          .bg-brand-green { background-color: var(--theme-primary); }
+
+   2. Each [data-theme="..."] block defines the actual --theme-* values for
+      that palette. Changing the data-theme attribute on <html> — a single
+      server-side attribute write in layout.tsx — swaps every colour and font
+      across the entire page with zero JavaScript.
+
+   3. :root is aliased to the default (tropical) so the page renders correctly
+      even if data-theme is missing or load is deferred.
+═══════════════════════════════════════════════════════════════════════════════ */
+
 @theme inline {
-  --color-background: #fafaf7;
-  --color-foreground: #111111;
+  /* ── Themeable brand palette ─────────────────────────────────────────────── */
+  /* These map to Tailwind utilities: bg-brand-green, text-brand-gold, etc.    */
+  --color-brand-green:      var(--theme-primary);
+  --color-brand-green-dark: var(--theme-primary-dark);
+  --color-brand-gold:       var(--theme-accent);
+  --color-brand-muted:      var(--theme-muted);
+  --color-brand-card:       var(--theme-card);
+  --color-brand-light:      var(--theme-bg);
+  --color-background:       var(--theme-bg);
+  --color-foreground:       var(--theme-fg);
 
-  /* Brand colours */
-  --color-brand-green:      #2db82d;
-  --color-brand-green-dark: #1e961b;
-  --color-brand-gold:       #f5c300;
-  --color-brand-dark:       #111111;
-  --color-brand-charcoal:   #3d3d3d;
-  --color-brand-muted:      #555555;
-  --color-brand-card:       #ffffff;
-  --color-brand-light:      #fafaf7;
+  /* ── Static palette — admin dark UI only, intentionally unthemed ────────── */
+  /* The kitchen/office dashboards use these directly and must not shift.      */
+  --color-brand-dark:     #111111;
+  --color-brand-charcoal: #3d3d3d;
 
-  /* Typography */
-  --font-sans:  var(--font-inter);
-  --font-serif: var(--font-playfair);
+  /* ── Typography ──────────────────────────────────────────────────────────── */
+  /* --font-sans and --font-serif drive the font-sans / font-serif utilities.  */
+  /* Their values are theme-specific font stacks, resolved at runtime.         */
+  --font-sans:  var(--theme-font-sans);
+  --font-serif: var(--theme-font-serif);
 }
 
-html { scroll-behavior: smooth; }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DEFAULT FALLBACK  (must come first so theme blocks override it)
+   Applied to :root so any element outside [data-theme] still resolves tokens.
+═══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Mirrors [data-theme="tropical"] — keeps the page from flashing unstyled  */
+  /* if the data-theme attribute hasn't propagated yet, or is absent.         */
+  --theme-primary:      #1e8f2e;
+  --theme-primary-dark: #156b21;
+  --theme-accent:       #f5c300;
+  --theme-bg:           #fafaf7;
+  --theme-fg:           #111111;
+  --theme-muted:        #555555;
+  --theme-card:         #ffffff;
+  --theme-font-sans:    var(--font-inter);
+  --theme-font-serif:   var(--font-playfair);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   THEME: TROPICAL  — Jamaican green & gold (Bull Top Taste original)
+═══════════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="tropical"] {
+  --theme-primary:      #1e8f2e;  /* lush island green                        */
+  --theme-primary-dark: #156b21;  /* deeper shade for hover states             */
+  --theme-accent:       #f5c300;  /* reggae gold — prices, highlights          */
+  --theme-bg:           #fafaf7;  /* warm off-white page background            */
+  --theme-fg:           #111111;  /* near-black body copy                      */
+  --theme-muted:        #555555;  /* secondary text, metadata                  */
+  --theme-card:         #ffffff;  /* card / modal backgrounds                  */
+  --theme-font-sans:    var(--font-inter);
+  --theme-font-serif:   var(--font-playfair);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   THEME: MIDNIGHT  — Deep navy & amber (refined, upscale dining)
+═══════════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="midnight"] {
+  --theme-primary:      #1e3a6e;  /* deep diplomatic navy                      */
+  --theme-primary-dark: #142a50;  /* hover / pressed state                     */
+  --theme-accent:       #e8a020;  /* warm amber — prices, CTAs, badges         */
+  --theme-bg:           #f4f6fb;  /* cool blue-grey page background            */
+  --theme-fg:           #0d1929;  /* very dark navy for body copy              */
+  --theme-muted:        #4a5a72;  /* slate muted text                          */
+  --theme-card:         #ffffff;
+  --theme-font-sans:    var(--font-dm-sans);
+  --theme-font-serif:   var(--font-cormorant);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   THEME: SPICE  — Warm terracotta & cream (earthy, bold street-food energy)
+═══════════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="spice"] {
+  --theme-primary:      #c2440f;  /* fired terracotta                          */
+  --theme-primary-dark: #9e380b;  /* deep ember hover                          */
+  --theme-accent:       #e8b84b;  /* sun-baked gold accent                     */
+  --theme-bg:           #fdf6ee;  /* warm parchment page background            */
+  --theme-fg:           #1c0a00;  /* rich dark brown body copy                 */
+  --theme-muted:        #7a4428;  /* muted clay text                           */
+  --theme-card:         #fffbf6;  /* barely-there cream card                   */
+  --theme-font-sans:    var(--font-nunito);
+  --theme-font-serif:   var(--font-lora);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   THEME: OCEAN  — Coastal teal & coral (fresh, airy, modern seafood)
+═══════════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="ocean"] {
+  --theme-primary:      #0e7490;  /* deep coastal teal                         */
+  --theme-primary-dark: #0a5a70;  /* hover state                               */
+  --theme-accent:       #f97316;  /* coral counterpoint — warmth against cool  */
+  --theme-bg:           #f0fafb;  /* barely-tinted aqua page background        */
+  --theme-fg:           #0c3042;  /* dark ocean body copy                      */
+  --theme-muted:        #3d7a8a;  /* muted teal text                           */
+  --theme-card:         #ffffff;
+  --theme-font-sans:    var(--font-outfit);
+  --theme-font-serif:   var(--font-merriweather);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   Use --theme-* variables directly here (not the Tailwind colour tokens),
+   because @theme inline does not write --color-* to :root.
+═══════════════════════════════════════════════════════════════════════════════ */
+
+html {
+  scroll-behavior: smooth;
+}
 
 body {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  background:  var(--theme-bg);
+  color:       var(--theme-fg);
+  /* Fall back through the sans stack: theme font → system-ui → sans-serif.   */
+  font-family: var(--theme-font-sans), system-ui, sans-serif;
 }
