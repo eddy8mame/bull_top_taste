@@ -185,6 +185,15 @@ const { data: rawOrders, isLoading, mutate: mutateOrders } =
 
 `/api/menu/86` (unavailable items) uses SWR without auto-refresh — updates are staff-driven.
 
+### Cart persistence (localStorage)
+
+Cart state is persisted to `localStorage` under the key `'btt-cart'`. Implemented in `CartContext` via:
+- Lazy `useState` initializer — reads from localStorage on mount, guards against SSR with `typeof window === 'undefined'` check
+- `useEffect` syncing `items` to localStorage on every state change
+- `clearCart` removes the key in addition to resetting state
+
+Fails silently in all cases — localStorage unavailable or quota exceeded does not surface errors to the user.
+
 ### Optimistic UI (`mutate`)
 
 Every action function follows the same pattern:
@@ -315,9 +324,11 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 | `app/admin/office/page.tsx` redesign | Office analytics page not yet translated to the new admin CSS system — still uses old Tailwind classes |
 | Sub-modifier with multiple parents | If a single parent group has 2+ priced options each with different sub-modifier groups (rare), the current split-record approach handles it correctly. If the same sub-modifier group ID appears under multiple parent options, the last one wins in `parentKeyOf` — theoretical edge case only |
 | `startedAt` in Sanity Studio schema | `order.ts` doesn't have an explicit `startedAt` field definition (like `readyAt` does). Sanity accepts it from the API patch, but it should be added to the schema for Studio visibility |
+| Cart panel UI overhaul | In progress — localStorage persistence complete. Remaining: delivery card removal, pickup location card, modifier descriptor line, removal UX, Sanity-connected quick-add empty state, pre-populated modifier modal on item tap |
 
 ## System Changelog
-* **v1.3.0 (Current):** Resolved Sub-Modifier Pipeline. Replaced synthetic keys with explicit `parentOptionId` relational mapping. Re-wrote Kitchen and Floor 2-Pass algorithms to ensure perfect receipt accounting (dynamic base pricing) and operational clarity.
+* **v1.4.0 (Current):** Added localStorage cart persistence. Cart survives page refresh and browser close. Key: `'btt-cart'`.
+* **v1.3.0:** Resolved Sub-Modifier Pipeline. Replaced synthetic keys with explicit `parentOptionId` relational mapping. Re-wrote Kitchen and Floor 2-Pass algorithms to ensure perfect receipt accounting (dynamic base pricing) and operational clarity.
 * **v1.2.0:** Translated vanilla HTML Admin mockups into isolated React components. Preserved SWR and Sanity mutations. Scoped CSS under `.admin-shell`.
 * **v1.1.0:** Ripped out local `orderStore`. Wired Stripe webhooks directly to Sanity `create` mutations. 
 * **v1.0.0:** Migrated from single-tenant siteSettings to multi-tenant `location` schema with dynamic Tailwind v4 theming.
