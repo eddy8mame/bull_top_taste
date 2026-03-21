@@ -327,6 +327,7 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 | Cart panel UI overhaul | In progress — localStorage persistence complete. Remaining: delivery card removal, pickup location card, modifier descriptor line, removal UX, Sanity-connected quick-add empty state, pre-populated modifier modal on item tap |
 
 ## System Changelog
+* **v1.4.1 (Current):** Removed DoorDash delivery card and links from cart panel. Delivery option relocated to order confirmation page (not yet built).
 * **v1.4.0 (Current):** Added localStorage cart persistence. Cart survives page refresh and browser close. Key: `'btt-cart'`.
 * **v1.3.0:** Resolved Sub-Modifier Pipeline. Replaced synthetic keys with explicit `parentOptionId` relational mapping. Re-wrote Kitchen and Floor 2-Pass algorithms to ensure perfect receipt accounting (dynamic base pricing) and operational clarity.
 * **v1.2.0:** Translated vanilla HTML Admin mockups into isolated React components. Preserved SWR and Sanity mutations. Scoped CSS under `.admin-shell`.
