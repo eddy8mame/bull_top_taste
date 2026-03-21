@@ -6,12 +6,12 @@
    How it works:
 
    1. @theme inline maps every Tailwind colour/font token to a semantic CSS
-      variable (e.g. --color-brand-green → var(--theme-primary)).
+      variable (e.g. --color-brand-green → var(--theme-secondary)).
 
       Because of the `inline` keyword, Tailwind does NOT write these to :root.
       Instead it inlines the var() reference directly into each compiled utility
       class, e.g.:
-          .bg-brand-green { background-color: var(--theme-primary); }
+          .bg-brand-green { background-color: var(--theme-secondary); }
 
    2. Each [data-theme="..."] block defines the actual --theme-* values for
       that palette. Changing the data-theme attribute on <html> — a single
@@ -23,11 +23,12 @@
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 @theme inline {
-  /* ── Themeable brand palette ─────────────────────────────────────────────── */
-  /* These map to Tailwind utilities: bg-brand-green, text-brand-gold, etc.    */
-  --color-brand-green:      var(--theme-primary);
-  --color-brand-green-dark: var(--theme-primary-dark);
-  --color-brand-gold:       var(--theme-accent);
+  /* ── Themeable brand palette (4-tier: primary · secondary · tertiary · neutral)
+       These map to Tailwind utilities: bg-brand-green, text-brand-gold, etc.  */
+  --color-brand-green:      var(--theme-secondary);
+  --color-brand-green-dark: var(--theme-secondary-dark);
+  --color-brand-gold:       var(--theme-primary);
+  --color-brand-tertiary:   var(--theme-tertiary);
   --color-brand-muted:      var(--theme-muted);
   --color-brand-card:       var(--theme-card);
   --color-brand-light:      var(--theme-bg);
@@ -55,15 +56,16 @@
 :root {
   /* Mirrors [data-theme="tropical"] — keeps the page from flashing unstyled  */
   /* if the data-theme attribute hasn't propagated yet, or is absent.         */
-  --theme-primary:      #1e8f2e;
-  --theme-primary-dark: #156b21;
-  --theme-accent:       #f5c300;
-  --theme-bg:           #fafaf7;
-  --theme-fg:           #111111;
-  --theme-muted:        #555555;
-  --theme-card:         #ffffff;
-  --theme-font-sans:    var(--font-inter);
-  --theme-font-serif:   var(--font-playfair);
+  --theme-primary:        #FEB615;  /* Brand gold — hero, prices, highlights  */
+  --theme-secondary:      #017530;  /* Brand green — buttons, headings        */
+  --theme-secondary-dark: #015a24;  /* Deeper green for hover states          */
+  --theme-tertiary:       #F15F24;  /* Warm orange — CTAs, urgency accents    */
+  --theme-bg:             #fafaf7;
+  --theme-fg:             #031109;  /* Brand neutral — near-black body copy   */
+  --theme-muted:          #555555;
+  --theme-card:           #ffffff;
+  --theme-font-sans:      var(--font-inter);
+  --theme-font-serif:     var(--font-playfair);
 }
 
 
@@ -72,15 +74,16 @@
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 [data-theme="tropical"] {
-  --theme-primary:      #1e8f2e;  /* lush island green                        */
-  --theme-primary-dark: #156b21;  /* deeper shade for hover states             */
-  --theme-accent:       #f5c300;  /* reggae gold — prices, highlights          */
-  --theme-bg:           #fafaf7;  /* warm off-white page background            */
-  --theme-fg:           #111111;  /* near-black body copy                      */
-  --theme-muted:        #555555;  /* secondary text, metadata                  */
-  --theme-card:         #ffffff;  /* card / modal backgrounds                  */
-  --theme-font-sans:    var(--font-inter);
-  --theme-font-serif:   var(--font-playfair);
+  --theme-primary:        #FEB615;  /* brand gold — the hero colour            */
+  --theme-secondary:      #017530;  /* lush Jamaican green                     */
+  --theme-secondary-dark: #015a24;  /* deeper green for hover states           */
+  --theme-tertiary:       #F15F24;  /* warm orange accent — CTAs, urgency      */
+  --theme-bg:             #fafaf7;  /* warm off-white page background           */
+  --theme-fg:             #031109;  /* brand neutral — near-black body copy     */
+  --theme-muted:          #555555;  /* secondary text, metadata                 */
+  --theme-card:           #ffffff;  /* card / modal backgrounds                 */
+  --theme-font-sans:      var(--font-inter);
+  --theme-font-serif:     var(--font-playfair);
 }
 
 
@@ -89,15 +92,16 @@
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 [data-theme="midnight"] {
-  --theme-primary:      #1e3a6e;  /* deep diplomatic navy                      */
-  --theme-primary-dark: #142a50;  /* hover / pressed state                     */
-  --theme-accent:       #e8a020;  /* warm amber — prices, CTAs, badges         */
-  --theme-bg:           #f4f6fb;  /* cool blue-grey page background            */
-  --theme-fg:           #0d1929;  /* very dark navy for body copy              */
-  --theme-muted:        #4a5a72;  /* slate muted text                          */
-  --theme-card:         #ffffff;
-  --theme-font-sans:    var(--font-dm-sans);
-  --theme-font-serif:   var(--font-cormorant);
+  --theme-primary:        #e8a020;  /* warm amber — prices, CTAs, badges       */
+  --theme-secondary:      #1e3a6e;  /* deep diplomatic navy                    */
+  --theme-secondary-dark: #142a50;  /* hover / pressed state                   */
+  --theme-tertiary:       #c0392b;  /* rich crimson accent                     */
+  --theme-bg:             #f4f6fb;  /* cool blue-grey page background          */
+  --theme-fg:             #0d1929;  /* very dark navy for body copy            */
+  --theme-muted:          #4a5a72;  /* slate muted text                        */
+  --theme-card:           #ffffff;
+  --theme-font-sans:      var(--font-dm-sans);
+  --theme-font-serif:     var(--font-cormorant);
 }
 
 
@@ -106,15 +110,16 @@
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 [data-theme="spice"] {
-  --theme-primary:      #c2440f;  /* fired terracotta                          */
-  --theme-primary-dark: #9e380b;  /* deep ember hover                          */
-  --theme-accent:       #e8b84b;  /* sun-baked gold accent                     */
-  --theme-bg:           #fdf6ee;  /* warm parchment page background            */
-  --theme-fg:           #1c0a00;  /* rich dark brown body copy                 */
-  --theme-muted:        #7a4428;  /* muted clay text                           */
-  --theme-card:         #fffbf6;  /* barely-there cream card                   */
-  --theme-font-sans:    var(--font-nunito);
-  --theme-font-serif:   var(--font-lora);
+  --theme-primary:        #e8b84b;  /* sun-baked gold accent                   */
+  --theme-secondary:      #c2440f;  /* fired terracotta                        */
+  --theme-secondary-dark: #9e380b;  /* deep ember hover                        */
+  --theme-tertiary:       #d4a017;  /* mustard highlight                       */
+  --theme-bg:             #fdf6ee;  /* warm parchment page background          */
+  --theme-fg:             #1c0a00;  /* rich dark brown body copy               */
+  --theme-muted:          #7a4428;  /* muted clay text                         */
+  --theme-card:           #fffbf6;  /* barely-there cream card                 */
+  --theme-font-sans:      var(--font-nunito);
+  --theme-font-serif:     var(--font-lora);
 }
 
 
@@ -123,15 +128,16 @@
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 [data-theme="ocean"] {
-  --theme-primary:      #0e7490;  /* deep coastal teal                         */
-  --theme-primary-dark: #0a5a70;  /* hover state                               */
-  --theme-accent:       #f97316;  /* coral counterpoint — warmth against cool  */
-  --theme-bg:           #f0fafb;  /* barely-tinted aqua page background        */
-  --theme-fg:           #0c3042;  /* dark ocean body copy                      */
-  --theme-muted:        #3d7a8a;  /* muted teal text                           */
-  --theme-card:         #ffffff;
-  --theme-font-sans:    var(--font-outfit);
-  --theme-font-serif:   var(--font-merriweather);
+  --theme-primary:        #f97316;  /* coral counterpoint — warmth against cool */
+  --theme-secondary:      #0e7490;  /* deep coastal teal                       */
+  --theme-secondary-dark: #0a5a70;  /* hover state                             */
+  --theme-tertiary:       #e11d48;  /* rose accent                             */
+  --theme-bg:             #f0fafb;  /* barely-tinted aqua page background      */
+  --theme-fg:             #0c3042;  /* dark ocean body copy                    */
+  --theme-muted:          #3d7a8a;  /* muted teal text                         */
+  --theme-card:           #ffffff;
+  --theme-font-sans:      var(--font-outfit);
+  --theme-font-serif:     var(--font-merriweather);
 }
 
 

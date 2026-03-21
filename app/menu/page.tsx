@@ -1,4 +1,4 @@
-import { getMenuItems, getActiveSpecials, getSiteSettings } from "@/lib/sanity"
+import { getMenuItems, getActiveSpecials } from "@/lib/sanity"
 import Nav      from "@/components/Nav"
 import Cart     from "@/components/Cart"
 import MenuPage from "@/components/MenuPage"
@@ -11,16 +11,15 @@ export const metadata = {
 }
 
 export default async function MenuRoute() {
-  const [items, specials, settings] = await Promise.all([
+  const [items, specials] = await Promise.all([
     getMenuItems(),
     getActiveSpecials(),
-    getSiteSettings(),
   ])
 
   return (
     <>
-      <Nav  settings={settings} />
-      <Cart settings={settings} />
+      <Nav  location={null} />
+      <Cart location={null} />
 
       <main className="bg-brand-light min-h-screen pt-16">
         {/* Page header */}

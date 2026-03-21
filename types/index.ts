@@ -17,13 +17,14 @@ export interface ModifierGroup {
 }
 
 export interface SelectedModifier {
-  groupId:   string
+  groupId: string
   groupName: string
   selections: {
-    optionId:        string
-    name:            string
+    optionId: string
+    name: string
     priceAdjustment: number
   }[]
+  parentOptionId?: string
 }
 
 // ─── Menu ─────────────────────────────────────────────────────────────────────
@@ -94,6 +95,12 @@ export interface SanityOrderModifier {
   _key:       string   // required by Sanity for keyed arrays
   groupName:  string
   selections: string   // e.g. "Large +$3.50, Rice & Peas"
+  // BACKLOG: parentKey — the _key of the SanityOrderModifier whose selected
+  // option spawned this sub-modifier group (e.g. the "Size Choice" record for
+  // Plantain-Sweet points to the "Recommend Sides and Apps" record).
+  // Set this at checkout write time; the floor modal receipt renderer can then
+  // collapse sub-modifier rows inline with their parent add-on row.
+  parentKey?: string
 }
 
 // Order line item as stored in the Sanity order document.
@@ -161,18 +168,20 @@ export interface AdminOrderItem {
 }
 
 export interface AdminOrder {
-  _id:           string          // Sanity document _id
-  status:        OrderStatus
-  type:          "pickup" | "delivery"
-  customerName:  string
-  customerEmail: string
-  customerPhone: string
-  notes?:        string
-  items:         AdminOrderItem[]
-  total:         number
-  createdAt:     string
-  readyAt?:      string
-  pickedUpAt?:   string
+  _id:                    string          // Sanity document _id
+  stripePaymentIntentId?: string          // pi_… — last 6 chars used as display order ref
+  status:                 OrderStatus
+  type:                   "pickup" | "delivery"
+  customerName:           string
+  customerEmail:          string
+  customerPhone:          string
+  notes?:                 string
+  items:                  AdminOrderItem[]
+  total:                  number
+  createdAt:  string
+  startedAt?: string   // set when kitchen accepts (pending → kitchen)
+  readyAt?:   string   // set when kitchen marks ready (kitchen → floor)
+  pickedUpAt?: string  // set when floor staff confirms pickup
 }
 
 // ─── Notifications ────────────────────────────────────────────────────────────

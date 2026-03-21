@@ -85,7 +85,6 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
 // ─── Location (multi-tenant) ──────────────────────────────────────────────────
 
 // Minimal shape needed by the root layout for theming + metadata.
-// Expand this interface as more fields are consumed by server components.
 export interface LocationMeta {
   restaurantName: string
   theme:          "tropical" | "midnight" | "spice" | "ocean"
@@ -104,6 +103,99 @@ export async function getLocationBySlug(slug: string): Promise<LocationMeta | nu
     `*[_type == "location" && slug.current == $slug][0] {
       restaurantName, theme, metaTitle, metaDescription, tagline
     }`,
+    { slug }
+  )
+}
+
+// ─── Full location data (homepage) ──────────────────────────────────────────
+
+export interface LocationImage {
+  url:     string
+  alt?:    string
+  caption?: string
+}
+
+export interface LocationFull extends LocationMeta {
+  logoUrl?:           string
+  address?:           string
+  phone?:             string
+  phoneDialable?:     string
+  email?:             string
+  uberEatsUrl?:       string
+  instagram?:         string
+  facebook?:          string
+
+  // Hero
+  heroLabel?:            string
+  heroHeadline?:         string
+  heroSubheadline?:      string
+  heroPrimaryCtaText?:   string
+  heroSecondaryCtaText?: string
+  heroBackgroundUrl?:    string
+
+  // About
+  aboutSection?: {
+    heading?:       string
+    subheading?:    string
+    body?:          string
+    imageUrl?:      string
+    backgroundUrl?: string
+  }
+
+  // Gallery
+  gallery?: LocationImage[]
+
+  // Hours
+  hours?: { days: string; time: string }[]
+  pickupWaitTime?: string
+}
+
+// The full GROQ projection shared by both lookup paths.
+const LOCATION_FULL_PROJECTION = `{
+  restaurantName, theme, metaTitle, metaDescription, tagline,
+  "logoUrl": logo.asset->url,
+  address, phone, phoneDialable, email,
+  uberEatsUrl, instagram, facebook,
+
+  heroLabel, heroHeadline, heroSubheadline,
+  heroPrimaryCtaText, heroSecondaryCtaText,
+  "heroBackgroundUrl": heroBackground.asset->url,
+
+  aboutSection {
+    heading, subheading, body,
+    "imageUrl": image.asset->url,
+    "backgroundUrl": background.asset->url
+  },
+
+  gallery[] {
+    "url": asset->url,
+    alt,
+    caption
+  },
+
+  hours[] { days, time },
+  pickupWaitTime
+}`
+
+export async function getLocationFull(slug: string): Promise<LocationFull | null> {
+  const client = getSanityClient()
+  if (!client) return null
+
+  // Prefer ID-based lookup when SANITY_LOCATION_ID is set — this is more
+  // reliable than slug matching and is already required by the admin routes.
+  const locationId = process.env.SANITY_LOCATION_ID
+  if (locationId) {
+    const result = await client.fetch<LocationFull | null>(
+      `*[_type == "location" && _id == $id][0] ${LOCATION_FULL_PROJECTION}`,
+      { id: locationId }
+    )
+    if (result) return result
+    // Fall through to slug lookup if ID produced no results (e.g. wrong env value)
+    console.warn(`[Sanity] getLocationFull: no location found for id "${locationId}", retrying by slug.`)
+  }
+
+  return client.fetch<LocationFull | null>(
+    `*[_type == "location" && slug.current == $slug][0] ${LOCATION_FULL_PROJECTION}`,
     { slug }
   )
 }

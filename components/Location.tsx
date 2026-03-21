@@ -1,4 +1,5 @@
-import type { SiteSettings, HoursEntry } from "@/types"
+import type { LocationFull } from "@/lib/sanity"
+import type { HoursEntry }   from "@/types"
 
 const DEFAULT_HOURS: HoursEntry[] = [
   { days: "Monday – Saturday", time: "9:00 am – 10:00 pm" },
@@ -7,29 +8,29 @@ const DEFAULT_HOURS: HoursEntry[] = [
 ]
 
 const DEFAULTS = {
-  name:         "Bull Top Taste Jamaican Restaurant",
-  address:      "1172 Royal Palm Beach Blvd, Royal Palm Beach, FL 33411",
-  mapsQuery:    "1172 Royal Palm Beach Blvd Royal Palm Beach FL 33411",
-  phone:        "561.795.8440",
+  name:          "Bull Top Taste Jamaican Restaurant",
+  address:       "1172 Royal Palm Beach Blvd, Royal Palm Beach, FL 33411",
+  mapsQuery:     "1172 Royal Palm Beach Blvd Royal Palm Beach FL 33411",
+  phone:         "561.795.8440",
   phoneDialable: "5617958440",
-  email:        "info@bulltoptaste.com",
-  instagram:    "https://www.instagram.com/bulltoptasterestaurant/",
-  facebook:     "https://www.facebook.com/bulltoptaste/",
+  email:         "info@bulltoptaste.com",
+  instagram:     "https://www.instagram.com/bulltoptasterestaurant/",
+  facebook:      "https://www.facebook.com/bulltoptaste/",
 }
 
 interface Props {
-  settings?: SiteSettings | null
+  location?: LocationFull | null
 }
 
-export default function Location({ settings }: Props) {
-  const name         = settings?.restaurantName ?? DEFAULTS.name
-  const address      = settings?.address        ?? DEFAULTS.address
-  const phone        = settings?.phone          ?? DEFAULTS.phone
-  const phoneDialable = settings?.phoneDialable  ?? DEFAULTS.phoneDialable
-  const email        = settings?.email          ?? DEFAULTS.email
-  const instagram    = settings?.instagram      ?? DEFAULTS.instagram
-  const facebook     = settings?.facebook       ?? DEFAULTS.facebook
-  const hours        = settings?.hours?.length  ? settings.hours : DEFAULT_HOURS
+export default function Location({ location }: Props) {
+  const name          = location?.restaurantName ?? DEFAULTS.name
+  const address       = location?.address        ?? DEFAULTS.address
+  const phone         = location?.phone          ?? DEFAULTS.phone
+  const phoneDialable = location?.phoneDialable  ?? DEFAULTS.phoneDialable
+  const email         = location?.email          ?? DEFAULTS.email
+  const instagram     = location?.instagram      ?? DEFAULTS.instagram
+  const facebook      = location?.facebook       ?? DEFAULTS.facebook
+  const hours         = location?.hours?.length  ? location.hours : DEFAULT_HOURS
 
   const mapsQuery  = encodeURIComponent(address || DEFAULTS.mapsQuery)
   const embedSrc   = `https://maps.google.com/maps?q=${mapsQuery}&output=embed&z=15`

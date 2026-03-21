@@ -273,8 +273,9 @@ export default function ModifierModal({ item, onClose }: Props) {
           const soKeys = Array.from(subSel[gKey]?.[optKey]?.[sgKey] ?? [])
           if (!soKeys.length) return
           selectedModifiers.push({
-            groupId:   `${gKey}__${optKey}__${sgKey}`,
+            groupId: sgKey,
             groupName: sg.name,
+            parentOptionId: optKey,
             selections: soKeys.map(soKey => {
               const so = sg.options.find((o, soi) => safeKey(o, `${sgKey}-o${soi}`) === soKey)!
               return { optionId: soKey, name: so.name, priceAdjustment: so.priceAdjustment }

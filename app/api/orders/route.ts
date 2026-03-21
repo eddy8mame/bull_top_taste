@@ -1,6 +1,10 @@
-import { NextResponse }          from "next/server"
-import { getSanityReadClient }   from "@/lib/sanity"
-import type { AdminOrder }       from "@/types"
+import { NextResponse }            from "next/server"
+import { getSanityWriteClient }    from "@/lib/sanity"
+import type { AdminOrder }         from "@/types"
+
+// Force dynamic rendering — kitchen and floor dashboards cannot tolerate CDN
+// caching lag. The write client (useCdn: false) is used for the same reason.
+export const revalidate = 0
 
 // GET /api/orders — all orders for this location, newest first.
 // Polled by the admin kitchen/floor dashboard (SWR, 15 s interval) and the
@@ -13,6 +17,7 @@ const LOCATION_ID = process.env.SANITY_LOCATION_ID
 
 const ORDER_PROJECTION = `{
   _id,
+  stripePaymentIntentId,
   status,
   type,
   customerName,
@@ -21,6 +26,7 @@ const ORDER_PROJECTION = `{
   notes,
   total,
   createdAt,
+  startedAt,
   readyAt,
   pickedUpAt,
   items[] {
@@ -29,16 +35,17 @@ const ORDER_PROJECTION = `{
     quantity,
     basePrice,
     effectivePrice,
-    modifiers[] { _key, groupName, selections },
+    modifiers[] { _key, groupName, selections, parentKey },
     specialInstructions
   }
 }`
 
 export async function GET() {
-  const client = getSanityReadClient()
+  // Write client (useCdn: false) ensures live data; no CDN cache for order feeds.
+  const client = getSanityWriteClient()
 
   if (!client) {
-    console.warn("[orders] Sanity read client unavailable — returning empty list")
+    console.warn("[orders] Sanity write client unavailable — returning empty list")
     return NextResponse.json([] as AdminOrder[])
   }
 

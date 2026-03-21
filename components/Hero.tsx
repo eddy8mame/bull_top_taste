@@ -1,4 +1,4 @@
-import type { SiteSettings } from "@/types"
+import type { LocationFull } from "@/lib/sanity"
 
 const DEFAULTS = {
   label:         "Royal Palm Beach's Best Jamaican Restaurant",
@@ -9,25 +9,38 @@ const DEFAULTS = {
 }
 
 interface Props {
-  settings?: SiteSettings | null
+  location?: LocationFull | null
 }
 
-export default function Hero({ settings }: Props) {
-  const label        = settings?.heroLabel            ?? DEFAULTS.label
-  const headline     = settings?.heroHeadline         ?? DEFAULTS.headline
-  const subheadline  = settings?.heroSubheadline      ?? DEFAULTS.subheadline
-  const primaryCta   = settings?.heroPrimaryCtaText   ?? DEFAULTS.primaryCta
-  const secondaryCta = settings?.heroSecondaryCtaText ?? DEFAULTS.secondaryCta
+export default function Hero({ location }: Props) {
+  const label        = location?.heroLabel            ?? DEFAULTS.label
+  const headline     = location?.heroHeadline         ?? DEFAULTS.headline
+  const subheadline  = location?.heroSubheadline      ?? DEFAULTS.subheadline
+  const primaryCta   = location?.heroPrimaryCtaText   ?? DEFAULTS.primaryCta
+  const secondaryCta = location?.heroSecondaryCtaText ?? DEFAULTS.secondaryCta
+  const bgUrl        = location?.heroBackgroundUrl
 
   return (
     <section
       className="relative text-white text-center px-6 py-28 overflow-hidden"
-      style={{ backgroundColor: "#3d3d3d" }}
+      style={{
+        backgroundColor: "#3d3d3d",
+        ...(bgUrl
+          ? { backgroundImage: `url(${bgUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+          : {}),
+      }}
     >
-      {/* Subtle texture overlay */}
-      <div className="absolute inset-0 pointer-events-none opacity-5"
-        style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }}
-      />
+      {/* Dark overlay when using a background image (ensures text readability) */}
+      {bgUrl && (
+        <div className="absolute inset-0 bg-black/50 pointer-events-none" />
+      )}
+
+      {/* Subtle texture overlay (visible when no bg image) */}
+      {!bgUrl && (
+        <div className="absolute inset-0 pointer-events-none opacity-5"
+          style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }}
+        />
+      )}
 
       <div className="relative z-10 max-w-3xl mx-auto">
         <span className="inline-block text-brand-gold text-xs font-bold tracking-widest uppercase mb-6">

@@ -27,9 +27,14 @@ export async function POST(
     return NextResponse.json({ error: "Order not found" }, { status: 404 })
   }
 
+  // When an order is accepted into the kitchen, stamp startedAt so the
+  // contextual age timer on the kitchen display counts from that moment.
+  const patch: Record<string, unknown> = { status }
+  if (status === "kitchen") patch.startedAt = new Date().toISOString()
+
   const updated = await client
     .patch(id)
-    .set({ status })
+    .set(patch)
     .commit()
 
   return NextResponse.json(updated)

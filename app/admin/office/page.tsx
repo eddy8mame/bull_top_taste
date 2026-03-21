@@ -7,26 +7,45 @@ import {
 } from "recharts"
 import type { AdminOrder, AdminOrderItem } from "@/types"
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const LAG_WARN_MINUTES = 7
+const LAG_CRIT_MINUTES = 15
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type Section = "overview" | "menu" | "customers" | "settings"
+
+type DerivedCustomer = {
+  name:     string
+  email:    string
+  phone:    string
+  orders:   number
+  spend:    number
+  lastDate: Date
+}
+
+// ─── Helpers (preserved exactly) ──────────────────────────────────────────────
 
 function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString([], {
-    month: "short", day: "numeric", year: "numeric",
-  })
+  return new Date(iso).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" })
 }
 
 function fmtTime(iso: string) {
-  return new Date(iso).toLocaleTimeString([], {
-    hour: "2-digit", minute: "2-digit",
-  })
+  return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
 }
 
 function fmtLag(readyAt?: string, pickedUpAt?: string): string {
   if (!readyAt || !pickedUpAt) return "—"
-  const diffMs  = new Date(pickedUpAt).getTime() - new Date(readyAt).getTime()
-  const mins    = Math.floor(diffMs / 60000)
-  const secs    = Math.floor((diffMs % 60000) / 1000)
+  const diffMs = new Date(pickedUpAt).getTime() - new Date(readyAt).getTime()
+  const mins   = Math.floor(diffMs / 60000)
+  const secs   = Math.floor((diffMs % 60000) / 1000)
   return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`
+}
+
+function startOfMonth() {
+  const d = new Date()
+  return new Date(d.getFullYear(), d.getMonth(), 1).toISOString()
 }
 
 function deriveRevenueByDay(orders: AdminOrder[]) {
@@ -55,12 +74,105 @@ function deriveItemSales(orders: AdminOrder[]) {
     .sort((a, b) => b.count - a.count)
 }
 
+function kpis(slice: AdminOrder[], allOrders: AdminOrder[]) {
+  const rev    = slice.reduce((s, o) => s + o.total, 0)
+  const avg    = slice.length > 0 ? rev / slice.length : 0
+  const active = allOrders.filter(o => o.status !== "completed").length
+
+  const lagOrders = slice.filter(o => o.readyAt && o.pickedUpAt)
+  const avgLagMs  = lagOrders.length > 0
+    ? lagOrders.reduce((s, o) =>
+        s + new Date(o.pickedUpAt!).getTime() - new Date(o.readyAt!).getTime(), 0
+      ) / lagOrders.length
+    : null
+  const avgLag = avgLagMs !== null
+    ? `${Math.floor(avgLagMs / 60000)}m ${Math.floor((avgLagMs % 60000) / 1000)}s`
+    : "—"
+
+  return { rev, avg, active, avgLag, count: slice.length }
+}
+
+// ─── New helpers (UI layer only) ──────────────────────────────────────────────
+
+function lagMinutes(readyAt?: string, pickedUpAt?: string): number | null {
+  if (!readyAt || !pickedUpAt) return null
+  return (new Date(pickedUpAt).getTime() - new Date(readyAt).getTime()) / 60000
+}
+
+function lagCls(mins: number | null): "ok" | "warn" | "crit" {
+  if (mins === null) return "ok"
+  if (mins >= LAG_CRIT_MINUTES) return "crit"
+  if (mins >= LAG_WARN_MINUTES) return "warn"
+  return "ok"
+}
+
+function fmtRelative(date: Date): string {
+  const diffDays = Math.floor((Date.now() - date.getTime()) / 86400000)
+  if (diffDays === 0) return "Today"
+  if (diffDays === 1) return "Yesterday"
+  return `${diffDays}d ago`
+}
+
+function deriveCustomers(orders: AdminOrder[]): DerivedCustomer[] {
+  const map = new Map<string, DerivedCustomer>()
+  for (const o of orders) {
+    if (!o.customerEmail) continue
+    const date = new Date(o.createdAt)
+    const prev = map.get(o.customerEmail)
+    if (!prev) {
+      map.set(o.customerEmail, {
+        name:     o.customerName,
+        email:    o.customerEmail,
+        phone:    o.customerPhone ?? "",
+        orders:   1,
+        spend:    o.total,
+        lastDate: date,
+      })
+    } else {
+      const isNewer = date > prev.lastDate
+      map.set(o.customerEmail, {
+        ...prev,
+        orders:   prev.orders + 1,
+        spend:    prev.spend + o.total,
+        lastDate: isNewer ? date : prev.lastDate,
+        // Keep phone from the most recent order so stale numbers self-correct
+        phone:    isNewer ? (o.customerPhone ?? prev.phone) : prev.phone,
+      })
+    }
+  }
+  return Array.from(map.values()).sort((a, b) => b.spend - a.spend)
+}
+
+// ─── Location list ────────────────────────────────────────────────────────────
+// Simulated — for demo purposes only.
+// TODO: Replace with a server-side fetch of `location` documents from Sanity,
+// filtered by the current user's permitted locationIds. Each entry maps
+// `location._id → location.restaurantName`. The `active` flag becomes
+// whether the tenant env var resolves to that document.
+const LOCATIONS = [
+  { id: "rpb", label: "Royal Palm Beach, FL", active: true  },
+  { id: "wpb", label: "West Palm Beach, FL",  active: false },
+  { id: "all", label: "All Locations",         active: false },
+]
+
+const TABS: { id: Section; label: string }[] = [
+  { id: "overview",  label: "Overview"  },
+  { id: "menu",      label: "Menu"      },
+  { id: "customers", label: "Customers" },
+  { id: "settings",  label: "Settings"  },
+]
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function OfficeDashboard() {
-  const [orders,  setOrders]  = useState<AdminOrder[]>([])
-  const [loading, setLoading] = useState(true)
+  const [orders,           setOrders]          = useState<AdminOrder[]>([])
+  const [loading,          setLoading]         = useState(true)
+  const [selectedLocation, setSelectedLocation] = useState("rpb")
+  const [activeSection,    setActiveSection]   = useState<Section>("overview")
+  const [kitchenOpen,      setKitchenOpen]     = useState<boolean | null>(null)
+  const [togglingKitchen,  setTogglingKitchen] = useState(false)
 
+  // ── Preserved fetch logic ────────────────────────────────────────────────
   const fetchOrders = useCallback(async () => {
     const res  = await fetch("/api/orders")
     const data: AdminOrder[] = await res.json()
@@ -74,161 +186,487 @@ export default function OfficeDashboard() {
     return () => clearInterval(interval)
   }, [fetchOrders])
 
-  const totalRev  = orders.reduce((s, o) => s + o.total, 0)
-  const avgOrder  = orders.length > 0 ? totalRev / orders.length : 0
-  const active    = orders.filter(o => o.status !== "completed").length
-  const revenueByDay = deriveRevenueByDay(orders)
-  const itemSales    = deriveItemSales(orders)
+  // ── Kitchen open/close state (for Settings tab) ──────────────────────────
+  const fetchKitchen = useCallback(async () => {
+    const res  = await fetch("/api/kitchen")
+    const data = await res.json()
+    setKitchenOpen(data.kitchenOpen)
+  }, [])
 
-  // Avg pickup lag across completed orders that have both timestamps
-  const lagOrders = orders.filter(o => o.readyAt && o.pickedUpAt)
-  const avgLagMs  = lagOrders.length > 0
-    ? lagOrders.reduce((s, o) => s + new Date(o.pickedUpAt!).getTime() - new Date(o.readyAt!).getTime(), 0) / lagOrders.length
-    : null
-  const avgLagLabel = avgLagMs !== null
-    ? `${Math.floor(avgLagMs / 60000)}m ${Math.floor((avgLagMs % 60000) / 1000)}s`
-    : "—"
+  useEffect(() => { fetchKitchen() }, [fetchKitchen])
 
+  const toggleKitchen = async () => {
+    if (togglingKitchen || kitchenOpen === null) return
+    setTogglingKitchen(true)
+    const prev = kitchenOpen
+    setKitchenOpen(!prev)
+    try {
+      const res  = await fetch("/api/kitchen", { method: "POST" })
+      const data = await res.json()
+      setKitchenOpen(data.kitchenOpen)
+    } catch {
+      setKitchenOpen(prev)
+    } finally {
+      setTogglingKitchen(false)
+    }
+  }
+
+  // ── Derived data (preserved exactly) ────────────────────────────────────
+  const monthStart   = startOfMonth()
+  const thisMonth    = orders.filter(o => o.createdAt >= monthStart)
+  const lifetime     = orders
+
+  const monthKpi     = kpis(thisMonth, orders)
+  const lifeKpi      = kpis(lifetime,  orders)
+
+  const revenueByDay = deriveRevenueByDay(thisMonth)
+  const itemSales    = deriveItemSales(lifetime)
+
+  const selectedLoc  = LOCATIONS.find(l => l.id === selectedLocation) ?? LOCATIONS[0]
+
+  // ── New derived data (UI layer only) ─────────────────────────────────────
+  const customers      = deriveCustomers(orders)
+  const itemsByRevenue = [...itemSales].sort((a, b) => b.revenue - a.revenue)
+  const itemsByFreq    = itemSales                     // already sorted by count
+
+  const totalCustomers = customers.length
+  const repeatRate     = totalCustomers > 0
+    ? Math.round((customers.filter(c => c.orders > 1).length / totalCustomers) * 100)
+    : 0
+  const avgLTV = totalCustomers > 0
+    ? customers.reduce((s, c) => s + c.spend, 0) / totalCustomers
+    : 0
+
+  const topCustomers = customers.slice(0, 8)
+  const newCustomers = customers
+    .filter(c => c.orders === 1)
+    .sort((a, b) => b.lastDate.getTime() - a.lastDate.getTime())
+    .slice(0, 8)
+
+  // ── Render ───────────────────────────────────────────────────────────────
   return (
-    <main className="p-4 md:p-6 space-y-6">
+    <div className="admin-page office">
 
-      {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
-          { label: "Total Revenue",   value: `$${totalRev.toFixed(2)}`  },
-          { label: "Total Orders",    value: orders.length               },
-          { label: "Active Now",      value: active                      },
-          { label: "Avg Order",       value: `$${avgOrder.toFixed(2)}`  },
-        ].map(({ label, value }) => (
-          <div key={label} className="bg-white/5 rounded-xl p-4">
-            <p className="text-white/40 text-xs uppercase tracking-widest mb-1">{label}</p>
-            <p className="font-serif text-2xl text-brand-gold">{value}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Revenue chart */}
-      <div className="bg-white/5 rounded-xl p-5">
-        <h3 className="text-sm font-semibold text-white/70 mb-4">Revenue by Day</h3>
-        {revenueByDay.length === 0 ? (
-          <p className="text-white/30 text-sm text-center py-10">No order data yet.</p>
-        ) : (
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={revenueByDay}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="date" tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }} />
-              <YAxis tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }}
-                tickFormatter={v => `$${v}`} />
-              <Tooltip
-                contentStyle={{ background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8 }}
-                labelStyle={{ color: "rgba(255,255,255,0.6)" }}
-                formatter={(v) => [`$${Number(v).toFixed(2)}`, "Revenue"]}
-              />
-              <Bar dataKey="revenue" fill="#f5c300" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        )}
-      </div>
-
-      {/* Item sales */}
-      <div className="bg-white/5 rounded-xl p-5">
-        <h3 className="text-sm font-semibold text-white/70 mb-4">Item Sales</h3>
-        {itemSales.length === 0 ? (
-          <p className="text-white/30 text-sm">No data yet.</p>
-        ) : (
-          <ul className="space-y-3">
-            {itemSales.slice(0, 8).map((item, i) => (
-              <li key={item.name} className="flex items-center gap-3">
-                <span className="text-white/30 text-xs w-4 flex-shrink-0">{i + 1}</span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-white/80 truncate">{item.name}</span>
-                    <span className="text-white/40 ml-2 flex-shrink-0">{item.count} sold</span>
-                  </div>
-                  <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-brand-gold rounded-full transition-all"
-                      style={{ width: `${(item.count / (itemSales[0]?.count || 1)) * 100}%` }} />
-                  </div>
-                </div>
-                <span className="text-brand-gold text-xs font-semibold w-14 text-right flex-shrink-0">
-                  ${item.revenue.toFixed(0)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {/* Orders table — pickup timing */}
-      <div className="bg-white/5 rounded-xl p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-sm font-semibold text-white/70">Order Log</h3>
-            {avgLagMs !== null && (
-              <p className="text-white/30 text-xs mt-0.5">
-                Avg pickup lag: <span className="text-brand-gold font-semibold">{avgLagLabel}</span>
-              </p>
-            )}
-          </div>
-          <a href="/api/orders/export" download
-            className="text-xs bg-brand-green hover:bg-brand-green-dark text-white font-semibold px-3 py-1.5 rounded-lg transition-colors">
-            Export CSV ↓
-          </a>
+      {/* ── Topbar ──────────────────────────────────────────────────────── */}
+      <header className="o-topbar">
+        <div>
+          <div className="o-brand-name">Bull Top Taste</div>
+          <div className="o-brand-sub">Admin Dashboard</div>
         </div>
 
-        {loading ? (
-          <p className="text-white/30 text-sm text-center py-6">Loading…</p>
-        ) : orders.length === 0 ? (
-          <p className="text-white/30 text-sm text-center py-6">No orders yet.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-white/30 text-xs uppercase tracking-widest border-b border-white/10">
-                  <th className="text-left pb-2 pr-4">Date</th>
-                  <th className="text-left pb-2 pr-4">Time</th>
-                  <th className="text-left pb-2 pr-4">Customer</th>
-                  <th className="text-left pb-2 pr-4">Items</th>
-                  <th className="text-right pb-2 pr-4">Total</th>
-                  <th className="text-center pb-2 pr-4">Ready</th>
-                  <th className="text-center pb-2 pr-4">Picked Up</th>
-                  <th className="text-center pb-2">Lag</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {orders.map(o => (
-                  <tr key={o._id}>
-                    <td className="py-2.5 pr-4 text-white/50 whitespace-nowrap">{fmtDate(o.createdAt)}</td>
-                    <td className="py-2.5 pr-4 text-white/50 whitespace-nowrap">{fmtTime(o.createdAt)}</td>
-                    <td className="py-2.5 pr-4">
-                      <p className="font-medium text-white/80 leading-tight">{o.customerName}</p>
-                      <p className="text-white/30 text-xs">{o.customerEmail}</p>
-                    </td>
-                    <td className="py-2.5 pr-4 text-white/50 text-xs">
-                      {o.items.map((i: AdminOrderItem) => `${i.quantity}× ${i.itemName}`).join(", ")}
-                    </td>
-                    <td className="py-2.5 pr-4 text-right font-semibold text-brand-gold whitespace-nowrap">
-                      ${o.total.toFixed(2)}
-                    </td>
-                    <td className="py-2.5 pr-4 text-center text-white/50 whitespace-nowrap">
-                      {o.readyAt ? fmtTime(o.readyAt) : "—"}
-                    </td>
-                    <td className="py-2.5 pr-4 text-center text-white/50 whitespace-nowrap">
-                      {o.pickedUpAt ? fmtTime(o.pickedUpAt) : "—"}
-                    </td>
-                    <td className="py-2.5 text-center whitespace-nowrap">
-                      <span className={`text-xs font-semibold ${o.pickedUpAt ? "text-brand-gold" : "text-white/20"}`}>
-                        {fmtLag(o.readyAt, o.pickedUpAt)}
-                      </span>
-                    </td>
-                  </tr>
+        <nav className="o-top-nav">
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              className={`o-tab${activeSection === tab.id ? " active" : ""}`}
+              onClick={() => setActiveSection(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="o-top-right">
+          <select
+            className="o-loc-select"
+            value={selectedLocation}
+            onChange={e => setSelectedLocation(e.target.value)}
+          >
+            {LOCATIONS.map(loc => (
+              <option key={loc.id} value={loc.id} disabled={!loc.active}>
+                {loc.label}{loc.active ? "" : " ✦ Coming Soon"}
+              </option>
+            ))}
+          </select>
+          <a href="/admin" className="o-cross-link">← Dashboard</a>
+        </div>
+      </header>
+
+      {/* ── Main ────────────────────────────────────────────────────────── */}
+      <main className="o-main">
+
+        {/* ════════════════════════════════════════════════════════════════
+            OVERVIEW
+        ════════════════════════════════════════════════════════════════ */}
+        {activeSection === "overview" && (
+          <>
+            {/* 4 KPI cards */}
+            <div className="o-metrics-grid">
+              {[
+                { label: "Revenue — month", value: `$${monthKpi.rev.toFixed(2)}`  },
+                { label: "Orders — month",  value: monthKpi.count                  },
+                { label: "Avg order",       value: `$${monthKpi.avg.toFixed(2)}`  },
+                { label: "Avg pickup lag",  value: lifeKpi.avgLag                  },
+              ].map(({ label, value }) => (
+                <div key={label} className="o-metric-card">
+                  <div className="o-metric-label">{label}</div>
+                  <div className="o-metric-value">{value}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Charts row */}
+            <div className="o-charts-row">
+              {/* Revenue by day */}
+              <div className="o-chart-card">
+                <div className="o-chart-title">
+                  Revenue by day <span className="o-chart-sub">this month</span>
+                </div>
+                {revenueByDay.length === 0 ? (
+                  <p className="o-empty">No orders this month yet.</p>
+                ) : (
+                  <ResponsiveContainer width="100%" height={160}>
+                    <BarChart data={revenueByDay}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                      <XAxis dataKey="date" tick={{ fill: "#b0b0aa", fontSize: 10 }} />
+                      <YAxis
+                        tick={{ fill: "#b0b0aa", fontSize: 10 }}
+                        tickFormatter={v => `$${v}`}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          background: "#ffffff",
+                          border: "0.5px solid rgba(0,0,0,0.08)",
+                          borderRadius: 8,
+                        }}
+                        labelStyle={{ color: "#6b6b66" }}
+                        formatter={v => [`$${Number(v).toFixed(2)}`, "Revenue"]}
+                      />
+                      <Bar dataKey="revenue" fill="#1D9E75" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+
+              {/* Active orders snapshot */}
+              <div className="o-chart-card">
+                <div className="o-chart-title">
+                  Active orders <span className="o-chart-sub">right now</span>
+                </div>
+                <div className="o-active-num">{monthKpi.active}</div>
+                <div className="o-active-label">orders in queue</div>
+                <ul className="o-active-breakdown">
+                  <li>{orders.filter(o => o.status === "pending").length} pending</li>
+                  <li>{orders.filter(o => o.status === "kitchen").length} in kitchen</li>
+                  <li>{orders.filter(o => o.status === "floor").length} ready for pickup</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Order log */}
+            <div className="o-section-card">
+              <div className="o-log-header">
+                <div>
+                  <div className="o-log-title">Order log</div>
+                  {lifeKpi.avgLag !== "—" && (
+                    <div className="o-log-meta">
+                      Avg pickup lag: <strong>{lifeKpi.avgLag}</strong>
+                    </div>
+                  )}
+                </div>
+                <a href="/api/orders/export" download className="o-export-btn">
+                  Export CSV ↓
+                </a>
+              </div>
+
+              {loading ? (
+                <p className="o-empty">Loading…</p>
+              ) : orders.length === 0 ? (
+                <p className="o-empty">No orders yet.</p>
+              ) : (
+                <div className="o-table-wrap">
+                  <table className="o-log-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th className="o-th-right">Total</th>
+                        <th className="o-th-center">Ready</th>
+                        <th className="o-th-center">Picked up</th>
+                        <th className="o-th-center">Lag</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orders.map(o => {
+                        const lagMins = lagMinutes(o.readyAt, o.pickedUpAt)
+                        const cls     = lagCls(lagMins)
+                        return (
+                          <tr key={o._id}>
+                            <td className="o-nowrap">{fmtDate(o.createdAt)}</td>
+                            <td className="o-nowrap">{fmtTime(o.createdAt)}</td>
+                            <td>
+                              <div className="o-log-customer">{o.customerName}</div>
+                              <div className="o-log-contact">{o.customerEmail}</div>
+                              {o.customerPhone && (
+                                <div className="o-log-contact">{o.customerPhone}</div>
+                              )}
+                            </td>
+                            <td className="o-items-cell">
+                              {o.items.map((i: AdminOrderItem) =>
+                                `${i.quantity}× ${i.itemName}`
+                              ).join(", ")}
+                            </td>
+                            <td className="o-total-cell">${o.total.toFixed(2)}</td>
+                            <td className="o-center-cell o-nowrap">
+                              {o.readyAt ? fmtTime(o.readyAt) : "—"}
+                            </td>
+                            <td className="o-center-cell o-nowrap">
+                              {o.pickedUpAt ? fmtTime(o.pickedUpAt) : "—"}
+                            </td>
+                            <td className="o-center-cell">
+                              {o.pickedUpAt ? (
+                                <span className={`o-lag-pill o-lag-${cls}`}>
+                                  {fmtLag(o.readyAt, o.pickedUpAt)}
+                                </span>
+                              ) : (
+                                <span className="o-lag-pill o-lag-pending">—</span>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* ════════════════════════════════════════════════════════════════
+            MENU
+        ════════════════════════════════════════════════════════════════ */}
+        {activeSection === "menu" && (
+          <>
+            <div className="o-menu-grid">
+              {/* Top by revenue */}
+              <div className="o-section-card" style={{ marginBottom: 0 }}>
+                <div className="o-section-card-title">Top items by revenue</div>
+                {itemsByRevenue.length === 0 ? (
+                  <p className="o-empty">No data yet.</p>
+                ) : itemsByRevenue.slice(0, 8).map((item, i) => (
+                  <div key={item.name} className="o-item-row">
+                    <span className="o-item-rank">{i + 1}</span>
+                    <span className="o-item-name">{item.name}</span>
+                    <div className="o-item-bar-wrap">
+                      <div className="o-item-bar-bg">
+                        <div
+                          className="o-item-bar-fill"
+                          style={{
+                            width: `${(item.revenue / (itemsByRevenue[0]?.revenue || 1)) * 100}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <span className="o-item-val">${item.revenue.toFixed(0)}</span>
+                    <span className="o-item-orders">{item.count} sold</span>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+
+              {/* Top by frequency */}
+              <div className="o-section-card" style={{ marginBottom: 0 }}>
+                <div className="o-section-card-title">Top items by order frequency</div>
+                {itemsByFreq.length === 0 ? (
+                  <p className="o-empty">No data yet.</p>
+                ) : itemsByFreq.slice(0, 8).map((item, i) => (
+                  <div key={item.name} className="o-item-row">
+                    <span className="o-item-rank">{i + 1}</span>
+                    <span className="o-item-name">{item.name}</span>
+                    <div className="o-item-bar-wrap">
+                      <div className="o-item-bar-bg">
+                        <div
+                          className="o-item-bar-fill"
+                          style={{
+                            width: `${(item.count / (itemsByFreq[0]?.count || 1)) * 100}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <span className="o-item-orders">{item.count} sold</span>
+                    <span className="o-item-val">${item.revenue.toFixed(0)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Add-on uptake placeholder */}
+            <div className="o-section-card">
+              <div className="o-section-card-title">
+                Add-on uptake
+                <span className="o-chart-sub" style={{ marginLeft: 8 }}>
+                  % of orders including each add-on
+                </span>
+              </div>
+              <p className="o-empty" style={{ paddingBlock: "24px" }}>
+                Modifier-level analytics will appear here in a future update.
+              </p>
+            </div>
+          </>
+        )}
+
+        {/* ════════════════════════════════════════════════════════════════
+            CUSTOMERS
+        ════════════════════════════════════════════════════════════════ */}
+        {activeSection === "customers" && (
+          <>
+            <div className="o-cust-grid">
+              <div className="o-metric-card">
+                <div className="o-metric-label">Total customers</div>
+                <div className="o-metric-value">{totalCustomers}</div>
+              </div>
+              <div className="o-metric-card">
+                <div className="o-metric-label">Repeat rate</div>
+                <div className="o-metric-value">{repeatRate}%</div>
+              </div>
+              <div className="o-metric-card">
+                <div className="o-metric-label">Avg lifetime spend</div>
+                <div className="o-metric-value">${avgLTV.toFixed(2)}</div>
+              </div>
+            </div>
+
+            {/* Top customers by spend */}
+            <div className="o-section-card">
+              <div className="o-section-card-title">Top customers by spend</div>
+              {topCustomers.length === 0 ? (
+                <p className="o-empty">No data yet.</p>
+              ) : (
+                <table className="o-cust-table">
+                  <thead>
+                    <tr>
+                      <th>Customer</th>
+                      <th>Phone</th>
+                      <th>Orders</th>
+                      <th className="o-th-right">Total spend</th>
+                      <th>Last order</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topCustomers.map(c => (
+                      <tr key={c.email}>
+                        <td>
+                          <div className="o-cust-name">{c.name}</div>
+                          <div className="o-log-contact">{c.email}</div>
+                        </td>
+                        <td className="o-log-contact o-nowrap">{c.phone || "—"}</td>
+                        <td>{c.orders}</td>
+                        <td className="o-total-cell">${c.spend.toFixed(2)}</td>
+                        <td className="o-nowrap">{fmtRelative(c.lastDate)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            {/* Recent first-time customers */}
+            <div className="o-section-card">
+              <div className="o-section-card-title">Recent first-time customers</div>
+              {newCustomers.length === 0 ? (
+                <p className="o-empty">No first-time customers in this dataset.</p>
+              ) : (
+                <table className="o-cust-table">
+                  <thead>
+                    <tr>
+                      <th>Customer</th>
+                      <th>Phone</th>
+                      <th>First order</th>
+                      <th className="o-th-right">Spend</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {newCustomers.map(c => (
+                      <tr key={c.email}>
+                        <td>
+                          <div className="o-cust-name">{c.name}</div>
+                          <div className="o-log-contact">{c.email}</div>
+                        </td>
+                        <td className="o-log-contact o-nowrap">{c.phone || "—"}</td>
+                        <td className="o-nowrap">{fmtRelative(c.lastDate)}</td>
+                        <td className="o-total-cell">${c.spend.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* ════════════════════════════════════════════════════════════════
+            SETTINGS
+        ════════════════════════════════════════════════════════════════ */}
+        {activeSection === "settings" && (
+          <div className="o-settings-grid">
+
+            {/* Online ordering toggle */}
+            <div className="o-settings-card">
+              <div className="o-settings-title">
+                Online ordering
+                <span className="o-future-badge">manual override</span>
+              </div>
+              <div className="o-settings-sub">
+                Toggle online ordering for this location. Scheduling controls coming soon.
+              </div>
+
+              {kitchenOpen === null ? (
+                <p className="o-empty">Loading…</p>
+              ) : (
+                <div className="o-loc-setting-row">
+                  <div>
+                    <div className="o-loc-setting-name">{selectedLoc.label}</div>
+                    <div className="o-loc-setting-sub">
+                      {kitchenOpen
+                        ? "Accepting online orders"
+                        : "Online ordering paused"}
+                    </div>
+                  </div>
+                  <div className="o-toggle-wrap">
+                    <span className={`o-toggle-label ${kitchenOpen ? "open" : "closed"}`}>
+                      {kitchenOpen ? "Open" : "Closed"}
+                    </span>
+                    <label className="o-toggle">
+                      <input
+                        type="checkbox"
+                        checked={kitchenOpen}
+                        disabled={togglingKitchen}
+                        onChange={toggleKitchen}
+                      />
+                      <span className="o-toggle-track" />
+                      <span className="o-toggle-thumb" />
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              <p className="o-override-note">
+                Changes take effect immediately.{" "}
+                <strong>Closing ordering will prevent new orders from being placed</strong>
+                {" "}but will not affect orders already in the kitchen queue.
+              </p>
+            </div>
+
+            {/* Scheduled hours — coming soon */}
+            <div className="o-settings-card">
+              <div className="o-settings-title">
+                Scheduled hours
+                <span className="o-future-badge">coming soon</span>
+              </div>
+              <div className="o-settings-sub">
+                Set recurring open and close times per day of week. Manual override
+                will remain available.
+              </div>
+              <div className="o-coming-soon-body">
+                Weekly schedule builder will appear here
+              </div>
+            </div>
+
           </div>
         )}
-      </div>
 
-    </main>
+      </main>
+    </div>
   )
 }

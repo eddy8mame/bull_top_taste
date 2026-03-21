@@ -2,22 +2,22 @@
 
 import { useState }          from "react"
 import { useCart }           from "@/context/CartContext"
-import type { SiteSettings } from "@/types"
+import type { LocationFull } from "@/lib/sanity"
 
 const DOORDASH_URL = "https://www.doordash.com/store/top-taste-restaurant-royal-palm-beach-824119/1164804/"
 
 interface Props {
-  settings?: SiteSettings | null
+  location?: LocationFull | null
 }
 
-export default function Cart({ settings }: Props) {
+export default function Cart({ location }: Props) {
   const { items, removeItem, updateQty, clearCart, total, isOpen, setIsOpen } = useCart()
   const [loading,  setLoading]  = useState(false)
   const [formData, setFormData] = useState({
     name: "", email: "", phone: "", type: "pickup" as "pickup", notes: "",
   })
 
-  const pickupWait = settings?.pickupWaitTime ?? "15–20 min"
+  const pickupWait = location?.pickupWaitTime ?? "15–20 min"
 
   async function handleCheckout(e: React.FormEvent) {
     e.preventDefault()

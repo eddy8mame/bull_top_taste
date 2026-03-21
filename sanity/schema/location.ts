@@ -56,6 +56,14 @@ export const locationSchema = defineType({
     }),
 
     defineField({
+      name:        "logo",
+      title:       "Logo",
+      type:        "image",
+      group:       "identity",
+      description: "Brand mark displayed in the navigation bar. Falls back to the restaurant name in text.",
+    }),
+
+    defineField({
       name:        "tagline",
       title:       "Tagline",
       type:        "string",
@@ -92,6 +100,14 @@ export const locationSchema = defineType({
       type:        "string",
       group:       "hero",
       description: 'Small pill above the headline, e.g. "West Palm\'s #1 Jamaican Restaurant".',
+    }),
+    defineField({
+      name:        "heroBackground",
+      title:       "Hero Background Image",
+      type:        "image",
+      group:       "hero",
+      options:     { hotspot: true },
+      description: "Full-width background image for the hero section. Falls back to a solid colour when absent.",
     }),
     defineField({ name: "heroHeadline",    title: "Headline",    type: "string", group: "hero" }),
     defineField({ name: "heroSubheadline", title: "Subheadline", type: "text",   group: "hero", rows: 2 }),
@@ -147,6 +163,43 @@ export const locationSchema = defineType({
           type:        "image",
           options:     { hotspot: true },
           description: "Displayed alongside the body copy.",
+        }),
+        defineField({
+          name:        "background",
+          title:       "Section Background",
+          type:        "image",
+          options:     { hotspot: true },
+          description: "Optional background image for the About section. Falls back to white.",
+        }),
+      ],
+    }),
+
+    // ── Gallery ────────────────────────────────────────────────────────────────
+
+    defineField({
+      name:        "gallery",
+      title:       "Gallery Images",
+      type:        "array",
+      group:       "about",
+      description: "Photo gallery displayed on the homepage. Drag to reorder.",
+      of: [
+        defineArrayMember({
+          type:    "image",
+          options: { hotspot: true },
+          fields: [
+            defineField({
+              name:  "alt",
+              title: "Alt Text",
+              type:  "string",
+              description: "Accessibility description of the image.",
+            }),
+            defineField({
+              name:  "caption",
+              title: "Caption",
+              type:  "string",
+              description: "Optional label shown over the image.",
+            }),
+          ],
         }),
       ],
     }),
