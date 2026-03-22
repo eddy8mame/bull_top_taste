@@ -58,6 +58,8 @@
 
 Replaces the old deprecated `siteSettings` singleton. One document per physical restaurant location. Key fields:
 
+**Coordinates**: `latitude` (number, required, -90–90), `longitude` (number, required, -180–180) — used for Mapbox map embed in cart pickup location card
+
 **Identity group**: `restaurantName`, `slug` (URL slug, used as fallback tenant key), `logo` (image), `tagline`, `address`, `phone` (display), `phoneDialable` (tel: href), `email`, `uberEatsUrl`, `instagram`, `facebook`
 
 **Hero group**: `heroLabel`, `heroHeadline`, `heroSubheadline`, `heroPrimaryCtaText`, `heroSecondaryCtaText`, `heroBackground` (image with hotspot)
@@ -324,11 +326,14 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 | `app/admin/office/page.tsx` redesign | Office analytics page not yet translated to the new admin CSS system — still uses old Tailwind classes |
 | Sub-modifier with multiple parents | If a single parent group has 2+ priced options each with different sub-modifier groups (rare), the current split-record approach handles it correctly. If the same sub-modifier group ID appears under multiple parent options, the last one wins in `parentKeyOf` — theoretical edge case only |
 | `startedAt` in Sanity Studio schema | `order.ts` doesn't have an explicit `startedAt` field definition (like `readyAt` does). Sanity accepts it from the API patch, but it should be added to the schema for Studio visibility |
-| Cart panel UI overhaul | In progress — localStorage persistence complete. Remaining: delivery card removal, pickup location card, modifier descriptor line, removal UX, Sanity-connected quick-add empty state, pre-populated modifier modal on item tap |
+| Cart panel UI overhaul | In progress — localStorage persistence complete, delivery card removed, pickup location card with Mapbox map added. Remaining: modifier descriptor line, removal UX, Sanity-connected quick-add empty state, pre-populated modifier modal on item tap |
+
 
 ## System Changelog
-* **v1.4.1 (Current):** Removed DoorDash delivery card and links from cart panel. Delivery option relocated to order confirmation page (not yet built).
-* **v1.4.0 (Current):** Added localStorage cart persistence. Cart survives page refresh and browser close. Key: `'btt-cart'`.
+* **v1.4.3 (Current):** Added interactive Mapbox map to cart pickup location card. Coordinates stored in Sanity per location. Directions link uses Google Maps dir/ endpoint with device current location as origin.
+* **v1.4.2:** Added pickup location card to filled cart state. Address renders as tap-to-maps link. Mapbox map embed deferred — placeholder in place.
+* **v1.4.1:** Removed DoorDash delivery card and links from cart panel. Delivery option relocated to order confirmation page (not yet built).
+* **v1.4.0:** Added localStorage cart persistence. Cart survives page refresh and browser close. Key: `'btt-cart'`.
 * **v1.3.0:** Resolved Sub-Modifier Pipeline. Replaced synthetic keys with explicit `parentOptionId` relational mapping. Re-wrote Kitchen and Floor 2-Pass algorithms to ensure perfect receipt accounting (dynamic base pricing) and operational clarity.
 * **v1.2.0:** Translated vanilla HTML Admin mockups into isolated React components. Preserved SWR and Sanity mutations. Scoped CSS under `.admin-shell`.
 * **v1.1.0:** Ripped out local `orderStore`. Wired Stripe webhooks directly to Sanity `create` mutations. 

@@ -5,9 +5,9 @@ import { defineField, defineType, defineArrayMember } from "sanity"
 // The corresponding CSS variables are defined in globals.css.
 const THEME_OPTIONS = [
   { title: "🌴 Tropical  — Jamaican green & gold (default)", value: "tropical" },
-  { title: "🌑 Midnight  — Deep navy & amber",               value: "midnight" },
-  { title: "🌶 Spice     — Warm terracotta & cream",         value: "spice"    },
-  { title: "🌊 Ocean     — Coastal teal & white",            value: "ocean"    },
+  { title: "🌑 Midnight  — Deep navy & amber", value: "midnight" },
+  { title: "🌶 Spice     — Warm terracotta & cream", value: "spice" },
+  { title: "🌊 Ocean     — Coastal teal & white", value: "ocean" },
 ]
 
 // ─── Location document ────────────────────────────────────────────────────────
@@ -17,36 +17,35 @@ const THEME_OPTIONS = [
 // resolves the correct one via the `slug` field.
 
 export const locationSchema = defineType({
-  name:  "location",
+  name: "location",
   title: "Location",
-  type:  "document",
+  type: "document",
 
   groups: [
-    { name: "identity",  title: "Identity",       default: true },
-    { name: "hero",      title: "Hero Section"                  },
-    { name: "about",     title: "About Section"                 },
-    { name: "catering",  title: "Catering Section"              },
-    { name: "hours",     title: "Hours & Ordering"              },
-    { name: "theme",     title: "Theme & Branding"              },
-    { name: "seo",       title: "SEO"                           },
+    { name: "identity", title: "Identity", default: true },
+    { name: "hero", title: "Hero Section" },
+    { name: "about", title: "About Section" },
+    { name: "catering", title: "Catering Section" },
+    { name: "hours", title: "Hours & Ordering" },
+    { name: "theme", title: "Theme & Branding" },
+    { name: "seo", title: "SEO" },
   ],
 
   fields: [
-
     // ── Identity ──────────────────────────────────────────────────────────────
 
     defineField({
-      name:       "restaurantName",
-      title:      "Restaurant Name",
-      type:       "string",
-      group:      "identity",
+      name: "restaurantName",
+      title: "Restaurant Name",
+      type: "string",
+      group: "identity",
       validation: R => R.required(),
     }),
 
     defineField({
-      name:  "slug",
+      name: "slug",
       title: "URL Slug",
-      type:  "slug",
+      type: "slug",
       group: "identity",
       description:
         "Machine-readable identifier used in URLs and to resolve this location in the frontend. " +
@@ -56,73 +55,102 @@ export const locationSchema = defineType({
     }),
 
     defineField({
-      name:        "logo",
-      title:       "Logo",
-      type:        "image",
-      group:       "identity",
-      description: "Brand mark displayed in the navigation bar. Falls back to the restaurant name in text.",
+      name: "logo",
+      title: "Logo",
+      type: "image",
+      group: "identity",
+      description:
+        "Brand mark displayed in the navigation bar. Falls back to the restaurant name in text.",
     }),
 
     defineField({
-      name:        "tagline",
-      title:       "Tagline",
-      type:        "string",
-      group:       "identity",
-      description: 'Short descriptor shown above section headings, e.g. "Authentic Jamaican Cuisine".',
+      name: "tagline",
+      title: "Tagline",
+      type: "string",
+      group: "identity",
+      description:
+        'Short descriptor shown above section headings, e.g. "Authentic Jamaican Cuisine".',
     }),
 
-    defineField({ name: "address",       title: "Address",                type: "string", group: "identity" }),
+    defineField({ name: "address", title: "Address", type: "string", group: "identity" }),
+
     defineField({
-      name:        "phone",
-      title:       "Phone (display)",
-      type:        "string",
-      group:       "identity",
+      name: "latitude",
+      title: "Latitude",
+      type: "number",
+      validation: R => R.required().min(-90).max(90),
+    }),
+
+    defineField({
+      name: "longitude",
+      title: "Longitude",
+      type: "number",
+      validation: R => R.required().min(-180).max(180),
+    }),
+
+    defineField({
+      name: "phone",
+      title: "Phone (display)",
+      type: "string",
+      group: "identity",
       description: "Formatted for display, e.g. 561.653.1974",
     }),
     defineField({
-      name:        "phoneDialable",
-      title:       "Phone (digits only)",
-      type:        "string",
-      group:       "identity",
+      name: "phoneDialable",
+      title: "Phone (digits only)",
+      type: "string",
+      group: "identity",
       description: "Digits only for tel: links, e.g. 5616531974",
     }),
-    defineField({ name: "email",     title: "Email",          type: "string", group: "identity" }),
-    defineField({ name: "uberEatsUrl", title: "Uber Eats URL", type: "url",  group: "identity",
-      description: "Paste your Uber Eats restaurant page link here." }),
-    defineField({ name: "instagram", title: "Instagram URL",  type: "url",   group: "identity" }),
-    defineField({ name: "facebook",  title: "Facebook URL",   type: "url",   group: "identity" }),
+    defineField({ name: "email", title: "Email", type: "string", group: "identity" }),
+    defineField({
+      name: "uberEatsUrl",
+      title: "Uber Eats URL",
+      type: "url",
+      group: "identity",
+      description: "Paste your Uber Eats restaurant page link here.",
+    }),
+    defineField({ name: "instagram", title: "Instagram URL", type: "url", group: "identity" }),
+    defineField({ name: "facebook", title: "Facebook URL", type: "url", group: "identity" }),
 
     // ── Hero Section ──────────────────────────────────────────────────────────
 
     defineField({
-      name:        "heroLabel",
-      title:       "Badge Text",
-      type:        "string",
-      group:       "hero",
+      name: "heroLabel",
+      title: "Badge Text",
+      type: "string",
+      group: "hero",
       description: 'Small pill above the headline, e.g. "West Palm\'s #1 Jamaican Restaurant".',
     }),
     defineField({
-      name:        "heroBackground",
-      title:       "Hero Background Image",
-      type:        "image",
-      group:       "hero",
-      options:     { hotspot: true },
-      description: "Full-width background image for the hero section. Falls back to a solid colour when absent.",
+      name: "heroBackground",
+      title: "Hero Background Image",
+      type: "image",
+      group: "hero",
+      options: { hotspot: true },
+      description:
+        "Full-width background image for the hero section. Falls back to a solid colour when absent.",
     }),
-    defineField({ name: "heroHeadline",    title: "Headline",    type: "string", group: "hero" }),
-    defineField({ name: "heroSubheadline", title: "Subheadline", type: "text",   group: "hero", rows: 2 }),
+    defineField({ name: "heroHeadline", title: "Headline", type: "string", group: "hero" }),
     defineField({
-      name:         "heroPrimaryCtaText",
-      title:        "Primary Button",
-      type:         "string",
-      group:        "hero",
+      name: "heroSubheadline",
+      title: "Subheadline",
+      type: "text",
+      group: "hero",
+      rows: 2,
+    }),
+    defineField({
+      name: "heroPrimaryCtaText",
+      title: "Primary Button",
+      type: "string",
+      group: "hero",
       initialValue: "View Our Menu",
     }),
     defineField({
-      name:         "heroSecondaryCtaText",
-      title:        "Secondary Button",
-      type:         "string",
-      group:        "hero",
+      name: "heroSecondaryCtaText",
+      title: "Secondary Button",
+      type: "string",
+      group: "hero",
       initialValue: "Make a Reservation",
     }),
 
@@ -131,44 +159,44 @@ export const locationSchema = defineType({
     // a free-form rich-text block that would be harder to theme per-location.
 
     defineField({
-      name:        "aboutSection",
-      title:       "About Section",
-      type:        "object",
-      group:       "about",
+      name: "aboutSection",
+      title: "About Section",
+      type: "object",
+      group: "about",
       description: "Content for the About / Our Story section on the homepage.",
       fields: [
         defineField({
-          name:       "heading",
-          title:      "Heading",
-          type:       "string",
+          name: "heading",
+          title: "Heading",
+          type: "string",
           description: 'e.g. "Our Story"',
         }),
         defineField({
-          name:        "subheading",
-          title:       "Subheading",
-          type:        "string",
-          description: 'One-line hook below the heading.',
+          name: "subheading",
+          title: "Subheading",
+          type: "string",
+          description: "One-line hook below the heading.",
         }),
         defineField({
-          name:        "body",
-          title:       "Body",
-          type:        "text",
-          rows:        5,
+          name: "body",
+          title: "Body",
+          type: "text",
+          rows: 5,
           description: "Short paragraph — max 400 characters.",
-          validation:  R => R.max(400).warning("Keep under 400 characters for best layout fit."),
+          validation: R => R.max(400).warning("Keep under 400 characters for best layout fit."),
         }),
         defineField({
-          name:        "image",
-          title:       "Section Image",
-          type:        "image",
-          options:     { hotspot: true },
+          name: "image",
+          title: "Section Image",
+          type: "image",
+          options: { hotspot: true },
           description: "Displayed alongside the body copy.",
         }),
         defineField({
-          name:        "background",
-          title:       "Section Background",
-          type:        "image",
-          options:     { hotspot: true },
+          name: "background",
+          title: "Section Background",
+          type: "image",
+          options: { hotspot: true },
           description: "Optional background image for the About section. Falls back to white.",
         }),
       ],
@@ -177,26 +205,26 @@ export const locationSchema = defineType({
     // ── Gallery ────────────────────────────────────────────────────────────────
 
     defineField({
-      name:        "gallery",
-      title:       "Gallery Images",
-      type:        "array",
-      group:       "about",
+      name: "gallery",
+      title: "Gallery Images",
+      type: "array",
+      group: "about",
       description: "Photo gallery displayed on the homepage. Drag to reorder.",
       of: [
         defineArrayMember({
-          type:    "image",
+          type: "image",
           options: { hotspot: true },
           fields: [
             defineField({
-              name:  "alt",
+              name: "alt",
               title: "Alt Text",
-              type:  "string",
+              type: "string",
               description: "Accessibility description of the image.",
             }),
             defineField({
-              name:  "caption",
+              name: "caption",
               title: "Caption",
-              type:  "string",
+              type: "string",
               description: "Optional label shown over the image.",
             }),
           ],
@@ -207,48 +235,48 @@ export const locationSchema = defineType({
     // ── Catering Section ──────────────────────────────────────────────────────
 
     defineField({
-      name:        "cateringSection",
-      title:       "Catering Section",
-      type:        "object",
-      group:       "catering",
+      name: "cateringSection",
+      title: "Catering Section",
+      type: "object",
+      group: "catering",
       description: "Content for the Catering inquiry section.",
       fields: [
         defineField({
-          name:  "heading",
+          name: "heading",
           title: "Heading",
-          type:  "string",
+          type: "string",
           initialValue: "Catering & Events",
         }),
         defineField({
-          name:  "subheading",
+          name: "subheading",
           title: "Subheading",
-          type:  "string",
+          type: "string",
           initialValue: "Bring the taste of Jamaica to your next event.",
         }),
         defineField({
-          name:        "body",
-          title:       "Body",
-          type:        "text",
-          rows:        4,
+          name: "body",
+          title: "Body",
+          type: "text",
+          rows: 4,
           description: "Short paragraph describing your catering offer — max 400 characters.",
-          validation:  R => R.max(400).warning("Keep under 400 characters."),
+          validation: R => R.max(400).warning("Keep under 400 characters."),
         }),
         defineField({
-          name:        "ctaText",
-          title:       "CTA Button Text",
-          type:        "string",
+          name: "ctaText",
+          title: "CTA Button Text",
+          type: "string",
           initialValue: "Request a Quote",
         }),
         defineField({
-          name:        "ctaEmail",
-          title:       "CTA Email Address",
-          type:        "string",
+          name: "ctaEmail",
+          title: "CTA Email Address",
+          type: "string",
           description: "Clicking the CTA opens a mailto: link to this address.",
         }),
         defineField({
-          name:        "minimumGuests",
-          title:       "Minimum Guests",
-          type:        "number",
+          name: "minimumGuests",
+          title: "Minimum Guests",
+          type: "number",
           description: "Minimum headcount for catering enquiries.",
         }),
       ],
@@ -257,36 +285,46 @@ export const locationSchema = defineType({
     // ── Hours & Ordering ──────────────────────────────────────────────────────
 
     defineField({
-      name:  "hours",
+      name: "hours",
       title: "Hours of Operation",
-      type:  "array",
+      type: "array",
       group: "hours",
       of: [
         defineArrayMember({
-          type:    "object",
+          type: "object",
           preview: { select: { title: "days", subtitle: "time" } },
           fields: [
-            defineField({ name: "days", title: "Days",  type: "string", description: "e.g. Monday – Saturday" }),
-            defineField({ name: "time", title: "Hours", type: "string", description: "e.g. 9:00 am – 10:00 pm" }),
+            defineField({
+              name: "days",
+              title: "Days",
+              type: "string",
+              description: "e.g. Monday – Saturday",
+            }),
+            defineField({
+              name: "time",
+              title: "Hours",
+              type: "string",
+              description: "e.g. 9:00 am – 10:00 pm",
+            }),
           ],
         }),
       ],
     }),
 
     defineField({
-      name:         "pickupWaitTime",
-      title:        "Pickup Wait Time",
-      type:         "string",
-      group:        "hours",
-      description:  'Shown in the cart drawer, e.g. "15–20 min".',
+      name: "pickupWaitTime",
+      title: "Pickup Wait Time",
+      type: "string",
+      group: "hours",
+      description: 'Shown in the cart drawer, e.g. "15–20 min".',
       initialValue: "15–20 min",
     }),
 
     defineField({
-      name:         "kitchenOpen",
-      title:        "Kitchen Open",
-      type:         "boolean",
-      group:        "hours",
+      name: "kitchenOpen",
+      title: "Kitchen Open",
+      type: "boolean",
+      group: "hours",
       description:
         "Controls the Kitchen Closed banner on the ordering page. " +
         "Toggle off to temporarily stop accepting new orders (e.g. end of service).",
@@ -299,46 +337,46 @@ export const locationSchema = defineType({
     // The actual colour values live in globals.css under [data-theme="…"] selectors.
 
     defineField({
-      name:        "theme",
-      title:       "Theme",
-      type:        "string",
-      group:       "theme",
+      name: "theme",
+      title: "Theme",
+      type: "string",
+      group: "theme",
       description:
         "Visual theme applied to this location's storefront. " +
         "Each theme is a curated palette — switch themes to change all brand colours simultaneously.",
       options: {
-        list:   THEME_OPTIONS,
+        list: THEME_OPTIONS,
         layout: "radio",
       },
       initialValue: "tropical",
-      validation:   R => R.required(),
+      validation: R => R.required(),
     }),
 
     // ── SEO ───────────────────────────────────────────────────────────────────
 
     defineField({
-      name:        "metaTitle",
-      title:       "Page Title",
-      type:        "string",
-      group:       "seo",
+      name: "metaTitle",
+      title: "Page Title",
+      type: "string",
+      group: "seo",
       description: "Appears in browser tab and Google search results.",
     }),
     defineField({
-      name:        "metaDescription",
-      title:       "Meta Description",
-      type:        "text",
-      group:       "seo",
-      rows:        3,
+      name: "metaDescription",
+      title: "Meta Description",
+      type: "text",
+      group: "seo",
+      rows: 3,
       description: "Google search result description — aim for 150–160 characters.",
-      validation:  R => R.max(160).warning("Keep under 160 characters for best Google display."),
+      validation: R => R.max(160).warning("Keep under 160 characters for best Google display."),
     }),
   ],
 
   preview: {
     select: {
-      title:    "restaurantName",
+      title: "restaurantName",
       subtitle: "slug.current",
-      theme:    "theme",
+      theme: "theme",
     },
     prepare({ title, subtitle, theme }) {
       const themeLabel = THEME_OPTIONS.find(t => t.value === (theme as string))?.title ?? ""

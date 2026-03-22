@@ -116,29 +116,31 @@ export interface LocationImage {
 }
 
 export interface LocationFull extends LocationMeta {
-  logoUrl?:           string
-  address?:           string
-  phone?:             string
-  phoneDialable?:     string
-  email?:             string
-  uberEatsUrl?:       string
-  instagram?:         string
-  facebook?:          string
+  logoUrl?: string
+  address?: string
+  latitude?: number
+  longitude?: number
+  phone?: string
+  phoneDialable?: string
+  email?: string
+  uberEatsUrl?: string
+  instagram?: string
+  facebook?: string
 
   // Hero
-  heroLabel?:            string
-  heroHeadline?:         string
-  heroSubheadline?:      string
-  heroPrimaryCtaText?:   string
+  heroLabel?: string
+  heroHeadline?: string
+  heroSubheadline?: string
+  heroPrimaryCtaText?: string
   heroSecondaryCtaText?: string
-  heroBackgroundUrl?:    string
+  heroBackgroundUrl?: string
 
   // About
   aboutSection?: {
-    heading?:       string
-    subheading?:    string
-    body?:          string
-    imageUrl?:      string
+    heading?: string
+    subheading?: string
+    body?: string
+    imageUrl?: string
     backgroundUrl?: string
   }
 
@@ -155,6 +157,7 @@ const LOCATION_FULL_PROJECTION = `{
   restaurantName, theme, metaTitle, metaDescription, tagline,
   "logoUrl": logo.asset->url,
   address, phone, phoneDialable, email,
+  latitude, longitude,
   uberEatsUrl, instagram, facebook,
 
   heroLabel, heroHeadline, heroSubheadline,
