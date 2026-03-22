@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import Map, { Marker } from "react-map-gl/mapbox"
+import MapboxMap, { Marker } from "react-map-gl/mapbox"
 
 import "mapbox-gl/dist/mapbox-gl.css"
 
@@ -93,7 +93,7 @@ export default function Cart({ location }: Props) {
                 </div>
                 {location.latitude && location.longitude && (
                   <div className="h-40 w-full">
-                    <Map
+                    <MapboxMap
                       mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
                       initialViewState={{
                         longitude: location.longitude,
@@ -114,7 +114,7 @@ export default function Cart({ location }: Props) {
                           <span className="text-xs text-white">🏪</span>
                         </div>
                       </Marker>
-                    </Map>
+                    </MapboxMap>
                   </div>
                 )}
               </div>
@@ -127,22 +127,78 @@ export default function Cart({ location }: Props) {
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium">{item.name}</p>
 
-                    {/* Modifier summary */}
+                    {/* Modifier summary — Merged & Categorized */}
                     {item.selectedModifiers && item.selectedModifiers.length > 0 && (
-                      <ul className="mt-0.5 space-y-0.5">
-                        {item.selectedModifiers.map(group =>
-                          group.selections.map(sel => (
-                            <li key={sel.optionId} className="text-brand-muted text-xs">
-                              {sel.name}
-                              {sel.priceAdjustment > 0 && (
-                                <span className="text-brand-green ml-1">
-                                  +${sel.priceAdjustment.toFixed(2)}
-                                </span>
+                      <div className="mt-1">
+                        {(() => {
+                          const specs: string[] = []
+                          const addons: React.ReactNode[] = []
+
+                          // 1. Map sub-modifiers by parent option ID
+                          const subSelsByParent = new Map<
+                            string,
+                            { name: string; price: number }[]
+                          >()
+                          item.selectedModifiers.forEach(mod => {
+                            if (mod.parentOptionId) {
+                              const existing = subSelsByParent.get(mod.parentOptionId) ?? []
+                              mod.selections.forEach(s =>
+                                existing.push({ name: s.name, price: s.priceAdjustment })
+                              )
+                              subSelsByParent.set(mod.parentOptionId, existing)
+                            }
+                          })
+
+                          // 2. Process root modifiers
+                          item.selectedModifiers.forEach(mod => {
+                            if (mod.parentOptionId) return // Skip subs, handled above
+
+                            mod.selections.forEach(sel => {
+                              const subs = subSelsByParent.get(sel.optionId) ?? []
+                              const subPrice = subs.reduce((sum, s) => sum + s.price, 0)
+                              const subLabel = subs.map(s => s.name).join(", ")
+
+                              // Rule 1 & 3: Base sizes and free specs
+                              if (
+                                mod.groupName === "Size Choice" ||
+                                (sel.priceAdjustment === 0 && subPrice === 0)
+                              ) {
+                                specs.push(sel.name)
+                              }
+                              // Rule 2: Priced Add-ons
+                              else {
+                                // Keeping the ( ) format for vertical UI clarity
+                                const finalName = subLabel ? `${sel.name} (${subLabel})` : sel.name
+                                const finalPrice = sel.priceAdjustment + subPrice
+                                addons.push(
+                                  <li
+                                    key={sel.optionId}
+                                    className="mt-1.5 flex items-center justify-between text-xs"
+                                  >
+                                    <span className="flex items-center gap-1.5 text-gray-600">
+                                      <span className="text-gray-300">↳</span> {finalName}
+                                    </span>
+                                    <span className="text-brand-green font-medium">
+                                      +${finalPrice.toFixed(2)}
+                                    </span>
+                                  </li>
+                                )
+                              }
+                            })
+                          })
+
+                          return (
+                            <>
+                              {specs.length > 0 && (
+                                <p className="text-brand-muted text-xs leading-relaxed">
+                                  {specs.join(" · ")}
+                                </p>
                               )}
-                            </li>
-                          ))
-                        )}
-                      </ul>
+                              {addons.length > 0 && <ul className="mt-2">{addons}</ul>}
+                            </>
+                          )
+                        })()}
+                      </div>
                     )}
 
                     {item.specialInstructions && (

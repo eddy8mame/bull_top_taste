@@ -203,6 +203,20 @@ Cart state is persisted to `localStorage` under the key `'btt-cart'`. Implemente
 
 Fails silently in all cases — localStorage unavailable or quota exceeded does not surface errors to the user.
 
+### Cart modifier display (Cart.tsx)
+
+Three-tier display per cart item:
+1. **Item line**: `item.name` + `effectivePrice` (fully loaded — base + all adjustments)
+2. **Spec line**: muted, single line — size and zero-price selections joined with ` · ` (e.g. `Large · Chicken · Rice & Peas`)
+3. **Add-on lines**: indented with `↳` arrow, name + `(size)` if sub-modifier present, `+$X.XX` right-aligned in green
+
+Classification uses `SelectedModifier.groupName` and `priceAdjustment` on client state — same rules as floor modal but applied before Sanity write:
+- `groupName === 'Size Choice'` → spec regardless of price (size upgrade bundled into effectivePrice)
+- `priceAdjustment === 0` AND no sub-modifier price → spec
+- Everything else → priced add-on line
+
+Sub-modifiers (`parentOptionId` present) are merged into their parent add-on via `subSelsByParent` map — never rendered as standalone lines. Format: `Plantain (16 Oz)` — parentheses chosen over `·` separator for vertical list legibility.
+
 ### Optimistic UI (`mutate`)
 
 Every action function follows the same pattern:
@@ -333,11 +347,13 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 | `app/admin/office/page.tsx` redesign | Office analytics page not yet translated to the new admin CSS system — still uses old Tailwind classes |
 | Sub-modifier with multiple parents | If a single parent group has 2+ priced options each with different sub-modifier groups (rare), the current split-record approach handles it correctly. If the same sub-modifier group ID appears under multiple parent options, the last one wins in `parentKeyOf` — theoretical edge case only |
 | `startedAt` in Sanity Studio schema | `order.ts` doesn't have an explicit `startedAt` field definition (like `readyAt` does). Sanity accepts it from the API patch, but it should be added to the schema for Studio visibility |
-| Cart panel UI overhaul | In progress — localStorage persistence complete, delivery card removed, pickup location card with Mapbox map added. Remaining: modifier descriptor line, removal UX, Sanity-connected quick-add empty state, pre-populated modifier modal on item tap |
+| Cart panel UI overhaul | In progress — localStorage persistence complete, delivery card removed, pickup location card with Mapbox map added, modifier descriptor complete. Remaining: removal UX, Sanity-connected quick-add empty state, pre-populated modifier modal on item tap |
+| Pre-commit hooks | Deferred to post-demo. Plan: husky + lint-staged running Prettier then ESLint --fix on staged .ts/.tsx files. Skip until collaborators are added or approaching production. |
 
 
 ## System Changelog
-* **v1.4.3 (Current):** Added interactive Mapbox map to cart pickup location card. Coordinates stored in Sanity per location. Directions link uses Google Maps dir/ endpoint with device current location as origin.
+* **v1.4.4 (Current):** Added categorized modifier summary to cart items. Specs collapsed to single descriptor line, priced add-ons itemized with ↳ arrow and price. Sub-modifiers merged inline with parent.
+* **v1.4.3:** Added interactive Mapbox map to cart pickup location card. Coordinates stored in Sanity per location. Directions link uses Google Maps dir/ endpoint with device current location as origin.
 * **v1.4.2:** Added pickup location card to filled cart state. Address renders as tap-to-maps link. Mapbox map embed deferred — placeholder in place.
 * **v1.4.1:** Removed DoorDash delivery card and links from cart panel. Delivery option relocated to order confirmation page (not yet built).
 * **v1.4.0:** Added localStorage cart persistence. Cart survives page refresh and browser close. Key: `'btt-cart'`.
