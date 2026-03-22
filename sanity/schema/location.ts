@@ -102,6 +102,13 @@ export const locationSchema = defineType({
       group: "identity",
       description: "Digits only for tel: links, e.g. 5616531974",
     }),
+    defineField({
+      name: "doorDashUrl",
+      title: "DoorDash URL",
+      type: "url",
+      group: "identity",
+      description: "Paste your DoorDash restaurant page link here.",
+    }),
     defineField({ name: "email", title: "Email", type: "string", group: "identity" }),
     defineField({
       name: "uberEatsUrl",
@@ -311,7 +318,6 @@ export const locationSchema = defineType({
       ],
     }),
 
-    
     defineField({
       name: "pickupWaitTime",
       title: "Pickup Wait Time",
@@ -320,18 +326,18 @@ export const locationSchema = defineType({
       description: 'Shown in the cart drawer, e.g. "15–20 min".',
       initialValue: "15–20 min",
     }),
-    
+
     defineField({
       name: "kitchenOpen",
       title: "Kitchen Open",
       type: "boolean",
       group: "hours",
       description:
-      "Controls the Kitchen Closed banner on the ordering page. " +
-      "Toggle off to temporarily stop accepting new orders (e.g. end of service).",
+        "Controls the Kitchen Closed banner on the ordering page. " +
+        "Toggle off to temporarily stop accepting new orders (e.g. end of service).",
       initialValue: true,
     }),
-    
+
     defineField({
       name: "featuredItems",
       title: "Featured Items (Quick Add)",

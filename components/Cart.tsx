@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import MapboxMap, { Marker } from "react-map-gl/mapbox"
 
 import ModifierModal from "@/components/ModifierModal"
@@ -17,40 +18,13 @@ interface Props {
 }
 
 export default function Cart({ location }: Props) {
+  const router = useRouter()
   const { items, addItem, removeItem, updateQty, clearCart, total, isOpen, setIsOpen } = useCart()
 
-  const [loading, setLoading] = useState(false)
   const [quickAddItem, setQuickAddItem] = useState<MenuItem | null>(null)
   const [editingItem, setEditingItem] = useState<CartItem | null>(null)
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    type: "pickup" as const,
-    notes: "",
-  })
-
   const pickupWait = location?.pickupWaitTime ?? "15–20 min"
-
-  async function handleCheckout(e: React.FormEvent) {
-    e.preventDefault()
-    if (items.length === 0) return
-    setLoading(true)
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, total, customer: formData }),
-      })
-      const { url } = await res.json()
-      if (url) window.location.href = url
-    } catch (err) {
-      console.error("Checkout error:", err)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   if (!isOpen) return null
 
@@ -150,7 +124,7 @@ export default function Cart({ location }: Props) {
             )}
           </div>
         ) : (
-          <form onSubmit={handleCheckout} className="flex flex-1 flex-col">
+          <div  className="flex flex-1 flex-col">
             {/* Pickup location card */}
             {location && (
               <div className="mx-6 mt-4 overflow-hidden rounded-xl border border-gray-100">
@@ -347,42 +321,16 @@ export default function Cart({ location }: Props) {
               </div>
             </div>
 
-            <div className="flex shrink-0 flex-col gap-3 px-6 py-4">
-              <h3 className="text-brand-muted text-sm font-semibold tracking-wide uppercase">
-                Your Details
-              </h3>
-              <input
-                required
-                placeholder="Full Name *"
-                value={formData.name}
-                onChange={e => setFormData(p => ({ ...p, name: e.target.value }))}
-                className="focus:border-brand-green rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none"
-              />
-              <input
-                required
-                type="email"
-                placeholder="Email *"
-                value={formData.email}
-                onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
-                className="focus:border-brand-green rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none"
-              />
-              <input
-                required
-                type="tel"
-                placeholder="Phone *"
-                value={formData.phone}
-                onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))}
-                className="focus:border-brand-green rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none"
-              />
-            </div>
-
             <div className="mt-auto flex flex-col gap-2 px-6 pb-6">
               <button
-                type="submit"
-                disabled={loading}
-                className="bg-brand-green hover:bg-brand-green-dark w-full rounded-lg py-3.5 font-semibold text-white transition-colors disabled:opacity-60"
+                type="button"
+                onClick={() => {
+                  setIsOpen(false)
+                  router.push("/checkout")
+                }}
+                className="bg-brand-green hover:bg-brand-green-dark w-full rounded-lg py-3.5 font-semibold text-white transition-colors"
               >
-                {loading ? "Redirecting to payment…" : `Pay $${total.toFixed(2)}`}
+                Checkout — ${total.toFixed(2)}
               </button>
               <button
                 type="button"
@@ -392,7 +340,7 @@ export default function Cart({ location }: Props) {
                 Clear cart
               </button>
             </div>
-          </form>
+          </div>
         )}
       </aside>
 

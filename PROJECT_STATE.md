@@ -157,6 +157,14 @@ specialInstructions
   - `--theme-tertiary: #F15F24` → `brand-tertiary` → CTAs, urgency
   - `--theme-fg: #031109` → brand neutral near-black body copy
 
+### `/checkout` (new)
+- `app/checkout/page.tsx` — server component, fetches `LocationFull` via `getLocationFull("")`, passes to `CheckoutClient`. `robots: noindex`.
+- `app/checkout/CheckoutClient.tsx` — client component. Consumes `useCart()`. Two-column layout: left = order summary + pickup location + delivery upsell, right = customer details form + Stripe handoff.
+- Empty cart state renders inline (no redirect on mount — avoids localStorage hydration race condition).
+- On "Proceed to payment": POSTs to `/api/checkout` with `{ items, total, customer }`, redirects to Stripe hosted checkout URL.
+- Cart is NOT cleared here — cleared only on `/order-confirmation` mount.
+- `uberEatsUrl` field repurposed for DoorDash link — field rename deferred to future sprint.
+
 ### Admin routes (`/admin`, `/admin/office`)
 
 **Strict CSS isolation** — the admin UI must never adopt storefront theme colours (a dark kitchen display cannot flash to tropical green when the storefront theme changes).
@@ -367,7 +375,8 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System Changelog
-* **v1.4.7 (Current):** Cart item editing via pre-populated ModifierModal. Tap any cart item to edit modifiers, size, add-ons, and special instructions in place. Quantity preserved on update.
+* **v1.5.0 (Current):** Added /checkout page with 2-column order summary and customer details form. Cart stripped of form and API call — now routes to /checkout. Delivery upsell moved to checkout page.
+* **v1.4.7:** Cart item editing via pre-populated ModifierModal. Tap any cart item to edit modifiers, size, add-ons, and special instructions in place. Quantity preserved on update.
 * **v1.4.6:** Added featured items quick-add panel to empty cart state. 2×2 grid sourced from Sanity location document. Items with required modifiers open ModifierModal inline. Direct add for items with no required modifiers.
 * **v1.4.5:** Replaced standalone remove button with contextual trash icon. Minus button becomes red trash icon at quantity 1. Hover deepens red to reinforce destructive intent.
 * **v1.4.4:** Added categorized modifier summary to cart items. Specs collapsed to single descriptor line, priced add-ons itemized with ↳ arrow and price. Sub-modifiers merged inline with parent.

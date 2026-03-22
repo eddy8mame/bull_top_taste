@@ -130,6 +130,7 @@ export interface LocationFull extends LocationMeta {
   phoneDialable?: string
   email?: string
   uberEatsUrl?: string
+  doorDashUrl?: string
   instagram?: string
   facebook?: string
 
@@ -165,7 +166,7 @@ const LOCATION_FULL_PROJECTION = `{
   "logoUrl": logo.asset->url,
   address, phone, phoneDialable, email,
   latitude, longitude,
-  uberEatsUrl, instagram, facebook,
+  uberEatsUrl,doorDashUrl, instagram, facebook,
 
   heroLabel, heroHeadline, heroSubheadline,
   heroPrimaryCtaText, heroSecondaryCtaText,
