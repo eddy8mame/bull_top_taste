@@ -216,9 +216,31 @@ export default function Cart({ location }: Props) {
                     <button
                       type="button"
                       onClick={() => updateQty(item.cartItemId, item.quantity - 1)}
-                      className="hover:border-brand-green flex h-6 w-6 items-center justify-center rounded-full border border-gray-200 text-sm"
+                      className={`flex h-6 w-6 items-center justify-center rounded-full border text-sm transition-colors ${
+                        item.quantity === 1
+                          ? "border-red-200 text-red-400 hover:border-red-400 hover:bg-red-50"
+                          : "hover:border-brand-green border-gray-200"
+                      }`}
                     >
-                      −
+                      {item.quantity === 1 ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-3 w-3"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6l-1 14H6L5 6" />
+                          <path d="M10 11v6M14 11v6" />
+                          <path d="M9 6V4h6v2" />
+                        </svg>
+                      ) : (
+                        "−"
+                      )}
                     </button>
                     <span className="w-4 text-center text-sm font-semibold">{item.quantity}</span>
                     <button
@@ -229,14 +251,6 @@ export default function Cart({ location }: Props) {
                       +
                     </button>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => removeItem(item.cartItemId)}
-                    className="shrink-0 text-lg leading-none text-gray-300 hover:text-red-400"
-                  >
-                    ×
-                  </button>
                 </li>
               ))}
             </ul>

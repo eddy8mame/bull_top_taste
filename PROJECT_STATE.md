@@ -347,12 +347,13 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 | `app/admin/office/page.tsx` redesign | Office analytics page not yet translated to the new admin CSS system — still uses old Tailwind classes |
 | Sub-modifier with multiple parents | If a single parent group has 2+ priced options each with different sub-modifier groups (rare), the current split-record approach handles it correctly. If the same sub-modifier group ID appears under multiple parent options, the last one wins in `parentKeyOf` — theoretical edge case only |
 | `startedAt` in Sanity Studio schema | `order.ts` doesn't have an explicit `startedAt` field definition (like `readyAt` does). Sanity accepts it from the API patch, but it should be added to the schema for Studio visibility |
-| Cart panel UI overhaul | In progress — localStorage persistence complete, delivery card removed, pickup location card with Mapbox map added, modifier descriptor complete. Remaining: removal UX, Sanity-connected quick-add empty state, pre-populated modifier modal on item tap |
+| Cart panel UI overhaul | In progress — localStorage persistence complete, delivery card removed, pickup location card with Mapbox map added, modifier descriptor complete, removal UX complete. Remaining: Sanity-connected quick-add empty state, pre-populated modifier modal on item tap |
 | Pre-commit hooks | Deferred to post-demo. Plan: husky + lint-staged running Prettier then ESLint --fix on staged .ts/.tsx files. Skip until collaborators are added or approaching production. |
 
 
 ## System Changelog
-* **v1.4.4 (Current):** Added categorized modifier summary to cart items. Specs collapsed to single descriptor line, priced add-ons itemized with ↳ arrow and price. Sub-modifiers merged inline with parent.
+* **v1.4.5 (Current):** Replaced standalone remove button with contextual trash icon. Minus button becomes red trash icon at quantity 1. Hover deepens red to reinforce destructive intent.
+* **v1.4.4:** Added categorized modifier summary to cart items. Specs collapsed to single descriptor line, priced add-ons itemized with ↳ arrow and price. Sub-modifiers merged inline with parent.
 * **v1.4.3:** Added interactive Mapbox map to cart pickup location card. Coordinates stored in Sanity per location. Directions link uses Google Maps dir/ endpoint with device current location as origin.
 * **v1.4.2:** Added pickup location card to filled cart state. Address renders as tap-to-maps link. Mapbox map embed deferred — placeholder in place.
 * **v1.4.1:** Removed DoorDash delivery card and links from cart panel. Delivery option relocated to order confirmation page (not yet built).
