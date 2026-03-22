@@ -11,6 +11,7 @@ import { useCart } from "@/context/CartContext"
 interface Props {
   item: MenuItem
   onClose: () => void
+  existingItem?: CartItem // when set, modal is in edit mode
 }
 
 // ── Selection state types ─────────────────────────────────────────────────────
@@ -127,19 +128,58 @@ function SubGroups({
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function ModifierModal({ item, onClose }: Props) {
-  const { addItem } = useCart()
+export default function ModifierModal({ item, onClose, existingItem }: Props) {
+  const { addItem, replaceItem } = useCart()
   const groups = item.modifierGroups ?? []
 
   // Use index-based prefix so keys are consistent between init and render
   // even when Sanity returns null _key values for inline array objects.
-  const [selections, setSelections] = useState<Selections>(() =>
-    Object.fromEntries(groups.map((g, gi) => [groupKey(g, gi), new Set<string>()]))
-  )
-  const [subSel, setSubSel] = useState<SubSelections>({})
+const [selections, setSelections] = useState<Selections>(() => {
+  const empty = Object.fromEntries(groups.map((g, gi) => [groupKey(g, gi), new Set<string>()]))
+  if (!existingItem?.selectedModifiers) return empty
+
+  const result = { ...empty }
+  existingItem.selectedModifiers.forEach(mod => {
+    if (mod.parentOptionId) return // sub-modifiers handled in subSel init
+    if (result[mod.groupId] !== undefined) {
+      result[mod.groupId] = new Set(mod.selections.map(s => s.optionId))
+    }
+  })
+  return result
+})
+
+const [subSel, setSubSel] = useState<SubSelections>(() => {
+  if (!existingItem?.selectedModifiers) return {}
+
+  const result: SubSelections = {}
+  const subMods = existingItem.selectedModifiers.filter(m => m.parentOptionId)
+
+  subMods.forEach(mod => {
+    // Find which top-level group contains the parent option
+    let parentGroupId: string | undefined
+    groups.forEach((g, gi) => {
+      const gKey = groupKey(g, gi)
+      g.options.forEach((o, oi) => {
+        if (safeKey(o, `${gKey}-o${oi}`) === mod.parentOptionId) {
+          parentGroupId = gKey
+        }
+      })
+    })
+    if (!parentGroupId || !mod.parentOptionId) return
+
+    result[parentGroupId] ??= {}
+    result[parentGroupId][mod.parentOptionId] ??= {}
+    result[parentGroupId][mod.parentOptionId][mod.groupId] = new Set(
+      mod.selections.map(s => s.optionId)
+    )
+  })
+  return result
+})
 
   const [showInstructions, setShowInstructions] = useState(false)
-  const [specialInstructions, setSpecialInstructions] = useState("")
+const [specialInstructions, setSpecialInstructions] = useState(
+  existingItem?.specialInstructions ?? ""
+)
 
   // ── Validation ──────────────────────────────────────────────────────────────
   // Checks both top-level required groups AND required sub-modifier groups
@@ -266,57 +306,62 @@ export default function ModifierModal({ item, onClose }: Props) {
 
   // ── Add to cart ─────────────────────────────────────────────────────────────
 
-  function handleAdd() {
-    if (!isValid) return
+function handleAdd() {
+  if (!isValid) return
 
-    const selectedModifiers: SelectedModifier[] = []
+  const selectedModifiers: SelectedModifier[] = []
 
-    groups.forEach((g, gi) => {
-      const gKey = groupKey(g, gi)
-      const optKeys = Array.from(selections[gKey] ?? [])
-      if (!optKeys.length) return
+  groups.forEach((g, gi) => {
+    const gKey = groupKey(g, gi)
+    const optKeys = Array.from(selections[gKey] ?? [])
+    if (!optKeys.length) return
 
-      selectedModifiers.push({
-        groupId: gKey,
-        groupName: g.name,
-        selections: optKeys.map(optKey => {
-          const opt = g.options.find((o, oi) => safeKey(o, `${gKey}-o${oi}`) === optKey)!
-          return { optionId: optKey, name: opt.name, priceAdjustment: opt.priceAdjustment }
-        }),
-      })
-
-      // Flatten sub-modifiers as their own SelectedModifier entries
-      for (const optKey of optKeys) {
-        const opt = g.options.find((o, oi) => safeKey(o, `${gKey}-o${oi}`) === optKey)
-        ;(opt?.subModifierGroups ?? []).forEach((sg, sgi) => {
-          const sgKey = safeKey(sg, `sg${sgi}`)
-          const soKeys = Array.from(subSel[gKey]?.[optKey]?.[sgKey] ?? [])
-          if (!soKeys.length) return
-          selectedModifiers.push({
-            groupId: sgKey,
-            groupName: sg.name,
-            parentOptionId: optKey,
-            selections: soKeys.map(soKey => {
-              const so = sg.options.find((o, soi) => safeKey(o, `${sgKey}-o${soi}`) === soKey)!
-              return { optionId: soKey, name: so.name, priceAdjustment: so.priceAdjustment }
-            }),
-          })
-        })
-      }
+    selectedModifiers.push({
+      groupId: gKey,
+      groupName: g.name,
+      selections: optKeys.map(optKey => {
+        const opt = g.options.find((o, oi) => safeKey(o, `${gKey}-o${oi}`) === optKey)!
+        return { optionId: optKey, name: opt.name, priceAdjustment: opt.priceAdjustment }
+      }),
     })
 
-    const cartItem: CartItem = {
-      ...item,
-      cartItemId: `${item._id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      quantity: 1,
-      effectivePrice,
-      selectedModifiers: selectedModifiers.length ? selectedModifiers : undefined,
-      specialInstructions: specialInstructions.trim() || undefined,
+    for (const optKey of optKeys) {
+      const opt = g.options.find((o, oi) => safeKey(o, `${gKey}-o${oi}`) === optKey)
+      ;(opt?.subModifierGroups ?? []).forEach((sg, sgi) => {
+        const sgKey = safeKey(sg, `sg${sgi}`)
+        const soKeys = Array.from(subSel[gKey]?.[optKey]?.[sgKey] ?? [])
+        if (!soKeys.length) return
+        selectedModifiers.push({
+          groupId: sgKey,
+          groupName: sg.name,
+          parentOptionId: optKey,
+          selections: soKeys.map(soKey => {
+            const so = sg.options.find((o, soi) => safeKey(o, `${sgKey}-o${soi}`) === soKey)!
+            return { optionId: soKey, name: so.name, priceAdjustment: so.priceAdjustment }
+          }),
+        })
+      })
     }
+  })
 
-    addItem(cartItem)
-    onClose()
+  const cartItem: CartItem = {
+    ...item,
+    cartItemId:
+      existingItem?.cartItemId ??
+      `${item._id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    quantity: existingItem?.quantity ?? 1,
+    effectivePrice,
+    selectedModifiers: selectedModifiers.length ? selectedModifiers : undefined,
+    specialInstructions: specialInstructions.trim() || undefined,
   }
+
+  if (existingItem) {
+    replaceItem(existingItem.cartItemId, cartItem)
+  } else {
+    addItem(cartItem)
+  }
+  onClose()
+}
 
   // ── CTA label ───────────────────────────────────────────────────────────────
 

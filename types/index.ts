@@ -68,6 +68,7 @@ export interface CartState {
   addItem: (item: CartItem) => void
   removeItem: (cartItemId: string) => void
   updateQty: (cartItemId: string, qty: number) => void
+  replaceItem: (cartItemId: string, updated: CartItem) => void 
   clearCart: () => void
   total: number
   count: number

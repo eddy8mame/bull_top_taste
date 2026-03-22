@@ -4,7 +4,7 @@ import { useState } from "react"
 import MapboxMap, { Marker } from "react-map-gl/mapbox"
 
 import ModifierModal from "@/components/ModifierModal"
-import type { MenuItem } from "@/types"
+import type { CartItem, MenuItem } from "@/types"
 
 import "mapbox-gl/dist/mapbox-gl.css"
 
@@ -18,10 +18,11 @@ interface Props {
 
 export default function Cart({ location }: Props) {
   const { items, addItem, removeItem, updateQty, clearCart, total, isOpen, setIsOpen } = useCart()
-  
+
   const [loading, setLoading] = useState(false)
   const [quickAddItem, setQuickAddItem] = useState<MenuItem | null>(null)
-  
+  const [editingItem, setEditingItem] = useState<CartItem | null>(null)
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -199,7 +200,10 @@ export default function Cart({ location }: Props) {
             <ul className="shrink-0 divide-y divide-gray-50 px-6 py-4">
               {items.map(item => (
                 <li key={item.cartItemId} className="flex items-start gap-3 py-3">
-                  <div className="min-w-0 flex-1">
+                  <div
+                    className="min-w-0 flex-1 cursor-pointer"
+                    onClick={() => setEditingItem(item)}
+                  >
                     <p className="text-sm font-medium">{item.name}</p>
 
                     {/* Modifier summary — Merged & Categorized */}
@@ -394,6 +398,13 @@ export default function Cart({ location }: Props) {
 
       {/* Quick add modifier modal */}
       {quickAddItem && <ModifierModal item={quickAddItem} onClose={() => setQuickAddItem(null)} />}
+      {editingItem && (
+        <ModifierModal
+          item={editingItem}
+          existingItem={editingItem}
+          onClose={() => setEditingItem(null)}
+        />
+      )}
     </>
   )
 }

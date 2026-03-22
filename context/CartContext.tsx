@@ -47,6 +47,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setIsOpen(true)
   }, [])
 
+  const replaceItem = useCallback((cartItemId: string, updated: CartItem) => {
+    setItems(prev =>
+      prev.map(i =>
+        i.cartItemId === cartItemId ? { ...updated, cartItemId, quantity: i.quantity } : i
+      )
+    )
+  }, [])
+
   const removeItem = useCallback((cartItemId: string) => {
     setItems(prev => prev.filter(i => i.cartItemId !== cartItemId))
   }, [])
@@ -77,7 +85,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   return (
     <CartContext.Provider
-      value={{ items, addItem, removeItem, updateQty, clearCart, total, count, isOpen, setIsOpen }}
+      value={{ items, addItem, removeItem, replaceItem, updateQty, clearCart, total, count, isOpen, setIsOpen }}
     >
       {children}
     </CartContext.Provider>
