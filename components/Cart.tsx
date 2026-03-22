@@ -3,6 +3,9 @@
 import { useState } from "react"
 import MapboxMap, { Marker } from "react-map-gl/mapbox"
 
+import ModifierModal from "@/components/ModifierModal"
+import type { MenuItem } from "@/types"
+
 import "mapbox-gl/dist/mapbox-gl.css"
 
 import type { LocationFull } from "@/lib/sanity"
@@ -14,8 +17,11 @@ interface Props {
 }
 
 export default function Cart({ location }: Props) {
-  const { items, removeItem, updateQty, clearCart, total, isOpen, setIsOpen } = useCart()
+  const { items, addItem, removeItem, updateQty, clearCart, total, isOpen, setIsOpen } = useCart()
+  
   const [loading, setLoading] = useState(false)
+  const [quickAddItem, setQuickAddItem] = useState<MenuItem | null>(null)
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -63,15 +69,84 @@ export default function Cart({ location }: Props) {
         </div>
 
         {items.length === 0 ? (
-          <div className="text-brand-muted flex flex-1 flex-col items-center justify-center gap-3 px-6">
-            <span className="text-5xl">🍽️</span>
-            <p className="font-medium">Your cart is empty</p>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-brand-green text-sm font-semibold underline"
-            >
-              Browse the menu
-            </button>
+          <div className="flex flex-1 flex-col gap-6 px-6 py-8">
+            {/* Empty state header */}
+            <div className="flex flex-col items-center gap-2 text-center">
+              <span className="text-5xl">🍽️</span>
+              <p className="text-brand-muted font-medium">Your cart is empty</p>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-brand-green text-sm font-semibold underline"
+              >
+                Browse the full menu
+              </button>
+            </div>
+
+            {/* Quick add panel */}
+            {location?.featuredItems && location.featuredItems.length > 0 && (
+              <div>
+                <p className="text-brand-muted mb-3 text-xs font-semibold tracking-wide uppercase">
+                  Popular items
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  {location.featuredItems.slice(0, 4).map(item => {
+                    const hasRequired = item.modifierGroups?.some(g => g.required) ?? false
+                    return (
+                      <div
+                        key={item._id}
+                        className="flex flex-col overflow-hidden rounded-xl border border-gray-100"
+                      >
+                        {/* Item image */}
+                        <div className="relative h-24 w-full bg-gray-50">
+                          {item.imageUrl ? (
+                            <img
+                              src={item.imageUrl}
+                              alt={item.name}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-2xl">
+                              🍽️
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Item info */}
+                        <div className="flex flex-1 flex-col gap-1.5 p-2.5">
+                          <p className="line-clamp-2 text-xs leading-snug font-semibold text-gray-900">
+                            {item.name}
+                          </p>
+                          <p className="text-brand-muted text-xs">
+                            {item.price !== null ? `$${item.price.toFixed(2)}` : "Market price"}
+                          </p>
+
+                          {/* Add button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (hasRequired) {
+                                setQuickAddItem(item)
+                              } else {
+                                addItem({
+                                  ...item,
+                                  cartItemId: `${item._id}-${Date.now()}`,
+                                  quantity: 1,
+                                  effectivePrice: item.price ?? 0,
+                                  selectedModifiers: undefined,
+                                })
+                              }
+                            }}
+                            className="bg-brand-green hover:bg-brand-green-dark mt-auto flex w-full items-center justify-center gap-1 rounded-lg py-1.5 text-xs font-semibold text-white transition-colors"
+                          >
+                            {hasRequired ? "Customize" : "+ Add"}
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <form onSubmit={handleCheckout} className="flex flex-1 flex-col">
@@ -316,6 +391,9 @@ export default function Cart({ location }: Props) {
           </form>
         )}
       </aside>
+
+      {/* Quick add modifier modal */}
+      {quickAddItem && <ModifierModal item={quickAddItem} onClose={() => setQuickAddItem(null)} />}
     </>
   )
 }

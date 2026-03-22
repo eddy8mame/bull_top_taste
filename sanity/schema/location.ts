@@ -311,6 +311,7 @@ export const locationSchema = defineType({
       ],
     }),
 
+    
     defineField({
       name: "pickupWaitTime",
       title: "Pickup Wait Time",
@@ -319,18 +320,33 @@ export const locationSchema = defineType({
       description: 'Shown in the cart drawer, e.g. "15–20 min".',
       initialValue: "15–20 min",
     }),
-
+    
     defineField({
       name: "kitchenOpen",
       title: "Kitchen Open",
       type: "boolean",
       group: "hours",
       description:
-        "Controls the Kitchen Closed banner on the ordering page. " +
-        "Toggle off to temporarily stop accepting new orders (e.g. end of service).",
+      "Controls the Kitchen Closed banner on the ordering page. " +
+      "Toggle off to temporarily stop accepting new orders (e.g. end of service).",
       initialValue: true,
     }),
-
+    
+    defineField({
+      name: "featuredItems",
+      title: "Featured Items (Quick Add)",
+      type: "array",
+      group: "hours",
+      description:
+        "Items shown in the empty cart for quick add. Leave empty to show top items by order count automatically.",
+      of: [
+        defineArrayMember({
+          type: "reference",
+          to: [{ type: "menuItem" }],
+        }),
+      ],
+      validation: R => R.max(4),
+    }),
     // ── Theme & Branding ──────────────────────────────────────────────────────
     // Theme is a preset token rather than free-form hex codes.
     // This prevents per-location colour drift while still allowing visual variety.
