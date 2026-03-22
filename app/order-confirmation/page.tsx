@@ -1,4 +1,5 @@
 import Link from "next/link"
+
 import { stripe } from "@/lib/stripe"
 
 interface Props {
@@ -21,24 +22,23 @@ export default async function OrderConfirmation({ searchParams }: Props) {
     }
   }
 
-  const customerName  = session?.metadata?.customerName ?? ""
-  const orderType     = (session?.metadata?.orderType ?? "pickup") as "pickup" | "delivery"
+  const customerName = session?.metadata?.customerName ?? ""
+  const orderType = (session?.metadata?.orderType ?? "pickup") as "pickup" | "delivery"
   const customerPhone = session?.metadata?.customerPhone ?? ""
-  const lineItems     = session?.line_items?.data ?? []
-  const total         = session ? (session.amount_total ?? 0) / 100 : null
+  const lineItems = session?.line_items?.data ?? []
+  const total = session ? (session.amount_total ?? 0) / 100 : null
 
   // Location contact — swap to an env var or DB lookup for multi-location
-  const LOCATION_PHONE         = "561.795.8440"
+  const LOCATION_PHONE = "561.795.8440"
   const LOCATION_PHONE_DIALPAD = "5617958440"
 
   return (
-    <main className="min-h-screen bg-brand-light flex items-center justify-center px-6 py-16">
-      <div className="bg-white rounded-2xl border border-gray-100 p-10 max-w-md w-full shadow-sm">
-
+    <main className="bg-brand-light flex min-h-screen items-center justify-center px-6 py-16">
+      <div className="w-full max-w-md rounded-2xl border border-gray-100 bg-white p-10 shadow-sm">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="text-6xl mb-4">🎉</div>
-          <h1 className="font-serif text-3xl mb-2">
+        <div className="mb-8 text-center">
+          <div className="mb-4 text-6xl">🎉</div>
+          <h1 className="mb-2 font-serif text-3xl">
             {customerName ? `Thanks, ${customerName.split(" ")[0]}!` : "Order Confirmed!"}
           </h1>
           <p className="text-brand-muted leading-relaxed">
@@ -50,13 +50,15 @@ export default async function OrderConfirmation({ searchParams }: Props) {
 
         {/* Order summary */}
         {lineItems.length > 0 && (
-          <div className="border border-gray-100 rounded-xl overflow-hidden mb-6">
+          <div className="mb-6 overflow-hidden rounded-xl border border-gray-100">
             <div className="bg-brand-light px-4 py-2.5">
-              <p className="text-xs font-bold tracking-widest uppercase text-brand-muted">Order Summary</p>
+              <p className="text-brand-muted text-xs font-bold tracking-widest uppercase">
+                Order Summary
+              </p>
             </div>
             <ul className="divide-y divide-gray-50">
               {lineItems.map(item => (
-                <li key={item.id} className="px-4 py-3 flex justify-between text-sm">
+                <li key={item.id} className="flex justify-between px-4 py-3 text-sm">
                   <span className="font-medium">
                     {item.quantity && item.quantity > 1 ? `${item.quantity}× ` : ""}
                     {item.description}
@@ -68,7 +70,7 @@ export default async function OrderConfirmation({ searchParams }: Props) {
               ))}
             </ul>
             {total !== null && (
-              <div className="px-4 py-3 bg-gray-50 flex justify-between font-semibold text-sm border-t border-gray-100">
+              <div className="flex justify-between border-t border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold">
                 <span>Total paid</span>
                 <span className="text-brand-green">${total.toFixed(2)}</span>
               </div>
@@ -77,7 +79,7 @@ export default async function OrderConfirmation({ searchParams }: Props) {
         )}
 
         {/* What to expect */}
-        <div className="bg-brand-light rounded-xl px-5 py-4 mb-6 text-sm text-brand-muted leading-relaxed space-y-1">
+        <div className="bg-brand-light text-brand-muted mb-6 space-y-1 rounded-xl px-5 py-4 text-sm leading-relaxed">
           <p>✉️ A confirmation email is on its way to you.</p>
           {customerPhone && (
             <p>📱 We&apos;ll text you at {customerPhone} when your order is ready.</p>
@@ -85,7 +87,7 @@ export default async function OrderConfirmation({ searchParams }: Props) {
         </div>
 
         {/* Contact */}
-        <p className="text-center text-sm text-brand-muted mb-6">
+        <p className="text-brand-muted mb-6 text-center text-sm">
           Questions?{" "}
           <a href={`tel:${LOCATION_PHONE_DIALPAD}`} className="text-brand-green font-medium">
             {LOCATION_PHONE}
@@ -94,7 +96,7 @@ export default async function OrderConfirmation({ searchParams }: Props) {
 
         <Link
           href="/"
-          className="block w-full text-center bg-brand-green text-white font-semibold px-6 py-3 rounded-lg hover:bg-brand-green-dark transition-colors"
+          className="bg-brand-green hover:bg-brand-green-dark block w-full rounded-lg px-6 py-3 text-center font-semibold text-white transition-colors"
         >
           Back to Home
         </Link>

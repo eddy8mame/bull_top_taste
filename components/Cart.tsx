@@ -1,10 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { useCart } from "@/context/CartContext"
-import type { LocationFull } from "@/lib/sanity"
 import Map, { Marker } from "react-map-gl/mapbox"
+
 import "mapbox-gl/dist/mapbox-gl.css"
+
+import type { LocationFull } from "@/lib/sanity"
+
+import { useCart } from "@/context/CartContext"
 
 interface Props {
   location?: LocationFull | null

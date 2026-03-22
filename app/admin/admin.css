@@ -14,56 +14,55 @@
 
 .admin-shell {
   /* ── Kitchen palette ──────────────────────────────────────────────────────── */
-  --k-bg:          #161614;
-  --k-surface:     #1e1e1c;
-  --k-border:      rgba(255,255,255,0.07);
-  --k-border2:     rgba(255,255,255,0.13);
-  --k-text:        #e8e8e3;
-  --k-text2:       #888880;
-  --k-text3:       #4a4a45;
-  --k-amber:       #EF9F27;
-  --k-green:       #1D9E75;
-  --k-red:         #E24B4A;
-  --k-warn-bg:     rgba(186,117,23,0.18);
-  --k-warn-border: rgba(186,117,23,0.45);
-  --k-crit-bg:     rgba(163,45,45,0.18);
-  --k-crit-border: rgba(163,45,45,0.45);
+  --k-bg: #161614;
+  --k-surface: #1e1e1c;
+  --k-border: rgba(255, 255, 255, 0.07);
+  --k-border2: rgba(255, 255, 255, 0.13);
+  --k-text: #e8e8e3;
+  --k-text2: #888880;
+  --k-text3: #4a4a45;
+  --k-amber: #ef9f27;
+  --k-green: #1d9e75;
+  --k-red: #e24b4a;
+  --k-warn-bg: rgba(186, 117, 23, 0.18);
+  --k-warn-border: rgba(186, 117, 23, 0.45);
+  --k-crit-bg: rgba(163, 45, 45, 0.18);
+  --k-crit-border: rgba(163, 45, 45, 0.45);
 
   /* ── Floor palette ────────────────────────────────────────────────────────── */
-  --f-bg:          #f2f1ee;
-  --f-surface:     #ffffff;
-  --f-text:        #1a1a18;
-  --f-text2:       #6b6b66;
-  --f-text3:       #b0b0aa;
-  --f-green:       #3B6D11;
-  --f-green2:      #1D9E75;
-  --f-warn-bg:     #FAEEDA;
-  --f-warn-text:   #854F0B;
-  --f-warn-border: #BA7517;
-  --f-crit-bg:     #FCEBEB;
-  --f-crit-text:   #A32D2D;
-  --f-crit-border: #A32D2D;
+  --f-bg: #f2f1ee;
+  --f-surface: #ffffff;
+  --f-text: #1a1a18;
+  --f-text2: #6b6b66;
+  --f-text3: #b0b0aa;
+  --f-green: #3b6d11;
+  --f-green2: #1d9e75;
+  --f-warn-bg: #faeeda;
+  --f-warn-text: #854f0b;
+  --f-warn-border: #ba7517;
+  --f-crit-bg: #fcebeb;
+  --f-crit-text: #a32d2d;
+  --f-crit-border: #a32d2d;
 
   /* ── Office palette ───────────────────────────────────────────────────────── */
-  --o-bg:          #f4f3f0;
-  --o-surface:     #ffffff;
-  --o-surface2:    #f9f8f6;
-  --o-border:      rgba(0,0,0,0.08);
-  --o-border2:     rgba(0,0,0,0.14);
-  --o-text:        #1a1a18;
-  --o-text2:       #6b6b66;
-  --o-text3:       #b0b0aa;
-  --o-green:       #3B6D11;
-  --o-green2:      #1D9E75;
-  --o-green-bg:    #EAF3DE;
-  --o-amber:       #854F0B;
-  --o-amber-bg:    #FAEEDA;
-  --o-red:         #A32D2D;
-  --o-red-bg:      #FCEBEB;
-  --o-blue:        #185FA5;
-  --o-blue-bg:     #E6F1FB;
+  --o-bg: #f4f3f0;
+  --o-surface: #ffffff;
+  --o-surface2: #f9f8f6;
+  --o-border: rgba(0, 0, 0, 0.08);
+  --o-border2: rgba(0, 0, 0, 0.14);
+  --o-text: #1a1a18;
+  --o-text2: #6b6b66;
+  --o-text3: #b0b0aa;
+  --o-green: #3b6d11;
+  --o-green2: #1d9e75;
+  --o-green-bg: #eaf3de;
+  --o-amber: #854f0b;
+  --o-amber-bg: #faeeda;
+  --o-red: #a32d2d;
+  --o-red-bg: #fcebeb;
+  --o-blue: #185fa5;
+  --o-blue-bg: #e6f1fb;
 }
-
 
 /* ─── Admin page wrapper ──────────────────────────────────────────────────────
    The page component renders this as its outermost element with an additional
@@ -73,13 +72,16 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 14px;
 }
 
-.admin-shell .admin-page.kitchen { background: var(--k-bg); }
-.admin-shell .admin-page.floor   { background: var(--f-bg); }
-
+.admin-shell .admin-page.kitchen {
+  background: var(--k-bg);
+}
+.admin-shell .admin-page.floor {
+  background: var(--f-bg);
+}
 
 /* ─── Topbar ──────────────────────────────────────────────────────────────────
    3-column grid: [nav tabs] [ordering status] [clock + office link]           */
@@ -95,11 +97,26 @@
   top: 0;
   z-index: 50;
 }
-.admin-shell .admin-page.kitchen .topbar { background: #0e0e0d; border-color: rgba(255,255,255,0.08); }
-.admin-shell .admin-page.floor   .topbar { background: #ffffff;  border-color: rgba(0,0,0,0.08); }
+.admin-shell .admin-page.kitchen .topbar {
+  background: #0e0e0d;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.admin-shell .admin-page.floor .topbar {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+}
 
-.admin-shell .top-left  { display: flex; align-items: center; gap: 6px; }
-.admin-shell .top-right { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
+.admin-shell .top-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.admin-shell .top-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
 
 /* Nav tabs (pill buttons) */
 .admin-shell .nav-tab {
@@ -114,10 +131,24 @@
   background: transparent;
   font-family: inherit;
 }
-.admin-shell .admin-page.kitchen .nav-tab              { border-color: rgba(255,255,255,0.10); color: var(--k-text2); }
-.admin-shell .admin-page.kitchen .nav-tab.active       { background: rgba(255,255,255,0.10); color: var(--k-text); border-color: rgba(255,255,255,0.18); }
-.admin-shell .admin-page.floor   .nav-tab              { border-color: rgba(0,0,0,0.10); color: var(--f-text2); }
-.admin-shell .admin-page.floor   .nav-tab.active       { background: rgba(0,0,0,0.07); color: var(--f-text); border-color: rgba(0,0,0,0.18); }
+.admin-shell .admin-page.kitchen .nav-tab {
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--k-text2);
+}
+.admin-shell .admin-page.kitchen .nav-tab.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--k-text);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.admin-shell .admin-page.floor .nav-tab {
+  border-color: rgba(0, 0, 0, 0.1);
+  color: var(--f-text2);
+}
+.admin-shell .admin-page.floor .nav-tab.active {
+  background: rgba(0, 0, 0, 0.07);
+  color: var(--f-text);
+  border-color: rgba(0, 0, 0, 0.18);
+}
 
 /* Ordering status pill */
 .admin-shell .ordering-status {
@@ -129,12 +160,25 @@
   border-radius: 20px;
   border: 0.5px solid;
 }
-.admin-shell .admin-page.kitchen .ordering-status { border-color: rgba(255,255,255,0.10); }
-.admin-shell .admin-page.floor   .ordering-status { border-color: rgba(0,0,0,0.10); }
+.admin-shell .admin-page.kitchen .ordering-status {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.admin-shell .admin-page.floor .ordering-status {
+  border-color: rgba(0, 0, 0, 0.1);
+}
 
-.admin-shell .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.admin-shell .status-dot.open   { background: #639922; }
-.admin-shell .status-dot.closed { background: var(--k-red); }
+.admin-shell .status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.admin-shell .status-dot.open {
+  background: #639922;
+}
+.admin-shell .status-dot.closed {
+  background: var(--k-red);
+}
 
 .admin-shell .status-text {
   font-size: 11px;
@@ -142,8 +186,12 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
-.admin-shell .admin-page.kitchen .status-text { color: var(--k-text2); }
-.admin-shell .admin-page.floor   .status-text { color: var(--f-text2); }
+.admin-shell .admin-page.kitchen .status-text {
+  color: var(--k-text2);
+}
+.admin-shell .admin-page.floor .status-text {
+  color: var(--f-text2);
+}
 
 /* Clock */
 .admin-shell .clock {
@@ -151,8 +199,12 @@
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
-.admin-shell .admin-page.kitchen .clock { color: var(--k-text); }
-.admin-shell .admin-page.floor   .clock { color: var(--f-text); }
+.admin-shell .admin-page.kitchen .clock {
+  color: var(--k-text);
+}
+.admin-shell .admin-page.floor .clock {
+  color: var(--f-text);
+}
 
 /* Subtle cross-view nav link */
 .admin-shell .cross-link {
@@ -164,9 +216,15 @@
   text-decoration: none;
   white-space: nowrap;
 }
-.admin-shell .cross-link:hover { opacity: 0.75; }
-.admin-shell .admin-page.kitchen .cross-link { color: var(--k-text); }
-.admin-shell .admin-page.floor   .cross-link { color: var(--f-text); }
+.admin-shell .cross-link:hover {
+  opacity: 0.75;
+}
+.admin-shell .admin-page.kitchen .cross-link {
+  color: var(--k-text);
+}
+.admin-shell .admin-page.floor .cross-link {
+  color: var(--f-text);
+}
 
 /* Kitchen-closed banner */
 .admin-shell .closed-banner {
@@ -174,12 +232,20 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background: rgba(226,75,74,0.12);
-  border-bottom: 0.5px solid rgba(226,75,74,0.35);
+  background: rgba(226, 75, 74, 0.12);
+  border-bottom: 0.5px solid rgba(226, 75, 74, 0.35);
   padding: 9px 16px;
 }
-.admin-shell .closed-banner-text { font-size: 12px; font-weight: 500; color: var(--k-red); }
-.admin-shell .closed-banner-sub  { font-size: 11px; color: rgba(226,75,74,0.6); margin-top: 1px; }
+.admin-shell .closed-banner-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--k-red);
+}
+.admin-shell .closed-banner-sub {
+  font-size: 11px;
+  color: rgba(226, 75, 74, 0.6);
+  margin-top: 1px;
+}
 .admin-shell .reopen-btn {
   flex-shrink: 0;
   padding: 6px 14px;
@@ -193,9 +259,13 @@
   font-family: inherit;
   transition: background 0.12s;
 }
-.admin-shell .reopen-btn:hover    { background: #0F6E56; }
-.admin-shell .reopen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
+.admin-shell .reopen-btn:hover {
+  background: #0f6e56;
+}
+.admin-shell .reopen-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 /* ─── View wrappers ──────────────────────────────────────────────────────────
    React renders only one view at a time via conditional rendering (no
@@ -214,7 +284,6 @@
   min-height: 0;
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════════════
    KITCHEN VIEW
 ═══════════════════════════════════════════════════════════════════════════════ */
@@ -223,7 +292,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   flex: 1;
   min-height: 0;
 }
@@ -252,13 +321,16 @@
   font-size: 11px;
   font-weight: 500;
   color: var(--k-text2);
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   padding: 2px 7px;
   border-radius: 20px;
   font-variant-numeric: tabular-nums;
   transition: all 0.15s;
 }
-.admin-shell .k-col-count.has { color: var(--k-text); background: rgba(255,255,255,0.10); }
+.admin-shell .k-col-count.has {
+  color: var(--k-text);
+  background: rgba(255, 255, 255, 0.1);
+}
 .admin-shell .k-col-body {
   padding: 10px;
   overflow-y: auto;
@@ -282,8 +354,12 @@
   overflow: hidden;
   transition: border-color 0.2s;
 }
-.admin-shell .k-card.warn { border-color: var(--k-warn-border); }
-.admin-shell .k-card.crit { border-color: var(--k-crit-border); }
+.admin-shell .k-card.warn {
+  border-color: var(--k-warn-border);
+}
+.admin-shell .k-card.crit {
+  border-color: var(--k-crit-border);
+}
 
 .admin-shell .k-card-top {
   padding: 9px 12px 7px;
@@ -293,9 +369,22 @@
   align-items: flex-start;
   gap: 8px;
 }
-.admin-shell .k-order-num { font-size: 10px; color: var(--k-text3); letter-spacing: 0.04em; margin-bottom: 1px; }
-.admin-shell .k-customer  { font-size: 13px; font-weight: 500; color: var(--k-text); }
-.admin-shell .k-phone     { font-size: 11px; color: var(--k-text3); margin-top: 1px; }
+.admin-shell .k-order-num {
+  font-size: 10px;
+  color: var(--k-text3);
+  letter-spacing: 0.04em;
+  margin-bottom: 1px;
+}
+.admin-shell .k-customer {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--k-text);
+}
+.admin-shell .k-phone {
+  font-size: 11px;
+  color: var(--k-text3);
+  margin-top: 1px;
+}
 
 .admin-shell .k-age {
   flex-shrink: 0;
@@ -304,11 +393,17 @@
   font-variant-numeric: tabular-nums;
   padding: 2px 7px;
   border-radius: 20px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--k-text2);
 }
-.admin-shell .k-age.warn { background: var(--k-warn-bg); color: var(--k-amber); }
-.admin-shell .k-age.crit { background: var(--k-crit-bg); color: var(--k-red); }
+.admin-shell .k-age.warn {
+  background: var(--k-warn-bg);
+  color: var(--k-amber);
+}
+.admin-shell .k-age.crit {
+  background: var(--k-crit-bg);
+  color: var(--k-red);
+}
 
 .admin-shell .k-type-badge {
   display: inline-block;
@@ -319,8 +414,14 @@
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
-.admin-shell .k-type-badge.pickup   { background: rgba(239,159,39,0.18); color: var(--k-amber); }
-.admin-shell .k-type-badge.delivery { background: rgba(59,130,246,0.18); color: #93c5fd; }
+.admin-shell .k-type-badge.pickup {
+  background: rgba(239, 159, 39, 0.18);
+  color: var(--k-amber);
+}
+.admin-shell .k-type-badge.delivery {
+  background: rgba(59, 130, 246, 0.18);
+  color: #93c5fd;
+}
 
 .admin-shell .k-items {
   padding: 8px 12px;
@@ -328,9 +429,11 @@
 }
 .admin-shell .k-ticket-item {
   padding: 5px 0;
-  border-bottom: 0.5px solid rgba(255,255,255,0.03);
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.03);
 }
-.admin-shell .k-ticket-item:last-child { border-bottom: none; }
+.admin-shell .k-ticket-item:last-child {
+  border-bottom: none;
+}
 
 .admin-shell .k-item-header {
   display: flex;
@@ -338,11 +441,27 @@
   gap: 5px;
   margin-bottom: 2px;
 }
-.admin-shell .k-qty   { font-size: 13px; font-weight: 500; color: var(--k-amber); flex-shrink: 0; }
-.admin-shell .k-iname { font-size: 13px; font-weight: 500; color: var(--k-text); }
+.admin-shell .k-qty {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--k-amber);
+  flex-shrink: 0;
+}
+.admin-shell .k-iname {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--k-text);
+}
 
-.admin-shell .k-specs { padding-left: 18px; }
-.admin-shell .k-spec  { display: block; font-size: 11px; line-height: 1.6; color: var(--k-text2); }
+.admin-shell .k-specs {
+  padding-left: 18px;
+}
+.admin-shell .k-spec {
+  display: block;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--k-text2);
+}
 .admin-shell .k-spec-label {
   font-size: 10px;
   color: var(--k-text3);
@@ -357,14 +476,16 @@
 .admin-shell .k-note-text {
   font-size: 11px;
   font-style: italic;
-  color: rgba(234,179,8,0.75);
-  background: rgba(234,179,8,0.07);
-  border: 0.5px solid rgba(234,179,8,0.15);
+  color: rgba(234, 179, 8, 0.75);
+  background: rgba(234, 179, 8, 0.07);
+  border: 0.5px solid rgba(234, 179, 8, 0.15);
   border-radius: 5px;
   padding: 4px 8px;
 }
 
-.admin-shell .k-action { padding: 7px 10px; }
+.admin-shell .k-action {
+  padding: 7px 10px;
+}
 .admin-shell .k-btn {
   width: 100%;
   padding: 7px;
@@ -378,20 +499,26 @@
   font-family: inherit;
 }
 .admin-shell .k-btn.start {
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   color: #c8c8c2;
-  border: 0.5px solid rgba(255,255,255,0.15);
+  border: 0.5px solid rgba(255, 255, 255, 0.15);
 }
-.admin-shell .k-btn.start:hover { background: rgba(255,255,255,0.11); }
-.admin-shell .k-btn.ready       { background: var(--k-green); color: #e8faf4; }
-.admin-shell .k-btn.ready:hover { background: #0F6E56; }
-
+.admin-shell .k-btn.start:hover {
+  background: rgba(255, 255, 255, 0.11);
+}
+.admin-shell .k-btn.ready {
+  background: var(--k-green);
+  color: #e8faf4;
+}
+.admin-shell .k-btn.ready:hover {
+  background: #0f6e56;
+}
 
 /* ─── Stock panel (bottom of kitchen view) ───────────────────────────────── */
 
 .admin-shell .k-stock {
   background: #0e0e0d;
-  border-top: 0.5px solid rgba(255,255,255,0.07);
+  border-top: 0.5px solid rgba(255, 255, 255, 0.07);
   flex-shrink: 0;
 }
 .admin-shell .k-stock-header {
@@ -409,14 +536,19 @@
   text-transform: uppercase;
   color: var(--k-text2);
 }
-.admin-shell .k-stock-hint { font-size: 11px; color: var(--k-text3); }
+.admin-shell .k-stock-hint {
+  font-size: 11px;
+  color: var(--k-text3);
+}
 .admin-shell .k-stock-body {
   padding: 0 10px 10px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
 }
-.admin-shell .k-stock-body.collapsed { display: none; }
+.admin-shell .k-stock-body.collapsed {
+  display: none;
+}
 .admin-shell .k-stock-item {
   padding: 6px 10px;
   border-radius: 6px;
@@ -428,13 +560,29 @@
   cursor: pointer;
   transition: all 0.12s;
 }
-.admin-shell .k-stock-item:hover           { border-color: var(--k-border2); }
-.admin-shell .k-stock-item.out             { background: var(--k-crit-bg); border-color: rgba(163,45,45,0.35); }
-.admin-shell .k-stock-name                 { font-size: 12px; color: var(--k-text); }
-.admin-shell .k-stock-item.out .k-stock-name { color: var(--k-red); text-decoration: line-through; }
-.admin-shell .k-stock-tag                  { font-size: 10px; color: var(--k-text3); letter-spacing: 0.03em; }
-.admin-shell .k-stock-item.out .k-stock-tag { color: var(--k-red); }
-
+.admin-shell .k-stock-item:hover {
+  border-color: var(--k-border2);
+}
+.admin-shell .k-stock-item.out {
+  background: var(--k-crit-bg);
+  border-color: rgba(163, 45, 45, 0.35);
+}
+.admin-shell .k-stock-name {
+  font-size: 12px;
+  color: var(--k-text);
+}
+.admin-shell .k-stock-item.out .k-stock-name {
+  color: var(--k-red);
+  text-decoration: line-through;
+}
+.admin-shell .k-stock-tag {
+  font-size: 10px;
+  color: var(--k-text3);
+  letter-spacing: 0.03em;
+}
+.admin-shell .k-stock-item.out .k-stock-tag {
+  color: var(--k-red);
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    FLOOR VIEW
@@ -445,7 +593,7 @@
   align-items: baseline;
   gap: 8px;
   padding: 8px 14px;
-  border-bottom: 0.5px solid rgba(0,0,0,0.07);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.07);
   background: #ffffff;
   flex-shrink: 0;
 }
@@ -478,33 +626,57 @@
   align-content: start;
   flex: 1;
 }
-@media (max-width: 1024px) { .admin-shell .f-cards { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 640px)  { .admin-shell .f-cards { grid-template-columns: 1fr; } }
+@media (max-width: 1024px) {
+  .admin-shell .f-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .admin-shell .f-cards {
+    grid-template-columns: 1fr;
+  }
+}
 
 .admin-shell .f-card {
   background: #ffffff;
   border-radius: 12px;
-  border: 1.5px solid rgba(0,0,0,0.09);
+  border: 1.5px solid rgba(0, 0, 0, 0.09);
   overflow: hidden;
   cursor: pointer;
   transition: border-color 0.15s;
   display: flex;
   flex-direction: column;
 }
-.admin-shell .f-card:hover { border-color: rgba(0,0,0,0.20); }
-.admin-shell .f-card.warn  { border-color: var(--f-warn-border); }
-.admin-shell .f-card.crit  { border-color: var(--f-crit-border); }
+.admin-shell .f-card:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.admin-shell .f-card.warn {
+  border-color: var(--f-warn-border);
+}
+.admin-shell .f-card.crit {
+  border-color: var(--f-crit-border);
+}
 
 .admin-shell .f-card-header {
   padding: 10px 12px 8px;
-  border-bottom: 0.5px solid rgba(0,0,0,0.07);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.07);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
 }
-.admin-shell .f-order-num { font-size: 10px; color: #6b6b66; letter-spacing: 0.04em; margin-bottom: 2px; }
-.admin-shell .f-customer  { font-size: 16px; font-weight: 500; color: #1a1a18; line-height: 1.2; }
+.admin-shell .f-order-num {
+  font-size: 10px;
+  color: #6b6b66;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+.admin-shell .f-customer {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1a1a18;
+  line-height: 1.2;
+}
 
 .admin-shell .f-age {
   flex-shrink: 0;
@@ -513,20 +685,34 @@
   font-variant-numeric: tabular-nums;
   padding: 3px 8px;
   border-radius: 20px;
-  background: rgba(0,0,0,0.06);
+  background: rgba(0, 0, 0, 0.06);
   color: #6b6b66;
 }
-.admin-shell .f-age.warn { background: var(--f-warn-bg); color: var(--f-warn-text); }
-.admin-shell .f-age.crit { background: var(--f-crit-bg); color: var(--f-crit-text); }
+.admin-shell .f-age.warn {
+  background: var(--f-warn-bg);
+  color: var(--f-warn-text);
+}
+.admin-shell .f-age.crit {
+  background: var(--f-crit-bg);
+  color: var(--f-crit-text);
+}
 
-.admin-shell .f-card-body   { padding: 10px 12px; flex: 1; }
-.admin-shell .f-item-count  { font-size: 12px; color: #6b6b66; }
-.admin-shell .f-card-footer { padding: 8px 12px 10px; }
+.admin-shell .f-card-body {
+  padding: 10px 12px;
+  flex: 1;
+}
+.admin-shell .f-item-count {
+  font-size: 12px;
+  color: #6b6b66;
+}
+.admin-shell .f-card-footer {
+  padding: 8px 12px 10px;
+}
 .admin-shell .f-btn-view {
   width: 100%;
   padding: 8px;
   border-radius: 8px;
-  border: 1px solid rgba(0,0,0,0.15);
+  border: 1px solid rgba(0, 0, 0, 0.15);
   background: #ffffff;
   font-size: 12px;
   font-weight: 500;
@@ -536,8 +722,9 @@
   display: block;
   font-family: inherit;
 }
-.admin-shell .f-btn-view:hover { background: #f2f1ee; }
-
+.admin-shell .f-btn-view:hover {
+  background: #f2f1ee;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    FLOOR MODAL — receipt + pickup confirmation
@@ -548,17 +735,19 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.40);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 200;
   align-items: center;
   justify-content: center;
 }
-.admin-shell .modal-wrap.open { display: flex; }
+.admin-shell .modal-wrap.open {
+  display: flex;
+}
 
 .admin-shell .modal {
   background: #ffffff;
   border-radius: 16px;
-  border: 1px solid rgba(0,0,0,0.10);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   width: 390px;
   max-width: 92vw;
   max-height: 86vh;
@@ -568,17 +757,30 @@
 }
 .admin-shell .modal-head {
   padding: 14px 18px 12px;
-  border-bottom: 1px solid rgba(0,0,0,0.07);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   flex-shrink: 0;
   background: #ffffff;
 }
-.admin-shell .m-num   { font-size: 10px; color: #6b6b66; letter-spacing: 0.04em; margin-bottom: 2px; }
-.admin-shell .m-name  { font-size: 18px; font-weight: 500; color: #1a1a18; }
-.admin-shell .m-phone { font-size: 12px; color: #6b6b66; margin-top: 2px; }
-.admin-shell .m-age   {
+.admin-shell .m-num {
+  font-size: 10px;
+  color: #6b6b66;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+.admin-shell .m-name {
+  font-size: 18px;
+  font-weight: 500;
+  color: #1a1a18;
+}
+.admin-shell .m-phone {
+  font-size: 12px;
+  color: #6b6b66;
+  margin-top: 2px;
+}
+.admin-shell .m-age {
   font-size: 12px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
@@ -587,9 +789,18 @@
   flex-shrink: 0;
   margin-left: 12px;
 }
-.admin-shell .m-age.ok   { background: rgba(0,0,0,0.06); color: #6b6b66; }
-.admin-shell .m-age.warn { background: #FAEEDA; color: #854F0B; }
-.admin-shell .m-age.crit { background: #FCEBEB; color: #A32D2D; }
+.admin-shell .m-age.ok {
+  background: rgba(0, 0, 0, 0.06);
+  color: #6b6b66;
+}
+.admin-shell .m-age.warn {
+  background: #faeeda;
+  color: #854f0b;
+}
+.admin-shell .m-age.crit {
+  background: #fcebeb;
+  color: #a32d2d;
+}
 
 .admin-shell .modal-body {
   padding: 14px 18px;
@@ -610,9 +821,13 @@
 .admin-shell .r-item {
   margin-bottom: 12px;
   padding-bottom: 12px;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
-.admin-shell .r-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.admin-shell .r-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
 
 .admin-shell .r-item-row {
   display: flex;
@@ -621,12 +836,41 @@
   gap: 8px;
   margin-bottom: 3px;
 }
-.admin-shell .r-item-name  { font-size: 14px; font-weight: 500; color: #1a1a18; }
-.admin-shell .r-item-price { font-size: 14px; font-weight: 500; color: #1a1a18; flex-shrink: 0; font-variant-numeric: tabular-nums; }
-.admin-shell .r-specs      { font-size: 12px; color: #6b6b66; line-height: 1.6; margin-bottom: 3px; }
-.admin-shell .r-addon      { display: flex; justify-content: space-between; padding: 2px 0 2px 10px; border-left: 2px solid rgba(0,0,0,0.08); margin-top: 3px; }
-.admin-shell .r-addon-name  { font-size: 12px; color: #6b6b66; }
-.admin-shell .r-addon-price { font-size: 12px; color: #6b6b66; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.admin-shell .r-item-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a18;
+}
+.admin-shell .r-item-price {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a18;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.admin-shell .r-specs {
+  font-size: 12px;
+  color: #6b6b66;
+  line-height: 1.6;
+  margin-bottom: 3px;
+}
+.admin-shell .r-addon {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0 2px 10px;
+  border-left: 2px solid rgba(0, 0, 0, 0.08);
+  margin-top: 3px;
+}
+.admin-shell .r-addon-name {
+  font-size: 12px;
+  color: #6b6b66;
+}
+.admin-shell .r-addon-price {
+  font-size: 12px;
+  color: #6b6b66;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
 
 .admin-shell .r-total {
   display: flex;
@@ -634,17 +878,26 @@
   align-items: baseline;
   padding-top: 12px;
   margin-top: 4px;
-  border-top: 1px solid rgba(0,0,0,0.10);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
-.admin-shell .r-total-label { font-size: 13px; font-weight: 500; color: #1a1a18; }
-.admin-shell .r-total-value { font-size: 20px; font-weight: 500; color: #1a1a18; font-variant-numeric: tabular-nums; }
+.admin-shell .r-total-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a1a18;
+}
+.admin-shell .r-total-value {
+  font-size: 20px;
+  font-weight: 500;
+  color: #1a1a18;
+  font-variant-numeric: tabular-nums;
+}
 
 .admin-shell .modal-foot {
   padding: 10px 18px 16px;
   display: flex;
   gap: 8px;
   flex-shrink: 0;
-  border-top: 1px solid rgba(0,0,0,0.07);
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
   background: #ffffff;
 }
 .admin-shell .m-btn-confirm {
@@ -652,7 +905,7 @@
   padding: 10px;
   border-radius: 8px;
   border: none;
-  background: #1D9E75;
+  background: #1d9e75;
   color: #ffffff;
   font-size: 14px;
   font-weight: 500;
@@ -660,12 +913,17 @@
   transition: background 0.12s;
   font-family: inherit;
 }
-.admin-shell .m-btn-confirm:hover    { background: #0F6E56; }
-.admin-shell .m-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+.admin-shell .m-btn-confirm:hover {
+  background: #0f6e56;
+}
+.admin-shell .m-btn-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .admin-shell .m-btn-cancel {
   padding: 10px 14px;
   border-radius: 8px;
-  border: 1px solid rgba(0,0,0,0.15);
+  border: 1px solid rgba(0, 0, 0, 0.15);
   background: #ffffff;
   font-size: 14px;
   color: #6b6b66;
@@ -673,8 +931,9 @@
   transition: background 0.12s;
   font-family: inherit;
 }
-.admin-shell .m-btn-cancel:hover { background: #f2f1ee; }
-
+.admin-shell .m-btn-cancel:hover {
+  background: #f2f1ee;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    OFFICE VIEW  (app/admin/office/page.tsx)
@@ -685,7 +944,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 14px;
   background: var(--o-bg);
   color: var(--o-text);
@@ -704,10 +963,21 @@
   top: 0;
   z-index: 50;
 }
-.admin-shell .o-brand     { font-size: 14px; font-weight: 500; color: var(--o-text); }
-.admin-shell .o-brand-sub { font-size: 11px; color: var(--o-text3); margin-top: 1px; }
+.admin-shell .o-brand {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--o-text);
+}
+.admin-shell .o-brand-sub {
+  font-size: 11px;
+  color: var(--o-text3);
+  margin-top: 1px;
+}
 
-.admin-shell .o-top-nav { display: flex; gap: 2px; }
+.admin-shell .o-top-nav {
+  display: flex;
+  gap: 2px;
+}
 .admin-shell .o-tab {
   padding: 6px 14px;
   border-radius: 20px;
@@ -721,8 +991,13 @@
   letter-spacing: 0.02em;
   font-family: inherit;
 }
-.admin-shell .o-tab.active      { background: rgba(0,0,0,0.07); color: var(--o-text); }
-.admin-shell .o-tab:hover:not(.active) { background: rgba(0,0,0,0.04); }
+.admin-shell .o-tab.active {
+  background: rgba(0, 0, 0, 0.07);
+  color: var(--o-text);
+}
+.admin-shell .o-tab:hover:not(.active) {
+  background: rgba(0, 0, 0, 0.04);
+}
 
 .admin-shell .o-loc-select {
   padding: 5px 10px;
@@ -750,7 +1025,11 @@
   gap: 12px;
   margin-bottom: 20px;
 }
-@media (max-width: 900px) { .admin-shell .o-metrics-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px) {
+  .admin-shell .o-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
 .admin-shell .o-metric-card {
   background: var(--o-surface);
@@ -773,10 +1052,18 @@
   line-height: 1;
   margin-bottom: 4px;
 }
-.admin-shell .o-metric-delta       { font-size: 12px; }
-.admin-shell .o-metric-delta.up    { color: var(--o-green); }
-.admin-shell .o-metric-delta.down  { color: var(--o-red); }
-.admin-shell .o-metric-delta.neut  { color: var(--o-text3); }
+.admin-shell .o-metric-delta {
+  font-size: 12px;
+}
+.admin-shell .o-metric-delta.up {
+  color: var(--o-green);
+}
+.admin-shell .o-metric-delta.down {
+  color: var(--o-red);
+}
+.admin-shell .o-metric-delta.neut {
+  color: var(--o-text3);
+}
 
 /* Chart card */
 .admin-shell .o-chart-card {
@@ -786,16 +1073,35 @@
   padding: 18px;
   margin-bottom: 20px;
 }
-.admin-shell .o-chart-title { font-size: 12px; font-weight: 500; color: var(--o-text); margin-bottom: 14px; }
-.admin-shell .o-chart-sub   { font-size: 11px; color: var(--o-text3); margin-left: 8px; font-weight: 400; }
+.admin-shell .o-chart-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--o-text);
+  margin-bottom: 14px;
+}
+.admin-shell .o-chart-sub {
+  font-size: 11px;
+  color: var(--o-text3);
+  margin-left: 8px;
+  font-weight: 400;
+}
 
 /* Order log table */
-.admin-shell .o-log-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.admin-shell .o-log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
 .admin-shell .o-log-table th {
-  font-size: 10px; font-weight: 500; color: var(--o-text3);
-  letter-spacing: 0.05em; text-transform: uppercase;
-  padding: 6px 10px; text-align: left;
-  border-bottom: 0.5px solid var(--o-border); white-space: nowrap;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--o-text3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  text-align: left;
+  border-bottom: 0.5px solid var(--o-border);
+  white-space: nowrap;
 }
 .admin-shell .o-log-table td {
   padding: 9px 10px;
@@ -803,10 +1109,21 @@
   color: var(--o-text2);
   vertical-align: middle;
 }
-.admin-shell .o-log-table tr:last-child td { border-bottom: none; }
-.admin-shell .o-log-table tr:hover td      { background: var(--o-surface2); }
-.admin-shell .o-log-customer               { font-weight: 500; color: var(--o-text); font-size: 12px; }
-.admin-shell .o-log-contact                { font-size: 11px; color: var(--o-text3); }
+.admin-shell .o-log-table tr:last-child td {
+  border-bottom: none;
+}
+.admin-shell .o-log-table tr:hover td {
+  background: var(--o-surface2);
+}
+.admin-shell .o-log-customer {
+  font-weight: 500;
+  color: var(--o-text);
+  font-size: 12px;
+}
+.admin-shell .o-log-contact {
+  font-size: 11px;
+  color: var(--o-text3);
+}
 
 /* Lag pills */
 .admin-shell .lag-pill {
@@ -816,13 +1133,31 @@
   font-size: 11px;
   font-weight: 500;
 }
-.admin-shell .lag-ok   { background: var(--o-green-bg); color: var(--o-green); }
-.admin-shell .lag-warn { background: var(--o-amber-bg); color: var(--o-amber); }
-.admin-shell .lag-crit { background: var(--o-red-bg);   color: var(--o-red);   }
+.admin-shell .lag-ok {
+  background: var(--o-green-bg);
+  color: var(--o-green);
+}
+.admin-shell .lag-warn {
+  background: var(--o-amber-bg);
+  color: var(--o-amber);
+}
+.admin-shell .lag-crit {
+  background: var(--o-red-bg);
+  color: var(--o-red);
+}
 
 /* Item sales bar */
-.admin-shell .o-item-bar-bg   { height: 5px; border-radius: 3px; background: rgba(0,0,0,0.06); overflow: hidden; }
-.admin-shell .o-item-bar-fill { height: 100%; border-radius: 3px; background: var(--o-green2); }
+.admin-shell .o-item-bar-bg {
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+.admin-shell .o-item-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--o-green2);
+}
 
 /* Cross-nav link (Kitchen ← in office topbar) */
 .admin-shell .o-cross-link {
@@ -834,8 +1169,9 @@
   transition: opacity 0.15s;
   white-space: nowrap;
 }
-.admin-shell .o-cross-link:hover { opacity: 1; }
-
+.admin-shell .o-cross-link:hover {
+  opacity: 1;
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    OFFICE VIEW — Phase 4.5 additions
@@ -866,7 +1202,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 14px;
   background: var(--o-bg);
   color: var(--o-text);
@@ -876,10 +1212,18 @@
    .o-topbar, .o-tab, .o-loc-select, .o-cross-link already declared above.
    Adding only what is new.                                                    */
 
-.admin-shell .o-brand-name { font-size: 14px; font-weight: 500; color: var(--o-text); }
+.admin-shell .o-brand-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--o-text);
+}
 /* .o-brand-sub already declared above */
 
-.admin-shell .o-top-right  { display: flex; align-items: center; gap: 10px; }
+.admin-shell .o-top-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
 /* ── Charts row (2-col layout) ───────────────────────────────────────────── */
 
@@ -889,7 +1233,11 @@
   gap: 12px;
   margin-bottom: 20px;
 }
-@media (max-width: 800px) { .admin-shell .o-charts-row { grid-template-columns: 1fr; } }
+@media (max-width: 800px) {
+  .admin-shell .o-charts-row {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* Active orders snapshot panel (right column of charts row) */
 .admin-shell .o-active-num {
@@ -900,7 +1248,11 @@
   line-height: 1;
   margin-bottom: 4px;
 }
-.admin-shell .o-active-label { font-size: 13px; color: var(--o-text2); margin-bottom: 12px; }
+.admin-shell .o-active-label {
+  font-size: 13px;
+  color: var(--o-text2);
+  margin-bottom: 12px;
+}
 .admin-shell .o-active-breakdown {
   list-style: none;
   display: flex;
@@ -935,9 +1287,20 @@
   justify-content: space-between;
   margin-bottom: 12px;
 }
-.admin-shell .o-log-title { font-size: 13px; font-weight: 500; color: var(--o-text); }
-.admin-shell .o-log-meta  { font-size: 11px; color: var(--o-text3); margin-top: 2px; }
-.admin-shell .o-log-meta strong { color: var(--o-text); font-weight: 500; }
+.admin-shell .o-log-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--o-text);
+}
+.admin-shell .o-log-meta {
+  font-size: 11px;
+  color: var(--o-text3);
+  margin-top: 2px;
+}
+.admin-shell .o-log-meta strong {
+  color: var(--o-text);
+  font-weight: 500;
+}
 
 .admin-shell .o-export-btn {
   display: inline-block;
@@ -952,24 +1315,39 @@
   text-decoration: none;
   transition: background 0.12s;
 }
-.admin-shell .o-export-btn:hover { background: var(--o-surface2); }
+.admin-shell .o-export-btn:hover {
+  background: var(--o-surface2);
+}
 
 /* ── Table utilities ────────────────────────────────────────────────────────
    .o-log-table, .o-log-customer, .o-log-contact already declared above.     */
 
-.admin-shell .o-table-wrap  { overflow-x: auto; }
-.admin-shell .o-nowrap      { white-space: nowrap; }
-.admin-shell .o-items-cell  { font-size: 11px; max-width: 200px; }
-.admin-shell .o-total-cell  {
+.admin-shell .o-table-wrap {
+  overflow-x: auto;
+}
+.admin-shell .o-nowrap {
+  white-space: nowrap;
+}
+.admin-shell .o-items-cell {
+  font-size: 11px;
+  max-width: 200px;
+}
+.admin-shell .o-total-cell {
   text-align: right;
   font-weight: 600;
   color: var(--o-text);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.admin-shell .o-center-cell { text-align: center; }
-.admin-shell .o-th-right    { text-align: right; }
-.admin-shell .o-th-center   { text-align: center; }
+.admin-shell .o-center-cell {
+  text-align: center;
+}
+.admin-shell .o-th-right {
+  text-align: right;
+}
+.admin-shell .o-th-center {
+  text-align: center;
+}
 
 /* ── Lag pills (o- prefixed) ────────────────────────────────────────────────
    NOTE: the existing .lag-pill / .lag-ok / .lag-warn / .lag-crit selectors
@@ -984,10 +1362,22 @@
   font-size: 11px;
   font-weight: 500;
 }
-.admin-shell .o-lag-ok      { background: var(--o-green-bg); color: var(--o-green);  }
-.admin-shell .o-lag-warn    { background: var(--o-amber-bg); color: var(--o-amber);  }
-.admin-shell .o-lag-crit    { background: var(--o-red-bg);   color: var(--o-red);    }
-.admin-shell .o-lag-pending { background: rgba(0,0,0,0.05);  color: var(--o-text3);  }
+.admin-shell .o-lag-ok {
+  background: var(--o-green-bg);
+  color: var(--o-green);
+}
+.admin-shell .o-lag-warn {
+  background: var(--o-amber-bg);
+  color: var(--o-amber);
+}
+.admin-shell .o-lag-crit {
+  background: var(--o-red-bg);
+  color: var(--o-red);
+}
+.admin-shell .o-lag-pending {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--o-text3);
+}
 
 /* ── Menu tab ───────────────────────────────────────────────────────────────
    .o-item-bar-bg and .o-item-bar-fill already declared above.               */
@@ -998,7 +1388,11 @@
   gap: 12px;
   margin-bottom: 20px;
 }
-@media (max-width: 720px) { .admin-shell .o-menu-grid { grid-template-columns: 1fr; } }
+@media (max-width: 720px) {
+  .admin-shell .o-menu-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 .admin-shell .o-item-row {
   display: flex;
@@ -1007,12 +1401,38 @@
   padding: 7px 0;
   border-bottom: 0.5px solid var(--o-border);
 }
-.admin-shell .o-item-row:last-child { border-bottom: none; }
-.admin-shell .o-item-rank     { font-size: 11px; color: var(--o-text3); width: 16px; flex-shrink: 0; text-align: right; }
-.admin-shell .o-item-name     { flex: 1; font-size: 13px; font-weight: 500; color: var(--o-text); }
-.admin-shell .o-item-bar-wrap { flex: 2; }
-.admin-shell .o-item-val      { font-size: 12px; color: var(--o-text2); min-width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
-.admin-shell .o-item-orders   { font-size: 11px; color: var(--o-text3); min-width: 44px; text-align: right; }
+.admin-shell .o-item-row:last-child {
+  border-bottom: none;
+}
+.admin-shell .o-item-rank {
+  font-size: 11px;
+  color: var(--o-text3);
+  width: 16px;
+  flex-shrink: 0;
+  text-align: right;
+}
+.admin-shell .o-item-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--o-text);
+}
+.admin-shell .o-item-bar-wrap {
+  flex: 2;
+}
+.admin-shell .o-item-val {
+  font-size: 12px;
+  color: var(--o-text2);
+  min-width: 52px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.admin-shell .o-item-orders {
+  font-size: 11px;
+  color: var(--o-text3);
+  min-width: 44px;
+  text-align: right;
+}
 
 /* ── Customers tab ──────────────────────────────────────────────────────── */
 
@@ -1022,9 +1442,17 @@
   gap: 12px;
   margin-bottom: 20px;
 }
-@media (max-width: 720px) { .admin-shell .o-cust-grid { grid-template-columns: 1fr; } }
+@media (max-width: 720px) {
+  .admin-shell .o-cust-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
-.admin-shell .o-cust-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.admin-shell .o-cust-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
 .admin-shell .o-cust-table th {
   font-size: 10px;
   font-weight: 500;
@@ -1041,9 +1469,16 @@
   color: var(--o-text2);
   vertical-align: middle;
 }
-.admin-shell .o-cust-table tr:last-child td { border-bottom: none; }
-.admin-shell .o-cust-table tr:hover td      { background: var(--o-surface2); }
-.admin-shell .o-cust-name { font-weight: 500; color: var(--o-text); }
+.admin-shell .o-cust-table tr:last-child td {
+  border-bottom: none;
+}
+.admin-shell .o-cust-table tr:hover td {
+  background: var(--o-surface2);
+}
+.admin-shell .o-cust-name {
+  font-weight: 500;
+  color: var(--o-text);
+}
 
 /* ── Settings tab ───────────────────────────────────────────────────────── */
 
@@ -1052,7 +1487,11 @@
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
-@media (max-width: 720px) { .admin-shell .o-settings-grid { grid-template-columns: 1fr; } }
+@media (max-width: 720px) {
+  .admin-shell .o-settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 .admin-shell .o-settings-card {
   background: var(--o-surface);
@@ -1090,14 +1529,33 @@
   padding: 12px 0;
   border-bottom: 0.5px solid var(--o-border);
 }
-.admin-shell .o-loc-setting-name { font-size: 13px; font-weight: 500; color: var(--o-text); }
-.admin-shell .o-loc-setting-sub  { font-size: 11px; color: var(--o-text3); margin-top: 1px; }
+.admin-shell .o-loc-setting-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--o-text);
+}
+.admin-shell .o-loc-setting-sub {
+  font-size: 11px;
+  color: var(--o-text3);
+  margin-top: 1px;
+}
 
 /* Toggle switch */
-.admin-shell .o-toggle-wrap  { display: flex; align-items: center; gap: 10px; }
-.admin-shell .o-toggle-label { font-size: 12px; color: var(--o-text2); }
-.admin-shell .o-toggle-label.open   { color: var(--o-green); }
-.admin-shell .o-toggle-label.closed { color: var(--o-red);   }
+.admin-shell .o-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-shell .o-toggle-label {
+  font-size: 12px;
+  color: var(--o-text2);
+}
+.admin-shell .o-toggle-label.open {
+  color: var(--o-green);
+}
+.admin-shell .o-toggle-label.closed {
+  color: var(--o-red);
+}
 
 .admin-shell .o-toggle {
   position: relative;
@@ -1115,12 +1573,17 @@
   position: absolute;
   inset: 0;
   border-radius: 11px;
-  background: rgba(0,0,0,0.12);
+  background: rgba(0, 0, 0, 0.12);
   cursor: pointer;
   transition: background 0.2s;
 }
-.admin-shell .o-toggle input:checked   + .o-toggle-track { background: var(--o-green2); }
-.admin-shell .o-toggle input:disabled  + .o-toggle-track { opacity: 0.5; cursor: not-allowed; }
+.admin-shell .o-toggle input:checked + .o-toggle-track {
+  background: var(--o-green2);
+}
+.admin-shell .o-toggle input:disabled + .o-toggle-track {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .admin-shell .o-toggle-thumb {
   position: absolute;
   top: 3px;
@@ -1132,7 +1595,9 @@
   transition: transform 0.2s;
   pointer-events: none;
 }
-.admin-shell .o-toggle input:checked ~ .o-toggle-thumb { transform: translateX(18px); }
+.admin-shell .o-toggle input:checked ~ .o-toggle-thumb {
+  transform: translateX(18px);
+}
 
 .admin-shell .o-override-note {
   font-size: 11px;
@@ -1140,7 +1605,10 @@
   margin-top: 16px;
   line-height: 1.5;
 }
-.admin-shell .o-override-note strong { color: var(--o-amber); font-weight: 500; }
+.admin-shell .o-override-note strong {
+  color: var(--o-amber);
+  font-weight: 500;
+}
 
 .admin-shell .o-coming-soon-body {
   padding: 24px 0;

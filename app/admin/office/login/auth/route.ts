@@ -11,8 +11,8 @@ export async function POST(req: NextRequest) {
   res.cookies.set("office_token", process.env.OFFICE_SECRET ?? "", {
     httpOnly: true,
     sameSite: "lax",
-    maxAge:   60 * 60 * 8,  // 8 hours
-    path:     "/",
+    maxAge: 60 * 60 * 8, // 8 hours
+    path: "/",
   })
   return res
 }

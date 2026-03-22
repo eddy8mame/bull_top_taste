@@ -1,20 +1,23 @@
 import type { Metadata } from "next"
 import {
-  // ── Tropical (default) ──────────────────────────────────────────────────────
-  Inter,
-  Playfair_Display,
+  Cormorant_Garamond,
   // ── Midnight ────────────────────────────────────────────────────────────────
   DM_Sans,
-  Cormorant_Garamond,
+  // ── Tropical (default) ──────────────────────────────────────────────────────
+  Inter,
+  Lora,
+  Merriweather,
   // ── Spice ───────────────────────────────────────────────────────────────────
   Nunito,
-  Lora,
   // ── Ocean ───────────────────────────────────────────────────────────────────
   Outfit,
-  Merriweather,
+  Playfair_Display,
 } from "next/font/google"
-import { CartProvider }        from "@/context/CartContext"
-import { getLocationBySlug }   from "@/lib/sanity"
+
+import { getLocationBySlug } from "@/lib/sanity"
+
+import { CartProvider } from "@/context/CartContext"
+
 import "./globals.css"
 
 // ─── Font definitions ─────────────────────────────────────────────────────────
@@ -25,55 +28,55 @@ import "./globals.css"
 // --theme-font-serif by pointing at the appropriate font variable.
 
 const inter = Inter({
-  subsets:  ["latin"],
+  subsets: ["latin"],
   variable: "--font-inter",
-  display:  "swap",
+  display: "swap",
 })
 
 const playfair = Playfair_Display({
-  subsets:  ["latin"],
+  subsets: ["latin"],
   variable: "--font-playfair",
-  weight:   ["400", "700"],
-  display:  "swap",
+  weight: ["400", "700"],
+  display: "swap",
 })
 
 const dmSans = DM_Sans({
-  subsets:  ["latin"],
+  subsets: ["latin"],
   variable: "--font-dm-sans",
-  display:  "swap",
+  display: "swap",
 })
 
 const cormorant = Cormorant_Garamond({
-  subsets:  ["latin"],
+  subsets: ["latin"],
   variable: "--font-cormorant",
-  weight:   ["300", "400", "600", "700"],
-  display:  "swap",
+  weight: ["300", "400", "600", "700"],
+  display: "swap",
 })
 
 const nunito = Nunito({
-  subsets:  ["latin"],
+  subsets: ["latin"],
   variable: "--font-nunito",
-  display:  "swap",
+  display: "swap",
 })
 
 const lora = Lora({
-  subsets:  ["latin"],
+  subsets: ["latin"],
   variable: "--font-lora",
-  weight:   ["400", "700"],
-  display:  "swap",
+  weight: ["400", "700"],
+  display: "swap",
 })
 
 const outfit = Outfit({
-  subsets:  ["latin"],
+  subsets: ["latin"],
   variable: "--font-outfit",
-  display:  "swap",
+  display: "swap",
 })
 
 const merriweather = Merriweather({
-  subsets:  ["latin"],
+  subsets: ["latin"],
   variable: "--font-merriweather",
-  weight:   ["400", "700"],
-  display:  "swap",
+  weight: ["400", "700"],
+  display: "swap",
 })
 
 // All variable classNames combined — applied to <html> so every CSS custom
@@ -99,26 +102,30 @@ const LOCATION_SLUG = "bull-top-taste-rpb"
 export async function generateMetadata(): Promise<Metadata> {
   const loc = await getLocationBySlug(LOCATION_SLUG)
   return {
-    title: loc?.metaTitle
-      ?? "Bull Top Taste – Authentic Jamaican Restaurant | Royal Palm Beach",
-    description: loc?.metaDescription
-      ?? "Royal Palm Beach's best Jamaican restaurant. Authentic jerk chicken, oxtail, ackee & saltfish, and more. Order online for pickup.",
-    keywords: ["Jamaican restaurant", "Royal Palm Beach", "jerk chicken", "oxtail", "authentic Caribbean food"],
+    title: loc?.metaTitle ?? "Bull Top Taste – Authentic Jamaican Restaurant | Royal Palm Beach",
+    description:
+      loc?.metaDescription ??
+      "Royal Palm Beach's best Jamaican restaurant. Authentic jerk chicken, oxtail, ackee & saltfish, and more. Order online for pickup.",
+    keywords: [
+      "Jamaican restaurant",
+      "Royal Palm Beach",
+      "jerk chicken",
+      "oxtail",
+      "authentic Caribbean food",
+    ],
   }
 }
 
 // ─── Root layout ──────────────────────────────────────────────────────────────
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const loc   = await getLocationBySlug(LOCATION_SLUG)
+  const loc = await getLocationBySlug(LOCATION_SLUG)
   const theme = loc?.theme ?? "tropical"
 
   return (
     <html lang="en" data-theme={theme} className={FONT_VARIABLES}>
       <body className="antialiased">
-        <CartProvider>
-          {children}
-        </CartProvider>
+        <CartProvider>{children}</CartProvider>
       </body>
     </html>
   )

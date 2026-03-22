@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse }  from "next/server"
+import { NextRequest, NextResponse } from "next/server"
+
 import { getSanityReadClient, getSanityWriteClient } from "@/lib/sanity"
 
 // GET  /api/menu/86 — returns _id list of menuItem documents currently marked unavailable.
@@ -26,7 +27,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const { itemId }: { itemId: string } = await req.json()
 
-  const readClient  = getSanityReadClient()
+  const readClient = getSanityReadClient()
   const writeClient = getSanityWriteClient()
 
   if (!readClient || !writeClient) {
@@ -42,12 +43,9 @@ export async function POST(req: NextRequest) {
 
   // If the item doesn't exist in Sanity yet, default to treating it as available
   // and mark it unavailable (i.e. "86 it" on first press).
-  const newAvailable = current === false   // false → true (un-86), anything else → false (86)
+  const newAvailable = current === false // false → true (un-86), anything else → false (86)
 
-  await writeClient
-    .patch(itemId)
-    .set({ available: newAvailable })
-    .commit()
+  await writeClient.patch(itemId).set({ available: newAvailable }).commit()
 
   return NextResponse.json({ itemId, unavailable: !newAvailable })
 }

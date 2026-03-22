@@ -1,20 +1,20 @@
-import { defineConfig }       from "sanity"
-import { structureTool }      from "sanity/structure"
-import { locationSchema }     from "@/sanity/schema/location"
-import { menuItemSchema }     from "@/sanity/schema/menuItem"
-import { orderSchema }        from "@/sanity/schema/order"
-import { specialSchema }      from "@/sanity/schema/special"
+import { locationSchema } from "@/sanity/schema/location"
+import { menuItemSchema } from "@/sanity/schema/menuItem"
+import { orderSchema } from "@/sanity/schema/order"
 // siteSettings is kept in schema registration for backwards compatibility with
 // any existing documents, but it is no longer surfaced in the Studio sidebar.
 // Migrate existing data to the new `location` document type, then remove this import.
 import { siteSettingsSchema } from "@/sanity/schema/siteSettings"
+import { specialSchema } from "@/sanity/schema/special"
+import { defineConfig } from "sanity"
+import { structureTool } from "sanity/structure"
 
 export default defineConfig({
-  name:      "bulltoptaste",
-  title:     "Bull Top Taste — Studio",
+  name: "bulltoptaste",
+  title: "Bull Top Taste — Studio",
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-  dataset:   process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production",
-  basePath:  "/studio",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production",
+  basePath: "/studio",
 
   plugins: [
     structureTool({
@@ -22,7 +22,6 @@ export default defineConfig({
         S.list()
           .title("Content")
           .items([
-
             // ── Locations ───────────────────────────────────────────────────
             // Each document = one physical restaurant location / franchise unit.
             // The slug field determines which location the frontend loads.
@@ -76,7 +75,6 @@ export default defineConfig({
                   .filter('_type == "order" && status == "completed"')
                   .defaultOrdering([{ field: "createdAt", direction: "desc" }])
               ),
-
           ]),
     }),
   ],

@@ -25,28 +25,27 @@
 @theme inline {
   /* ── Themeable brand palette (4-tier: primary · secondary · tertiary · neutral)
        These map to Tailwind utilities: bg-brand-green, text-brand-gold, etc.  */
-  --color-brand-green:      var(--theme-secondary);
+  --color-brand-green: var(--theme-secondary);
   --color-brand-green-dark: var(--theme-secondary-dark);
-  --color-brand-gold:       var(--theme-primary);
-  --color-brand-tertiary:   var(--theme-tertiary);
-  --color-brand-muted:      var(--theme-muted);
-  --color-brand-card:       var(--theme-card);
-  --color-brand-light:      var(--theme-bg);
-  --color-background:       var(--theme-bg);
-  --color-foreground:       var(--theme-fg);
+  --color-brand-gold: var(--theme-primary);
+  --color-brand-tertiary: var(--theme-tertiary);
+  --color-brand-muted: var(--theme-muted);
+  --color-brand-card: var(--theme-card);
+  --color-brand-light: var(--theme-bg);
+  --color-background: var(--theme-bg);
+  --color-foreground: var(--theme-fg);
 
   /* ── Static palette — admin dark UI only, intentionally unthemed ────────── */
   /* The kitchen/office dashboards use these directly and must not shift.      */
-  --color-brand-dark:     #111111;
+  --color-brand-dark: #111111;
   --color-brand-charcoal: #3d3d3d;
 
   /* ── Typography ──────────────────────────────────────────────────────────── */
   /* --font-sans and --font-serif drive the font-sans / font-serif utilities.  */
   /* Their values are theme-specific font stacks, resolved at runtime.         */
-  --font-sans:  var(--theme-font-sans);
+  --font-sans: var(--theme-font-sans);
   --font-serif: var(--theme-font-serif);
 }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    DEFAULT FALLBACK  (must come first so theme blocks override it)
@@ -56,90 +55,85 @@
 :root {
   /* Mirrors [data-theme="tropical"] — keeps the page from flashing unstyled  */
   /* if the data-theme attribute hasn't propagated yet, or is absent.         */
-  --theme-primary:        #FEB615;  /* Brand gold — hero, prices, highlights  */
-  --theme-secondary:      #017530;  /* Brand green — buttons, headings        */
-  --theme-secondary-dark: #015a24;  /* Deeper green for hover states          */
-  --theme-tertiary:       #F15F24;  /* Warm orange — CTAs, urgency accents    */
-  --theme-bg:             #fafaf7;
-  --theme-fg:             #031109;  /* Brand neutral — near-black body copy   */
-  --theme-muted:          #555555;
-  --theme-card:           #ffffff;
-  --theme-font-sans:      var(--font-inter);
-  --theme-font-serif:     var(--font-playfair);
+  --theme-primary: #feb615; /* Brand gold — hero, prices, highlights  */
+  --theme-secondary: #017530; /* Brand green — buttons, headings        */
+  --theme-secondary-dark: #015a24; /* Deeper green for hover states          */
+  --theme-tertiary: #f15f24; /* Warm orange — CTAs, urgency accents    */
+  --theme-bg: #fafaf7;
+  --theme-fg: #031109; /* Brand neutral — near-black body copy   */
+  --theme-muted: #555555;
+  --theme-card: #ffffff;
+  --theme-font-sans: var(--font-inter);
+  --theme-font-serif: var(--font-playfair);
 }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    THEME: TROPICAL  — Jamaican green & gold (Bull Top Taste original)
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 [data-theme="tropical"] {
-  --theme-primary:        #FEB615;  /* brand gold — the hero colour            */
-  --theme-secondary:      #017530;  /* lush Jamaican green                     */
-  --theme-secondary-dark: #015a24;  /* deeper green for hover states           */
-  --theme-tertiary:       #F15F24;  /* warm orange accent — CTAs, urgency      */
-  --theme-bg:             #fafaf7;  /* warm off-white page background           */
-  --theme-fg:             #031109;  /* brand neutral — near-black body copy     */
-  --theme-muted:          #555555;  /* secondary text, metadata                 */
-  --theme-card:           #ffffff;  /* card / modal backgrounds                 */
-  --theme-font-sans:      var(--font-inter);
-  --theme-font-serif:     var(--font-playfair);
+  --theme-primary: #feb615; /* brand gold — the hero colour            */
+  --theme-secondary: #017530; /* lush Jamaican green                     */
+  --theme-secondary-dark: #015a24; /* deeper green for hover states           */
+  --theme-tertiary: #f15f24; /* warm orange accent — CTAs, urgency      */
+  --theme-bg: #fafaf7; /* warm off-white page background           */
+  --theme-fg: #031109; /* brand neutral — near-black body copy     */
+  --theme-muted: #555555; /* secondary text, metadata                 */
+  --theme-card: #ffffff; /* card / modal backgrounds                 */
+  --theme-font-sans: var(--font-inter);
+  --theme-font-serif: var(--font-playfair);
 }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    THEME: MIDNIGHT  — Deep navy & amber (refined, upscale dining)
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 [data-theme="midnight"] {
-  --theme-primary:        #e8a020;  /* warm amber — prices, CTAs, badges       */
-  --theme-secondary:      #1e3a6e;  /* deep diplomatic navy                    */
-  --theme-secondary-dark: #142a50;  /* hover / pressed state                   */
-  --theme-tertiary:       #c0392b;  /* rich crimson accent                     */
-  --theme-bg:             #f4f6fb;  /* cool blue-grey page background          */
-  --theme-fg:             #0d1929;  /* very dark navy for body copy            */
-  --theme-muted:          #4a5a72;  /* slate muted text                        */
-  --theme-card:           #ffffff;
-  --theme-font-sans:      var(--font-dm-sans);
-  --theme-font-serif:     var(--font-cormorant);
+  --theme-primary: #e8a020; /* warm amber — prices, CTAs, badges       */
+  --theme-secondary: #1e3a6e; /* deep diplomatic navy                    */
+  --theme-secondary-dark: #142a50; /* hover / pressed state                   */
+  --theme-tertiary: #c0392b; /* rich crimson accent                     */
+  --theme-bg: #f4f6fb; /* cool blue-grey page background          */
+  --theme-fg: #0d1929; /* very dark navy for body copy            */
+  --theme-muted: #4a5a72; /* slate muted text                        */
+  --theme-card: #ffffff;
+  --theme-font-sans: var(--font-dm-sans);
+  --theme-font-serif: var(--font-cormorant);
 }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    THEME: SPICE  — Warm terracotta & cream (earthy, bold street-food energy)
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 [data-theme="spice"] {
-  --theme-primary:        #e8b84b;  /* sun-baked gold accent                   */
-  --theme-secondary:      #c2440f;  /* fired terracotta                        */
-  --theme-secondary-dark: #9e380b;  /* deep ember hover                        */
-  --theme-tertiary:       #d4a017;  /* mustard highlight                       */
-  --theme-bg:             #fdf6ee;  /* warm parchment page background          */
-  --theme-fg:             #1c0a00;  /* rich dark brown body copy               */
-  --theme-muted:          #7a4428;  /* muted clay text                         */
-  --theme-card:           #fffbf6;  /* barely-there cream card                 */
-  --theme-font-sans:      var(--font-nunito);
-  --theme-font-serif:     var(--font-lora);
+  --theme-primary: #e8b84b; /* sun-baked gold accent                   */
+  --theme-secondary: #c2440f; /* fired terracotta                        */
+  --theme-secondary-dark: #9e380b; /* deep ember hover                        */
+  --theme-tertiary: #d4a017; /* mustard highlight                       */
+  --theme-bg: #fdf6ee; /* warm parchment page background          */
+  --theme-fg: #1c0a00; /* rich dark brown body copy               */
+  --theme-muted: #7a4428; /* muted clay text                         */
+  --theme-card: #fffbf6; /* barely-there cream card                 */
+  --theme-font-sans: var(--font-nunito);
+  --theme-font-serif: var(--font-lora);
 }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    THEME: OCEAN  — Coastal teal & coral (fresh, airy, modern seafood)
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 [data-theme="ocean"] {
-  --theme-primary:        #f97316;  /* coral counterpoint — warmth against cool */
-  --theme-secondary:      #0e7490;  /* deep coastal teal                       */
-  --theme-secondary-dark: #0a5a70;  /* hover state                             */
-  --theme-tertiary:       #e11d48;  /* rose accent                             */
-  --theme-bg:             #f0fafb;  /* barely-tinted aqua page background      */
-  --theme-fg:             #0c3042;  /* dark ocean body copy                    */
-  --theme-muted:          #3d7a8a;  /* muted teal text                         */
-  --theme-card:           #ffffff;
-  --theme-font-sans:      var(--font-outfit);
-  --theme-font-serif:     var(--font-merriweather);
+  --theme-primary: #f97316; /* coral counterpoint — warmth against cool */
+  --theme-secondary: #0e7490; /* deep coastal teal                       */
+  --theme-secondary-dark: #0a5a70; /* hover state                             */
+  --theme-tertiary: #e11d48; /* rose accent                             */
+  --theme-bg: #f0fafb; /* barely-tinted aqua page background      */
+  --theme-fg: #0c3042; /* dark ocean body copy                    */
+  --theme-muted: #3d7a8a; /* muted teal text                         */
+  --theme-card: #ffffff;
+  --theme-font-sans: var(--font-outfit);
+  --theme-font-serif: var(--font-merriweather);
 }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    BASE STYLES
@@ -152,8 +146,8 @@ html {
 }
 
 body {
-  background:  var(--theme-bg);
-  color:       var(--theme-fg);
+  background: var(--theme-bg);
+  color: var(--theme-fg);
   /* Fall back through the sans stack: theme font → system-ui → sans-serif.   */
   font-family: var(--theme-font-sans), system-ui, sans-serif;
 }

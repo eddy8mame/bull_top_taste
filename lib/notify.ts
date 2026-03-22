@@ -1,12 +1,10 @@
-import { Resend }  from "resend"
-import twilio      from "twilio"
+import { Resend } from "resend"
+import twilio from "twilio"
+
 import type { Order } from "@/types"
 
-const resend       = new Resend(process.env.RESEND_API_KEY)
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-)
+const resend = new Resend(process.env.RESEND_API_KEY)
+const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
 
 // In dev/test: use Resend's shared onboarding@resend.dev sender — no domain
 // verification required, but delivery is restricted to your Resend account email.
@@ -22,8 +20,8 @@ export async function notifyRestaurantByEmail(order: Order) {
     .join("\n")
 
   await resend.emails.send({
-    from:    FROM_EMAIL,
-    to:      process.env.RESTAURANT_EMAIL ?? "",
+    from: FROM_EMAIL,
+    to: process.env.RESTAURANT_EMAIL ?? "",
     subject: `New Order #${order.id} — $${order.total.toFixed(2)}`,
     text: `
 New order received!
@@ -45,13 +43,11 @@ Total: $${order.total.toFixed(2)}
 // ─── SMS to restaurant ────────────────────────────────────────────────────────
 
 export async function notifyRestaurantBySMS(order: Order) {
-  const itemsSummary = order.items
-    .map(i => `${i.quantity}x ${i.name}`)
-    .join(", ")
+  const itemsSummary = order.items.map(i => `${i.quantity}x ${i.name}`).join(", ")
 
   await twilioClient.messages.create({
     from: process.env.TWILIO_PHONE_NUMBER ?? "",
-    to:   process.env.RESTAURANT_PHONE    ?? "",
+    to: process.env.RESTAURANT_PHONE ?? "",
     body: `New order from ${order.customerName}: ${itemsSummary}. Total: $${order.total.toFixed(2)}. Type: ${order.type}.`,
   })
 }
@@ -59,13 +55,11 @@ export async function notifyRestaurantBySMS(order: Order) {
 // ─── Order confirmation to customer ──────────────────────────────────────────
 
 export async function confirmOrderToCustomer(order: Order) {
-  const itemsList = order.items
-    .map(i => `${i.quantity}x ${i.name}`)
-    .join(", ")
+  const itemsList = order.items.map(i => `${i.quantity}x ${i.name}`).join(", ")
 
   await resend.emails.send({
-    from:    FROM_EMAIL,
-    to:      order.customerEmail,
+    from: FROM_EMAIL,
+    to: order.customerEmail,
     subject: `Your order at Bull Top Taste is confirmed!`,
     text: `
 Hi ${order.customerName},
@@ -84,7 +78,6 @@ Questions? Call us at 561.795.8440 or email info@bulltoptaste.com
   })
 }
 
-
 // ─── "Order ready for pickup" SMS to customer ────────────────────────────────
 
 export async function notifyCustomerOrderReady(order: Order) {
@@ -92,7 +85,7 @@ export async function notifyCustomerOrderReady(order: Order) {
 
   await twilioClient.messages.create({
     from: process.env.TWILIO_PHONE_NUMBER ?? "",
-    to:   order.customerPhone,
+    to: order.customerPhone,
     body: `Hi ${order.customerName}! Your order at Bull Top Taste is ready for pickup. See you soon! Questions? Call 561.795.8440.`,
   })
 }

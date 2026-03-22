@@ -1,10 +1,11 @@
 import { createClient } from "@sanity/client"
-import type { MenuItem, Special, SiteSettings, ModifierGroup } from "@/types"
+
+import type { MenuItem, ModifierGroup, SiteSettings, Special } from "@/types"
 
 // ─── Client factory ───────────────────────────────────────────────────────────
 
 const SHARED_CONFIG = {
-  dataset:    process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production",
   apiVersion: "2024-01-01",
 } as const
 
@@ -21,11 +22,11 @@ function getSanityClient() {
 // the null case gracefully so the user-facing flow is never blocked by a missing key.
 export function getSanityWriteClient() {
   const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
-  const token     = process.env.SANITY_API_WRITE_TOKEN
+  const token = process.env.SANITY_API_WRITE_TOKEN
   if (!projectId || !token) {
     console.warn(
       "[Sanity] Write client unavailable — set NEXT_PUBLIC_SANITY_PROJECT_ID " +
-      "and SANITY_API_WRITE_TOKEN in your environment."
+        "and SANITY_API_WRITE_TOKEN in your environment."
     )
     return null
   }
@@ -59,11 +60,14 @@ export async function getActiveSpecials(): Promise<Special[]> {
   const client = getSanityClient()
   if (!client) return FALLBACK_SPECIALS
   const today = new Date().toISOString().split("T")[0]
-  return client.fetch<Special[]>(`
+  return client.fetch<Special[]>(
+    `
     *[_type == "special" && validFrom <= $today && validUntil >= $today] {
       _id, title, items, price, validFrom, validUntil, hours
     }
-  `, { today })
+  `,
+    { today }
+  )
 }
 
 export async function getSiteSettings(): Promise<SiteSettings | null> {
@@ -87,16 +91,18 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
 // Minimal shape needed by the root layout for theming + metadata.
 export interface LocationMeta {
   restaurantName: string
-  theme:          "tropical" | "midnight" | "spice" | "ocean"
-  metaTitle?:     string
+  theme: "tropical" | "midnight" | "spice" | "ocean"
+  metaTitle?: string
   metaDescription?: string
-  tagline?:       string
+  tagline?: string
 }
 
 export async function getLocationBySlug(slug: string): Promise<LocationMeta | null> {
   const client = getSanityClient()
   if (!client) {
-    console.warn(`[Sanity] Client not configured — cannot resolve location "${slug}". Falling back to default theme.`)
+    console.warn(
+      `[Sanity] Client not configured — cannot resolve location "${slug}". Falling back to default theme.`
+    )
     return null
   }
   return client.fetch<LocationMeta | null>(
@@ -110,8 +116,8 @@ export async function getLocationBySlug(slug: string): Promise<LocationMeta | nu
 // ─── Full location data (homepage) ──────────────────────────────────────────
 
 export interface LocationImage {
-  url:     string
-  alt?:    string
+  url: string
+  alt?: string
   caption?: string
 }
 
@@ -194,7 +200,9 @@ export async function getLocationFull(slug: string): Promise<LocationFull | null
     )
     if (result) return result
     // Fall through to slug lookup if ID produced no results (e.g. wrong env value)
-    console.warn(`[Sanity] getLocationFull: no location found for id "${locationId}", retrying by slug.`)
+    console.warn(
+      `[Sanity] getLocationFull: no location found for id "${locationId}", retrying by slug.`
+    )
   }
 
   return client.fetch<LocationFull | null>(
@@ -212,64 +220,95 @@ export function getSanityReadClient() {
 // ─── Shared modifier groups ───────────────────────────────────────────────────
 
 const SIZE_CHOICE: ModifierGroup = {
-  _id: "mg-size", name: "Size Choice", required: true, min: 1, max: 1,
+  _id: "mg-size",
+  name: "Size Choice",
+  required: true,
+  min: 1,
+  max: 1,
   options: [
-    { _id: "size-small", name: "Small",          priceAdjustment: 0    },
-    { _id: "size-large", name: "Large",           priceAdjustment: 3.50 },
+    { _id: "size-small", name: "Small", priceAdjustment: 0 },
+    { _id: "size-large", name: "Large", priceAdjustment: 3.5 },
   ],
 }
 
 const SIDE_CHOICE: ModifierGroup = {
-  _id: "mg-sides", name: "Side Choice", required: true, min: 2, max: 2,
+  _id: "mg-sides",
+  name: "Side Choice",
+  required: true,
+  min: 2,
+  max: 2,
   options: [
-    { _id: "side-white-rice",       name: "White Rice",       priceAdjustment: 0 },
-    { _id: "side-rice-peas",        name: "Rice & Peas",      priceAdjustment: 0 },
-    { _id: "side-cabbage-slaw",     name: "Cabbage Slaw",     priceAdjustment: 0 },
-    { _id: "side-lettuce-mix",      name: "Lettuce Mix",      priceAdjustment: 0 },
-    { _id: "side-plantain-sweet",   name: "Plantain-Sweet",   priceAdjustment: 0 },
-    { _id: "side-jerk-sauce",       name: "Jerk Sauce",       priceAdjustment: 0 },
-    { _id: "side-fry-chicken-sauce",name: "Fry Chicken Sauce",priceAdjustment: 0 },
+    { _id: "side-white-rice", name: "White Rice", priceAdjustment: 0 },
+    { _id: "side-rice-peas", name: "Rice & Peas", priceAdjustment: 0 },
+    { _id: "side-cabbage-slaw", name: "Cabbage Slaw", priceAdjustment: 0 },
+    { _id: "side-lettuce-mix", name: "Lettuce Mix", priceAdjustment: 0 },
+    { _id: "side-plantain-sweet", name: "Plantain-Sweet", priceAdjustment: 0 },
+    { _id: "side-jerk-sauce", name: "Jerk Sauce", priceAdjustment: 0 },
+    { _id: "side-fry-chicken-sauce", name: "Fry Chicken Sauce", priceAdjustment: 0 },
   ],
 }
 
 const SAUCE_ADDITIONS: ModifierGroup = {
-  _id: "mg-sauce", name: "Sauce Additions", required: false, min: 0, max: 2,
+  _id: "mg-sauce",
+  name: "Sauce Additions",
+  required: false,
+  min: 0,
+  max: 2,
   options: [
-    { _id: "sauce-jerk",        name: "Jerk Sauce",        priceAdjustment: 0.75 },
+    { _id: "sauce-jerk", name: "Jerk Sauce", priceAdjustment: 0.75 },
     { _id: "sauce-fry-chicken", name: "Fry Chicken Sauce", priceAdjustment: 0.75 },
   ],
 }
 
 const PLANTAIN_SIZE: ModifierGroup = {
-  _id: "mg-plantain-size", name: "Plantain Size", required: true, min: 1, max: 1,
+  _id: "mg-plantain-size",
+  name: "Plantain Size",
+  required: true,
+  min: 1,
+  max: 1,
   options: [
-    { _id: "plantain-sm", name: "Small",  priceAdjustment: 0    },
-    { _id: "plantain-lg", name: "Large",  priceAdjustment: 2.00 },
+    { _id: "plantain-sm", name: "Small", priceAdjustment: 0 },
+    { _id: "plantain-lg", name: "Large", priceAdjustment: 2.0 },
   ],
 }
 
 const RECOMMENDED_APPS: ModifierGroup = {
-  _id: "mg-recommended", name: "Recommended Sides & Apps", required: false, min: 0, max: 3,
+  _id: "mg-recommended",
+  name: "Recommended Sides & Apps",
+  required: false,
+  min: 0,
+  max: 3,
   options: [
-    { _id: "app-plantain", name: "Plantain", priceAdjustment: 6.98,  subModifierGroups: [PLANTAIN_SIZE] },
-    { _id: "app-cabbage",  name: "Cabbage",  priceAdjustment: 4.99  },
-    { _id: "app-cow-foot", name: "Cow Foot", priceAdjustment: 27.00 },
+    {
+      _id: "app-plantain",
+      name: "Plantain",
+      priceAdjustment: 6.98,
+      subModifierGroups: [PLANTAIN_SIZE],
+    },
+    { _id: "app-cabbage", name: "Cabbage", priceAdjustment: 4.99 },
+    { _id: "app-cow-foot", name: "Cow Foot", priceAdjustment: 27.0 },
   ],
 }
 
 const CRAB_PROTEIN: ModifierGroup = {
-  _id: "mg-protein", name: "Protein Choice", required: true, min: 1, max: 1,
-  options: [
-    { _id: "protein-crab", name: "1 Crab", priceAdjustment: 0 },
-  ],
+  _id: "mg-protein",
+  name: "Protein Choice",
+  required: true,
+  min: 1,
+  max: 1,
+  options: [{ _id: "protein-crab", name: "1 Crab", priceAdjustment: 0 }],
 }
 
 const PATTY_CHOICE: ModifierGroup = {
-  _id: "mg-patty", name: "Patty Flavour", required: true, min: 1, max: 1,
+  _id: "mg-patty",
+  name: "Patty Flavour",
+  required: true,
+  min: 1,
+  max: 1,
   options: [
-    { _id: "patty-beef",   name: "Beef",      priceAdjustment: 0    },
-    { _id: "patty-chicken",name: "Chicken",   priceAdjustment: 0    },
-    { _id: "patty-veggie", name: "Vegetable", priceAdjustment: 0    },
+    { _id: "patty-beef", name: "Beef", priceAdjustment: 0 },
+    { _id: "patty-chicken", name: "Chicken", priceAdjustment: 0 },
+    { _id: "patty-veggie", name: "Vegetable", priceAdjustment: 0 },
   ],
 }
 
@@ -279,142 +318,239 @@ const PLATE_MODIFIERS = [SIZE_CHOICE, SIDE_CHOICE, SAUCE_ADDITIONS, RECOMMENDED_
 // ─── Fallback menu ────────────────────────────────────────────────────────────
 
 export const FALLBACK_MENU: MenuItem[] = [
-
   // ── Section: Mains — Category: Weekly Specials ───────────────────────────────
   {
-    _id: "jerk-chicken", name: "Jerk Chicken", section: "Mains", category: "Weekly Specials",
-    tag: "Must Try", orderCount: 198,
-    description: "Slow-grilled over pimento wood with scotch bonnet, allspice, and island herbs. Choose your size and sides.",
-    price: 13.99, available: true,
+    _id: "jerk-chicken",
+    name: "Jerk Chicken",
+    section: "Mains",
+    category: "Weekly Specials",
+    tag: "Must Try",
+    orderCount: 198,
+    description:
+      "Slow-grilled over pimento wood with scotch bonnet, allspice, and island herbs. Choose your size and sides.",
+    price: 13.99,
+    available: true,
     modifierGroups: PLATE_MODIFIERS,
   },
   {
-    _id: "stew-chicken", name: "Stew Chicken", section: "Mains", category: "Weekly Specials",
-    tag: "Classic", orderCount: 89,
-    description: "Marinated chicken braised low and slow in a savory brown stew. A Jamaican household staple.",
-    price: 12.99, available: true,
+    _id: "stew-chicken",
+    name: "Stew Chicken",
+    section: "Mains",
+    category: "Weekly Specials",
+    tag: "Classic",
+    orderCount: 89,
+    description:
+      "Marinated chicken braised low and slow in a savory brown stew. A Jamaican household staple.",
+    price: 12.99,
+    available: true,
     modifierGroups: PLATE_MODIFIERS,
   },
   {
-    _id: "curried-goat", name: "Curried Goat", section: "Mains", category: "Weekly Specials",
-    tag: "Popular", orderCount: 134,
-    description: "Slow-cooked goat in fragrant Jamaican curry with potatoes. Rich, hearty, and deeply satisfying.",
-    price: 14.99, available: true,
+    _id: "curried-goat",
+    name: "Curried Goat",
+    section: "Mains",
+    category: "Weekly Specials",
+    tag: "Popular",
+    orderCount: 134,
+    description:
+      "Slow-cooked goat in fragrant Jamaican curry with potatoes. Rich, hearty, and deeply satisfying.",
+    price: 14.99,
+    available: true,
     modifierGroups: PLATE_MODIFIERS,
   },
 
   // ── Section: Mains — Category: Lunch Plates ──────────────────────────────────
   {
-    _id: "jerk-pork", name: "Jerk Pork", section: "Mains", category: "Lunch Plates",
-    tag: "Fan Favourite", orderCount: 142,
-    description: "Jerk pork with choice of size; paired with crab protein. Sides include rice variations, cabbage slaw, lettuce mix, sweet plantain, and flavorful sauces.",
-    price: 16.50, available: true,
+    _id: "jerk-pork",
+    name: "Jerk Pork",
+    section: "Mains",
+    category: "Lunch Plates",
+    tag: "Fan Favourite",
+    orderCount: 142,
+    description:
+      "Jerk pork with choice of size; paired with crab protein. Sides include rice variations, cabbage slaw, lettuce mix, sweet plantain, and flavorful sauces.",
+    price: 16.5,
+    available: true,
     modifierGroups: [SIZE_CHOICE, CRAB_PROTEIN, SIDE_CHOICE, SAUCE_ADDITIONS, RECOMMENDED_APPS],
   },
   {
-    _id: "oxtail", name: "Oxtail", section: "Mains", category: "Lunch Plates",
-    tag: "Popular", orderCount: 167,
-    description: "Tender, slow-braised oxtail in a rich, deeply seasoned gravy. A Bull Top Taste signature.",
-    price: null, available: true,
+    _id: "oxtail",
+    name: "Oxtail",
+    section: "Mains",
+    category: "Lunch Plates",
+    tag: "Popular",
+    orderCount: 167,
+    description:
+      "Tender, slow-braised oxtail in a rich, deeply seasoned gravy. A Bull Top Taste signature.",
+    price: null,
+    available: true,
     modifierGroups: [SIZE_CHOICE, SIDE_CHOICE, SAUCE_ADDITIONS, RECOMMENDED_APPS],
   },
   {
-    _id: "fried-chicken", name: "Fried Chicken", section: "Mains", category: "Lunch Plates",
-    tag: "Crispy", orderCount: 76,
+    _id: "fried-chicken",
+    name: "Fried Chicken",
+    section: "Mains",
+    category: "Lunch Plates",
+    tag: "Crispy",
+    orderCount: 76,
     description: "Marinated in island spices and fried golden. Crispy outside, juicy inside.",
-    price: 11.99, available: true,
+    price: 11.99,
+    available: true,
     modifierGroups: PLATE_MODIFIERS,
   },
   {
-    _id: "cow-foot", name: "Cow Foot", section: "Mains", category: "Lunch Plates",
-    tag: "Hearty", orderCount: 58,
-    description: "A beloved Jamaican staple — fall-off-the-bone tender, slow-simmered with butter beans and spices.",
-    price: 14.99, available: true,
+    _id: "cow-foot",
+    name: "Cow Foot",
+    section: "Mains",
+    category: "Lunch Plates",
+    tag: "Hearty",
+    orderCount: 58,
+    description:
+      "A beloved Jamaican staple — fall-off-the-bone tender, slow-simmered with butter beans and spices.",
+    price: 14.99,
+    available: true,
     modifierGroups: PLATE_MODIFIERS,
   },
   {
-    _id: "stew-peas", name: "Stew Peas", section: "Mains", category: "Lunch Plates",
-    tag: "Comfort", orderCount: 47,
+    _id: "stew-peas",
+    name: "Stew Peas",
+    section: "Mains",
+    category: "Lunch Plates",
+    tag: "Comfort",
+    orderCount: 47,
     description: "Creamy kidney peas and tender meat simmered in a coconut milk-based stew.",
-    price: 12.99, available: true,
+    price: 12.99,
+    available: true,
     modifierGroups: PLATE_MODIFIERS,
   },
   {
-    _id: "ackee-saltfish", name: "Ackee & Saltfish", section: "Mains", category: "Classics",
-    tag: "National Dish", orderCount: 61,
-    description: "Jamaica's national dish — ackee sautéed with salted codfish, onions, tomatoes, and scotch bonnet.",
-    price: null, available: true,
+    _id: "ackee-saltfish",
+    name: "Ackee & Saltfish",
+    section: "Mains",
+    category: "Classics",
+    tag: "National Dish",
+    orderCount: 61,
+    description:
+      "Jamaica's national dish — ackee sautéed with salted codfish, onions, tomatoes, and scotch bonnet.",
+    price: null,
+    available: true,
     modifierGroups: [SIDE_CHOICE, SAUCE_ADDITIONS],
   },
 
   // ── Section: Fish ─────────────────────────────────────────────────────────────
   {
-    _id: "fried-fish", name: "Fried Fish", section: "Fish",
-    tag: "Fresh", orderCount: 43,
-    description: "Whole fried fish seasoned with island spices. Crispy skin, tender flesh. Market price daily.",
-    price: null, available: true,
+    _id: "fried-fish",
+    name: "Fried Fish",
+    section: "Fish",
+    tag: "Fresh",
+    orderCount: 43,
+    description:
+      "Whole fried fish seasoned with island spices. Crispy skin, tender flesh. Market price daily.",
+    price: null,
+    available: true,
     modifierGroups: [SIDE_CHOICE, SAUCE_ADDITIONS],
   },
   {
-    _id: "escovitch-fish", name: "Escovitch Fish", section: "Fish",
-    tag: "Classic", orderCount: 38,
-    description: "Fried fish topped with pickled vegetables, scotch bonnet, and vinegar sauce. A Jamaican favourite.",
-    price: null, available: true,
+    _id: "escovitch-fish",
+    name: "Escovitch Fish",
+    section: "Fish",
+    tag: "Classic",
+    orderCount: 38,
+    description:
+      "Fried fish topped with pickled vegetables, scotch bonnet, and vinegar sauce. A Jamaican favourite.",
+    price: null,
+    available: true,
     modifierGroups: [SIDE_CHOICE, SAUCE_ADDITIONS],
   },
   {
-    _id: "brown-stew-fish", name: "Brown Stew Fish", section: "Fish",
+    _id: "brown-stew-fish",
+    name: "Brown Stew Fish",
+    section: "Fish",
     orderCount: 29,
     description: "Fish braised in a rich brown stew with onions, tomatoes, and island herbs.",
-    price: null, available: true,
+    price: null,
+    available: true,
     modifierGroups: [SIDE_CHOICE, SAUCE_ADDITIONS],
   },
 
   // ── Section: Starters — Category: Quick Bites ────────────────────────────────
   {
-    _id: "jamaican-patty", name: "Jamaican Patty", section: "Starters", category: "Quick Bites",
-    tag: "Quick Bite", orderCount: 210,
-    description: "Flaky golden pastry filled with your choice of seasoned beef, chicken, or vegetable.",
-    price: 2.99, available: true,
+    _id: "jamaican-patty",
+    name: "Jamaican Patty",
+    section: "Starters",
+    category: "Quick Bites",
+    tag: "Quick Bite",
+    orderCount: 210,
+    description:
+      "Flaky golden pastry filled with your choice of seasoned beef, chicken, or vegetable.",
+    price: 2.99,
+    available: true,
     modifierGroups: [PATTY_CHOICE],
   },
   {
-    _id: "festival", name: "Festival", section: "Starters", category: "Quick Bites",
-    tag: "Classic Side", orderCount: 184,
-    description: "Sweet fried dough — lightly crispy outside, soft inside. The perfect complement to any dish.",
-    price: 1.50, available: true,
+    _id: "festival",
+    name: "Festival",
+    section: "Starters",
+    category: "Quick Bites",
+    tag: "Classic Side",
+    orderCount: 184,
+    description:
+      "Sweet fried dough — lightly crispy outside, soft inside. The perfect complement to any dish.",
+    price: 1.5,
+    available: true,
   },
 
   // ── Section: Starters — Category: Sides ─────────────────────────────────────
   {
-    _id: "plantain", name: "Sweet Plantain", section: "Starters", category: "Sides",
+    _id: "plantain",
+    name: "Sweet Plantain",
+    section: "Starters",
+    category: "Sides",
     orderCount: 156,
     description: "Ripe plantain sliced and fried golden. Sweet, caramelized, and irresistible.",
-    price: 6.98, available: true,
+    price: 6.98,
+    available: true,
   },
   {
-    _id: "cabbage-side", name: "Cabbage", section: "Starters", category: "Sides",
+    _id: "cabbage-side",
+    name: "Cabbage",
+    section: "Starters",
+    category: "Sides",
     orderCount: 98,
     description: "Lightly sautéed cabbage seasoned the Jamaican way.",
-    price: 4.99, available: true,
+    price: 4.99,
+    available: true,
   },
   {
-    _id: "rice-peas", name: "Rice & Peas", section: "Starters", category: "Sides",
+    _id: "rice-peas",
+    name: "Rice & Peas",
+    section: "Starters",
+    category: "Sides",
     orderCount: 87,
-    description: "Coconut-infused rice with kidney beans — a Jamaican Sunday staple, available every day.",
-    price: 3.99, available: true,
+    description:
+      "Coconut-infused rice with kidney beans — a Jamaican Sunday staple, available every day.",
+    price: 3.99,
+    available: true,
   },
 ]
 
 export const FALLBACK_SPECIALS: Special[] = [
   {
-    _id: "s1", title: "Daily Lunch Special",
+    _id: "s1",
+    title: "Daily Lunch Special",
     items: ["Curry Chicken", "Fried Chicken", "Stew Chicken", "Jerk Chicken"],
-    price: 6.99, validFrom: "2024-01-01", validUntil: "2099-12-31", hours: "11 am – 2 pm",
+    price: 6.99,
+    validFrom: "2024-01-01",
+    validUntil: "2099-12-31",
+    hours: "11 am – 2 pm",
   },
   {
-    _id: "s2", title: "Daily Lunch Special",
+    _id: "s2",
+    title: "Daily Lunch Special",
     items: ["Curried Goat", "Cow Foot", "Stew Peas"],
-    price: 7.99, validFrom: "2024-01-01", validUntil: "2099-12-31", hours: "11 am – 2 pm",
+    price: 7.99,
+    validFrom: "2024-01-01",
+    validUntil: "2099-12-31",
+    hours: "11 am – 2 pm",
   },
 ]

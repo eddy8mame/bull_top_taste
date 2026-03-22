@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
-import { stripe }                   from "@/lib/stripe"
-import { getSanityWriteClient }     from "@/lib/sanity"
+
+import type { Order } from "@/types"
+
 import {
+  confirmOrderToCustomer,
   notifyRestaurantByEmail,
   notifyRestaurantBySMS,
-  confirmOrderToCustomer,
 } from "@/lib/notify"
-import type { Order } from "@/types"
+import { getSanityWriteClient } from "@/lib/sanity"
+import { stripe } from "@/lib/stripe"
 
 // POST /api/notify — Stripe webhook receiver.
 // Stripe calls this after a checkout.session.completed event (i.e., after the
@@ -22,16 +24,12 @@ import type { Order } from "@/types"
 // a non-200 response, which would trigger endless retries.
 
 export async function POST(req: NextRequest) {
-  const sig     = req.headers.get("stripe-signature") ?? ""
+  const sig = req.headers.get("stripe-signature") ?? ""
   const rawBody = await req.text()
 
   let event
   try {
-    event = stripe.webhooks.constructEvent(
-      rawBody,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET ?? ""
-    )
+    event = stripe.webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET ?? "")
   } catch (err) {
     // Signature mismatch — reject and let Stripe retry with the correct secret.
     return NextResponse.json({ error: `Webhook signature error: ${err}` }, { status: 400 })
@@ -42,10 +40,9 @@ export async function POST(req: NextRequest) {
 
     // The orderId embedded in Stripe metadata is the Sanity document _id,
     // set by /api/checkout at session creation time.
-    const orderId         = session.metadata?.orderId
-    const paymentIntentId = typeof session.payment_intent === "string"
-      ? session.payment_intent
-      : undefined
+    const orderId = session.metadata?.orderId
+    const paymentIntentId =
+      typeof session.payment_intent === "string" ? session.payment_intent : undefined
 
     // ── Patch Sanity order with confirmed payment intent ─────────────────────
     // This is the authoritative "payment received" signal. We patch rather than
@@ -55,10 +52,7 @@ export async function POST(req: NextRequest) {
       const sanityClient = getSanityWriteClient()
       if (sanityClient && paymentIntentId) {
         try {
-          await sanityClient
-            .patch(orderId)
-            .set({ stripePaymentIntentId: paymentIntentId })
-            .commit()
+          await sanityClient.patch(orderId).set({ stripePaymentIntentId: paymentIntentId }).commit()
         } catch (err) {
           // Log but do not propagate — Stripe must receive 200.
           console.error(`[notify] Failed to patch order ${orderId} in Sanity:`, err)
@@ -72,17 +66,17 @@ export async function POST(req: NextRequest) {
     // abbreviated summary (name + quantity only) because full modifier data
     // is not stored in Stripe metadata. Full data is in Sanity.
     const order: Order = {
-      id:            orderId ?? session.id,
-      status:        "pending",
-      type:          (session.metadata?.orderType as "pickup" | "delivery") ?? "pickup",
-      customerName:  session.metadata?.customerName  ?? "",
-      customerEmail: session.customer_email           ?? "",
-      customerPhone: session.metadata?.customerPhone  ?? "",
-      notes:         session.metadata?.notes          || undefined,
-      items:         [],   // abbreviated — full detail is in Sanity
-      total:         (session.amount_total ?? 0) / 100,
-      createdAt:     new Date().toISOString(),
-      stripeSessionId:       session.id,
+      id: orderId ?? session.id,
+      status: "pending",
+      type: (session.metadata?.orderType as "pickup" | "delivery") ?? "pickup",
+      customerName: session.metadata?.customerName ?? "",
+      customerEmail: session.customer_email ?? "",
+      customerPhone: session.metadata?.customerPhone ?? "",
+      notes: session.metadata?.notes || undefined,
+      items: [], // abbreviated — full detail is in Sanity
+      total: (session.amount_total ?? 0) / 100,
+      createdAt: new Date().toISOString(),
+      stripeSessionId: session.id,
       stripePaymentIntentId: paymentIntentId,
     }
 
@@ -94,7 +88,7 @@ export async function POST(req: NextRequest) {
 
     await Promise.all([
       notify("restaurant-email", () => notifyRestaurantByEmail(order)),
-      notify("restaurant-sms",   () => notifyRestaurantBySMS(order)),
+      notify("restaurant-sms", () => notifyRestaurantBySMS(order)),
       notify("customer-confirm", () => confirmOrderToCustomer(order)),
     ])
   }

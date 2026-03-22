@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
-import { stripe } from "@/lib/stripe"
-import { getSanityWriteClient, getSanityReadClient } from "@/lib/sanity"
+
 import type { CartItem, SanityOrderItem, SanityOrderModifier } from "@/types"
+
+import { getSanityReadClient, getSanityWriteClient } from "@/lib/sanity"
+import { stripe } from "@/lib/stripe"
 
 // ─── Request body ─────────────────────────────────────────────────────────────
 

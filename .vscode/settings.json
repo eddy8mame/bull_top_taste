@@ -1,6 +1,12 @@
 {
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "editor.tabSize": 2,
   "editor.rulers": [100],
 
@@ -22,8 +28,8 @@
   // File nesting for cleaner explorer view
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
-    "*.ts":    "${capture}.js, ${capture}.d.ts",
-    "*.tsx":   "${capture}.js",
+    "*.ts": "${capture}.js, ${capture}.d.ts",
+    "*.tsx": "${capture}.js",
     "package.json": "package-lock.json, .prettierrc, .prettierignore, .gitignore, eslint.config.*",
     "next.config.*": "next-env.d.ts, tsconfig.json, postcss.config.*"
   }

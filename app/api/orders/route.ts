@@ -1,6 +1,8 @@
-import { NextResponse }            from "next/server"
-import { getSanityWriteClient }    from "@/lib/sanity"
-import type { AdminOrder }         from "@/types"
+import { NextResponse } from "next/server"
+
+import type { AdminOrder } from "@/types"
+
+import { getSanityWriteClient } from "@/lib/sanity"
 
 // Force dynamic rendering — kitchen and floor dashboards cannot tolerate CDN
 // caching lag. The write client (useCdn: false) is used for the same reason.

@@ -1,13 +1,16 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
-import useSWR                           from "swr"
+import { useEffect, useRef, useState } from "react"
+
+import useSWR from "swr"
+
 import type { AdminOrder, AdminOrderItem, OrderStatus } from "@/types"
-import { FALLBACK_MENU }                from "@/lib/sanity"
+
+import { FALLBACK_MENU } from "@/lib/sanity"
 
 // ── Configurable age thresholds ────────────────────────────────────────────────
 // Adjust here — no other changes needed. Units: minutes.
-const WARNING_THRESHOLD_MINUTES  = 7
+const WARNING_THRESHOLD_MINUTES = 7
 const CRITICAL_THRESHOLD_MINUTES = 15
 
 type Mode = "kitchen" | "floor"
@@ -20,9 +23,7 @@ const fetcher = (url: string) => fetch(url).then(r => r.json())
 // Uses the last 6 characters of the pi_… string, uppercased: e.g. "#AB3F2C".
 // Falls back to "——" for cash / test orders that have no payment intent.
 function fmtOrderNum(stripePaymentIntentId?: string): string {
-  return stripePaymentIntentId
-    ? `#${stripePaymentIntentId.slice(-6).toUpperCase()}`
-    : "——"
+  return stripePaymentIntentId ? `#${stripePaymentIntentId.slice(-6).toUpperCase()}` : "——"
 }
 
 // Strip "+$X.XX" price annotations from a pre-formatted selections string.
@@ -35,15 +36,16 @@ function stripPricing(s: string): string {
 // Format written at checkout: "Name +$X.XX" (priced) or "Name" (included/spec).
 // Splitting on ", " is safe here — individual modifier option names in this
 // schema do not contain ", " sequences.
-interface ParsedSel { name: string; price: number }
+interface ParsedSel {
+  name: string
+  price: number
+}
 function parseSelections(selections: string): ParsedSel[] {
   return selections
     .split(", ")
     .map(part => {
       const m = part.trim().match(/^(.+?)\s+\+\$([\d.]+)$/)
-      return m
-        ? { name: m[1].trim(), price: parseFloat(m[2]) }
-        : { name: part.trim(), price: 0 }
+      return m ? { name: m[1].trim(), price: parseFloat(m[2]) } : { name: part.trim(), price: 0 }
     })
     .filter(s => s.name.length > 0)
 }
@@ -52,13 +54,12 @@ function parseSelections(selections: string): ParsedSel[] {
 // Kitchen staff need to know what to make, not what the CMS group is named.
 function kitchenLabel(groupName: string): string {
   const lc = groupName.toLowerCase()
-  if (/\bsize\b|\bportion\b/.test(lc))                               return "Size"
-  if (/\bprotein\b/.test(lc))                                        return "Protein"
-  if (/\bsauce\b/.test(lc))                                          return "Sauce"
+  if (/\bsize\b|\bportion\b/.test(lc)) return "Size"
+  if (/\bprotein\b/.test(lc)) return "Protein"
+  if (/\bsauce\b/.test(lc)) return "Sauce"
   if (/\bside|\bsides\b/.test(lc) && !/recommend/i.test(groupName)) return "Sides"
-  return "Add-on"  // "Recommend Sides and Apps" and all other upcharge groups
+  return "Add-on" // "Recommend Sides and Apps" and all other upcharge groups
 }
-
 
 // Orphaned size suppression — content-based check.
 // A modifier is an orphan when ALL THREE conditions hold:
@@ -72,21 +73,14 @@ function isOrphanedSize(mod: {
   selections: string
   parentKey?: string | null
 }): boolean {
-  return (
-    mod.groupName.includes("Size Choice") &&
-    !mod.parentKey &&
-    !mod.selections.includes("+$")
-  )
+  return mod.groupName.includes("Size Choice") && !mod.parentKey && !mod.selections.includes("+$")
 }
 
 // Identifies modifier groups that should render as itemised priced add-on rows
 // in the floor modal receipt. All other groups — including "Size Choice" with a
 // price adjustment — render as spec descriptor text with pricing stripped.
 function isAddonGroup(groupName: string): boolean {
-  return (
-    groupName === "Recommend Sides and Apps" ||
-    groupName === "Extra Sides and Apps"
-  )
+  return groupName === "Recommend Sides and Apps" || groupName === "Extra Sides and Apps"
 }
 
 // ── Time helpers ───────────────────────────────────────────────────────────────
@@ -96,9 +90,11 @@ function isAddonGroup(groupName: string): boolean {
 //   floor    → readyAt     (how long it has been sitting at the pass)
 function getAgeSeconds(order: AdminOrder, now: number): number {
   const ref =
-    order.status === "kitchen" ? (order.startedAt ?? order.createdAt) :
-    order.status === "floor"   ? (order.readyAt   ?? order.createdAt) :
-    order.createdAt
+    order.status === "kitchen"
+      ? (order.startedAt ?? order.createdAt)
+      : order.status === "floor"
+        ? (order.readyAt ?? order.createdAt)
+        : order.createdAt
   return Math.max(0, Math.floor((now - new Date(ref).getTime()) / 1000))
 }
 
@@ -111,40 +107,42 @@ function fmtAge(seconds: number): string {
 function ageCls(seconds: number): "ok" | "warn" | "crit" {
   const m = seconds / 60
   if (m >= CRITICAL_THRESHOLD_MINUTES) return "crit"
-  if (m >= WARNING_THRESHOLD_MINUTES)  return "warn"
+  if (m >= WARNING_THRESHOLD_MINUTES) return "warn"
   return "ok"
 }
 
 // ── Audio alert ────────────────────────────────────────────────────────────────
 function playNewOrderChime() {
   try {
-    const ctx   = new AudioContext()
+    const ctx = new AudioContext()
     const freqs = [523, 659, 784]
     freqs.forEach((freq, i) => {
-      const osc  = ctx.createOscillator()
+      const osc = ctx.createOscillator()
       const gain = ctx.createGain()
       osc.connect(gain)
       gain.connect(ctx.destination)
       osc.frequency.value = freq
-      osc.type            = "sine"
+      osc.type = "sine"
       gain.gain.setValueAtTime(0.18, ctx.currentTime + i * 0.12)
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.4)
       osc.start(ctx.currentTime + i * 0.12)
-      osc.stop(ctx.currentTime  + i * 0.12 + 0.5)
+      osc.stop(ctx.currentTime + i * 0.12 + 0.5)
     })
-  } catch { /* requires prior user gesture */ }
+  } catch {
+    /* requires prior user gesture */
+  }
 }
 
 // ── Page ───────────────────────────────────────────────────────────────────────
 
 export default function AdminDashboard() {
-  const [mode,        setMode]        = useState<Mode>("kitchen")
+  const [mode, setMode] = useState<Mode>("kitchen")
   const [kitchenOpen, setKitchenOpen] = useState(true)
   const [kitchenBusy, setKitchenBusy] = useState(false)
-  const [stockOpen,   setStockOpen]   = useState(true)
-  const [selectedId,  setSelectedId]  = useState<string | null>(null)
-  const [now,         setNow]         = useState(() => Date.now())
-  const prevPendingRef                = useRef(0)
+  const [stockOpen, setStockOpen] = useState(true)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [now, setNow] = useState(() => Date.now())
+  const prevPendingRef = useRef(0)
 
   // 1-second tick — drives the live clock and all contextual age badges
   useEffect(() => {
@@ -153,12 +151,14 @@ export default function AdminDashboard() {
   }, [])
 
   const clock = new Date(now).toLocaleTimeString([], {
-    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
   })
 
   // ── Orders: SWR with 15-second polling ────────────────────────────────────
   const {
-    data:   rawOrders,
+    data: rawOrders,
     isLoading,
     mutate: mutateOrders,
   } = useSWR<AdminOrder[]>("/api/orders", fetcher, {
@@ -169,12 +169,14 @@ export default function AdminDashboard() {
       prevPendingRef.current = pendingCount
     },
   })
-  const orders  = rawOrders ?? []
+  const orders = rawOrders ?? []
   const loading = isLoading
 
   // ── 86'd items: no auto-refresh — updates are staff-driven ───────────────
-  const { data: unavailData, mutate: mutateUnavail } =
-    useSWR<{ unavailable: string[] }>("/api/menu/86", fetcher)
+  const { data: unavailData, mutate: mutateUnavail } = useSWR<{ unavailable: string[] }>(
+    "/api/menu/86",
+    fetcher
+  )
   const unavail = unavailData?.unavailable ?? []
 
   // ── Kitchen open state: fetch once on mount ──────────────────────────────
@@ -190,19 +192,17 @@ export default function AdminDashboard() {
   async function markStatus(id: string, status: OrderStatus) {
     const snapshot = orders
     mutateOrders(
-      orders.map(o => o._id === id ? { ...o, status } : o),
+      orders.map(o => (o._id === id ? { ...o, status } : o)),
       false
     )
-    const endpoint = status === "floor"
-      ? `/api/orders/${id}/ready`
-      : `/api/orders/${id}/status`
+    const endpoint = status === "floor" ? `/api/orders/${id}/ready` : `/api/orders/${id}/status`
     try {
       await fetch(endpoint, {
-        method:  "POST",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body:    status !== "floor" ? JSON.stringify({ status }) : undefined,
+        body: status !== "floor" ? JSON.stringify({ status }) : undefined,
       })
-      mutateOrders()   // revalidate to capture server timestamps (startedAt, readyAt)
+      mutateOrders() // revalidate to capture server timestamps (startedAt, readyAt)
     } catch {
       mutateOrders(snapshot, false)
     }
@@ -210,7 +210,10 @@ export default function AdminDashboard() {
 
   async function markPickedUp(id: string) {
     const snapshot = orders
-    mutateOrders(orders.filter(o => o._id !== id), false)
+    mutateOrders(
+      orders.filter(o => o._id !== id),
+      false
+    )
     setSelectedId(null)
     try {
       await fetch(`/api/orders/${id}/pickedup`, { method: "POST" })
@@ -224,7 +227,7 @@ export default function AdminDashboard() {
     if (kitchenBusy) return
     setKitchenBusy(true)
     try {
-      const res  = await fetch("/api/kitchen", { method: "POST" })
+      const res = await fetch("/api/kitchen", { method: "POST" })
       const data: { open: boolean } = await res.json()
       setKitchenOpen(data.open)
     } finally {
@@ -233,7 +236,7 @@ export default function AdminDashboard() {
   }
 
   async function toggle86(itemId: string) {
-    const prev     = unavail
+    const prev = unavail
     const isNow86d = !unavail.includes(itemId)
     mutateUnavail(
       { unavailable: isNow86d ? [...unavail, itemId] : unavail.filter(id => id !== itemId) },
@@ -241,9 +244,9 @@ export default function AdminDashboard() {
     )
     try {
       await fetch("/api/menu/86", {
-        method:  "POST",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ itemId }),
+        body: JSON.stringify({ itemId }),
       })
       mutateUnavail()
     } catch {
@@ -252,24 +255,22 @@ export default function AdminDashboard() {
   }
 
   const selectedOrder = selectedId ? (orders.find(o => o._id === selectedId) ?? null) : null
-  const readyOrders   = orders.filter(o => o.status === "floor")
+  const readyOrders = orders.filter(o => o.status === "floor")
 
   return (
     <div className={`admin-page ${mode}`}>
-
       {/* ── Topbar ──────────────────────────────────────────────────────────── */}
       <div className="topbar">
-
         {/* Left: Kitchen / Floor pill tabs */}
         <div className="top-left">
           <button
-            className={`nav-tab${mode === "kitchen" ? " active" : ""}`}
+            className={`nav-tab${mode === "kitchen" ? "active" : ""}`}
             onClick={() => setMode("kitchen")}
           >
             Kitchen
           </button>
           <button
-            className={`nav-tab${mode === "floor" ? " active" : ""}`}
+            className={`nav-tab${mode === "floor" ? "active" : ""}`}
             onClick={() => setMode("floor")}
           >
             Floor
@@ -279,15 +280,15 @@ export default function AdminDashboard() {
         {/* Centre: ordering open/closed status */}
         <div className="ordering-status" onClick={toggleKitchen} style={{ cursor: "pointer" }}>
           <div className={`status-dot ${kitchenOpen ? "open" : "closed"}`} />
-          <span className="status-text">
-            {kitchenOpen ? "Ordering open" : "Ordering closed"}
-          </span>
+          <span className="status-text">{kitchenOpen ? "Ordering open" : "Ordering closed"}</span>
         </div>
 
         {/* Right: live clock + Office cross-link */}
         <div className="top-right">
           <span className="clock">{clock}</span>
-          <a href="/admin/office" className="cross-link">← Office</a>
+          <a href="/admin/office" className="cross-link">
+            ← Office
+          </a>
         </div>
       </div>
 
@@ -296,13 +297,11 @@ export default function AdminDashboard() {
         <div className="closed-banner">
           <div>
             <div className="closed-banner-text">Kitchen closed</div>
-            <div className="closed-banner-sub">Online ordering is paused. New checkout attempts will be blocked.</div>
+            <div className="closed-banner-sub">
+              Online ordering is paused. New checkout attempts will be blocked.
+            </div>
           </div>
-          <button
-            className="reopen-btn"
-            onClick={toggleKitchen}
-            disabled={kitchenBusy}
-          >
+          <button className="reopen-btn" onClick={toggleKitchen} disabled={kitchenBusy}>
             Reopen kitchen
           </button>
         </div>
@@ -311,9 +310,7 @@ export default function AdminDashboard() {
       {/* ── Kitchen view ─────────────────────────────────────────────────── */}
       {mode === "kitchen" && (
         <div className="view-kitchen">
-
           <div className="k-pipeline">
-
             {/* Incoming — pending orders awaiting a cook to accept */}
             <KitchenCol
               title="Incoming"
@@ -348,7 +345,7 @@ export default function AdminDashboard() {
                   return (
                     <div
                       key={item._id}
-                      className={`k-stock-item${is86 ? " out" : ""}`}
+                      className={`k-stock-item${is86 ? "out" : ""}`}
                       onClick={() => toggle86(item._id)}
                     >
                       <span className="k-stock-name">{item.name}</span>
@@ -405,22 +402,25 @@ export default function AdminDashboard() {
 // ── Kitchen Column ─────────────────────────────────────────────────────────────
 
 function KitchenCol({
-  title, emptyLabel, orders, loading, now, onMarkStatus,
+  title,
+  emptyLabel,
+  orders,
+  loading,
+  now,
+  onMarkStatus,
 }: {
-  title:        string
-  emptyLabel:   string
-  orders:       AdminOrder[]
-  loading:      boolean
-  now:          number
+  title: string
+  emptyLabel: string
+  orders: AdminOrder[]
+  loading: boolean
+  now: number
   onMarkStatus: (id: string, status: OrderStatus) => void
 }) {
   return (
     <div className="k-col">
       <div className="k-col-header">
         <span className="k-col-title">{title}</span>
-        <span className={`k-col-count${orders.length > 0 ? " has" : ""}`}>
-          {orders.length}
-        </span>
+        <span className={`k-col-count${orders.length > 0 ? "has" : ""}`}>{orders.length}</span>
       </div>
       <div className="k-col-body">
         {loading ? (
@@ -562,28 +562,27 @@ function KitchenCard({
 
 // ── Floor Card ─────────────────────────────────────────────────────────────────
 
-function FloorCard({ order, now, onClick }: {
-  order:   AdminOrder
-  now:     number
+function FloorCard({
+  order,
+  now,
+  onClick,
+}: {
+  order: AdminOrder
+  now: number
   onClick: () => void
 }) {
-  const ageS      = getAgeSeconds(order, now)
-  const cls       = ageCls(ageS)
+  const ageS = getAgeSeconds(order, now)
+  const cls = ageCls(ageS)
   const itemCount = order.items.reduce((n, i) => n + i.quantity, 0)
 
   return (
-    <div
-      className={`f-card${cls !== "ok" ? ` ${cls}` : ""}`}
-      onClick={onClick}
-    >
+    <div className={`f-card${cls !== "ok" ? ` ${cls}` : ""}`} onClick={onClick}>
       <div className="f-card-header">
         <div>
           <div className="f-order-num">{fmtOrderNum(order.stripePaymentIntentId)}</div>
           <div className="f-customer">{order.customerName}</div>
         </div>
-        <div className={`f-age${cls !== "ok" ? ` ${cls}` : ""}`}>
-          {fmtAge(ageS)}
-        </div>
+        <div className={`f-age${cls !== "ok" ? ` ${cls}` : ""}`}>{fmtAge(ageS)}</div>
       </div>
 
       <div className="f-card-body">
@@ -615,29 +614,33 @@ function FloorCard({ order, now, onClick }: {
 // Backwards compatible: old orders with no parentKey on any record fall through
 // the same root-mod path and render identically to before.
 
-function FloorModal({ order, now, onConfirm, onClose }: {
-  order:     AdminOrder
-  now:       number
+function FloorModal({
+  order,
+  now,
+  onConfirm,
+  onClose,
+}: {
+  order: AdminOrder
+  now: number
   onConfirm: () => void
-  onClose:   () => void
+  onClose: () => void
 }) {
   const ageS = getAgeSeconds(order, now)
-  const cls  = ageCls(ageS)
+  const cls = ageCls(ageS)
 
   return (
     <div
       className="modal-wrap open"
-      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+      onClick={e => {
+        if (e.target === e.currentTarget) onClose()
+      }}
     >
       <div className="modal">
-
         <div className="modal-head">
           <div>
             <div className="m-num">{fmtOrderNum(order.stripePaymentIntentId)}</div>
             <div className="m-name">{order.customerName}</div>
-            {order.customerPhone && (
-              <div className="m-phone">{order.customerPhone}</div>
-            )}
+            {order.customerPhone && <div className="m-phone">{order.customerPhone}</div>}
           </div>
           <div className={`m-age ${cls}`}>{fmtAge(ageS)}</div>
         </div>
@@ -663,36 +666,35 @@ function FloorModal({ order, now, onConfirm, onClose }: {
 
             // ── The New Root Modifiers Loop ──
             const rootMods = allMods.filter(m => !m.parentKey && !isOrphanedSize(m))
-            const specs:  string[]                          = []
+            const specs: string[] = []
             const addons: { name: string; price: number }[] = []
-            
+
             // We will dynamically tally the base price to include base size upgrades
-            let displayBasePrice = item.basePrice ?? 0;
+            let displayBasePrice = item.basePrice ?? 0
 
             for (const mod of rootMods) {
-              const subSels  = subSelsByParent.get(mod._key) ?? []
+              const subSels = subSelsByParent.get(mod._key) ?? []
               const subPrice = subSels.reduce((sum, s) => sum + s.price, 0)
               const subLabel = subSels.map(s => s.name).join(" · ")
 
               for (const sel of parseSelections(mod.selections)) {
-                
                 // Rule 1: Base Size Upgrades (e.g., Large +$3.50)
                 // Add the cost to the top-line item price, but push the name to the spec line.
                 if (mod.groupName === "Size Choice") {
-                  displayBasePrice += sel.price;
-                  specs.push(sel.name);
-                } 
+                  displayBasePrice += sel.price
+                  specs.push(sel.name)
+                }
                 // Rule 2: Any other priced item (Sauces, Extra Sides, Add-ons)
                 // If it costs money, it gets its own row.
                 else if (sel.price > 0 || subPrice > 0) {
                   addons.push({
-                    name:  subLabel ? `${sel.name} · ${subLabel}` : sel.name,
+                    name: subLabel ? `${sel.name} · ${subLabel}` : sel.name,
                     price: sel.price + subPrice,
-                  });
-                } 
+                  })
+                }
                 // Rule 3: Free inclusions (Standard proteins, included sides)
                 else {
-                  specs.push(sel.name);
+                  specs.push(sel.name)
                 }
               }
             }
@@ -701,11 +703,11 @@ function FloorModal({ order, now, onConfirm, onClose }: {
 
             return (
               <div key={item._key} className="r-item">
-
                 {/* Item name row — (dynamic base price + size upgrades) × qty */}
                 <div className="r-item-row">
                   <span className="r-item-name">
-                    {item.quantity > 1 ? `${item.quantity}× ` : ""}{item.itemName}
+                    {item.quantity > 1 ? `${item.quantity}× ` : ""}
+                    {item.itemName}
                   </span>
                   <span className="r-item-price">
                     ${(displayBasePrice * item.quantity).toFixed(2)}
@@ -713,9 +715,7 @@ function FloorModal({ order, now, onConfirm, onClose }: {
                 </div>
 
                 {/* Spec descriptor — size, protein, included sides etc. (no price) */}
-                {specLine && (
-                  <div className="r-specs">{specLine}</div>
-                )}
+                {specLine && <div className="r-specs">{specLine}</div>}
 
                 {/* Priced add-ons — one row each, price × qty */}
                 {addons.map((addon, i) => (
@@ -744,8 +744,12 @@ function FloorModal({ order, now, onConfirm, onClose }: {
         </div>
 
         <div className="modal-foot">
-          <button className="m-btn-cancel"  onClick={onClose}>Cancel</button>
-          <button className="m-btn-confirm" onClick={onConfirm}>Confirm pickup</button>
+          <button className="m-btn-cancel" onClick={onClose}>
+            Cancel
+          </button>
+          <button className="m-btn-confirm" onClick={onConfirm}>
+            Confirm pickup
+          </button>
         </div>
       </div>
     </div>

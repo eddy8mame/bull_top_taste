@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse }  from "next/server"
+import { cookies } from "next/headers"
+import { NextRequest, NextResponse } from "next/server"
+
 import { getSanityReadClient, getSanityWriteClient } from "@/lib/sanity"
-import { cookies }                   from "next/headers"
 
 // Kitchen open/close state is stored on the `location` Sanity document as a
 // `kitchenOpen` boolean. This persists across Vercel cold starts.
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "SANITY_LOCATION_ID is not configured" }, { status: 500 })
   }
 
-  const readClient  = getSanityReadClient()
+  const readClient = getSanityReadClient()
   const writeClient = getSanityWriteClient()
   if (!readClient || !writeClient) {
     console.warn("[kitchen] Sanity clients unavailable — state not persisted")
@@ -65,10 +66,7 @@ export async function POST(req: NextRequest) {
     newOpen = !(current ?? true)
   }
 
-  await writeClient
-    .patch(LOCATION_ID)
-    .set({ kitchenOpen: newOpen })
-    .commit()
+  await writeClient.patch(LOCATION_ID).set({ kitchenOpen: newOpen }).commit()
 
   return NextResponse.json({ open: newOpen })
 }

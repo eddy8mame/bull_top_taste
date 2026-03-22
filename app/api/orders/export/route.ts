@@ -1,6 +1,8 @@
-import { NextResponse }          from "next/server"
-import { getSanityReadClient }   from "@/lib/sanity"
+import { NextResponse } from "next/server"
+
 import type { AdminOrder, AdminOrderItem } from "@/types"
+
+import { getSanityReadClient } from "@/lib/sanity"
 
 // GET /api/orders/export — full order history as CSV, sourced from Sanity.
 // One row per order; modifiers are pre-formatted strings stored in Sanity
@@ -69,18 +71,14 @@ export async function GET() {
 
   const rows = orders.map(o => {
     // Items: "2x Jerk Chicken; 1x Festival"
-    const itemsStr = o.items
-      .map((i: AdminOrderItem) => `${i.quantity}x ${i.itemName}`)
-      .join("; ")
+    const itemsStr = o.items.map((i: AdminOrderItem) => `${i.quantity}x ${i.itemName}`).join("; ")
 
     // Modifiers: each item's groups on one line.
     // selections is already a pre-formatted string (e.g. "Large +$3.50, Rice & Peas")
     const modifiersStr = o.items
       .map((i: AdminOrderItem) => {
         if (!i.modifiers?.length && !i.specialInstructions) return ""
-        const mods = (i.modifiers ?? [])
-          .map(m => `[${m.groupName}: ${m.selections}]`)
-          .join(" ")
+        const mods = (i.modifiers ?? []).map(m => `[${m.groupName}: ${m.selections}]`).join(" ")
         const note = i.specialInstructions ? ` [Note: ${i.specialInstructions}]` : ""
         return `${i.itemName}: ${mods}${note}`
       })
@@ -88,19 +86,20 @@ export async function GET() {
       .join("; ")
 
     // Timestamps in ET
-    const readyAt    = o.readyAt
-      ? new Date(o.readyAt).toLocaleString("en-US",    { timeZone: "America/New_York" })
+    const readyAt = o.readyAt
+      ? new Date(o.readyAt).toLocaleString("en-US", { timeZone: "America/New_York" })
       : ""
     const pickedUpAt = o.pickedUpAt
       ? new Date(o.pickedUpAt).toLocaleString("en-US", { timeZone: "America/New_York" })
       : ""
 
     // Lag = minutes from order placed to pickup
-    const lag = (o.readyAt && o.pickedUpAt)
-      ? String(Math.round(
-          (new Date(o.pickedUpAt).getTime() - new Date(o.createdAt).getTime()) / 60000
-        ))
-      : ""
+    const lag =
+      o.readyAt && o.pickedUpAt
+        ? String(
+            Math.round((new Date(o.pickedUpAt).getTime() - new Date(o.createdAt).getTime()) / 60000)
+          )
+        : ""
 
     const cols = [
       o._id,
@@ -122,12 +121,12 @@ export async function GET() {
     return cols.join(",")
   })
 
-  const csv  = [header, ...rows].join("\n")
+  const csv = [header, ...rows].join("\n")
   const date = new Date().toISOString().split("T")[0]
 
   return new NextResponse(csv, {
     headers: {
-      "Content-Type":        "text/csv",
+      "Content-Type": "text/csv",
       "Content-Disposition": `attachment; filename="orders-${date}.csv"`,
     },
   })

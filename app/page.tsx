@@ -1,17 +1,18 @@
-import { getMenuItems, getActiveSpecials, getLocationFull } from "@/lib/sanity"
-import Nav            from "@/components/Nav"
-import Hero           from "@/components/Hero"
-import Menu           from "@/components/Menu"
-import Location       from "@/components/Location"
-import About          from "@/components/About"
-import Gallery        from "@/components/Gallery"
-import Catering       from "@/components/Catering"
-import Testimonials   from "@/components/Testimonials"
-import ReservationForm from "@/components/ReservationForm"
-import Footer         from "@/components/Footer"
-import Cart           from "@/components/Cart"
+import { getActiveSpecials, getLocationFull, getMenuItems } from "@/lib/sanity"
 
-export const revalidate = 3600  // ISR: revalidate CMS content every hour
+import About from "@/components/About"
+import Cart from "@/components/Cart"
+import Catering from "@/components/Catering"
+import Footer from "@/components/Footer"
+import Gallery from "@/components/Gallery"
+import Hero from "@/components/Hero"
+import Location from "@/components/Location"
+import Menu from "@/components/Menu"
+import Nav from "@/components/Nav"
+import ReservationForm from "@/components/ReservationForm"
+import Testimonials from "@/components/Testimonials"
+
+export const revalidate = 3600 // ISR: revalidate CMS content every hour
 
 // Default slug — single-location fallback. In multi-tenant mode, this would
 // come from the URL or a middleware-injected header.
@@ -26,15 +27,15 @@ export default async function Home() {
 
   return (
     <>
-      <Nav  location={location} />
+      <Nav location={location} />
       <Cart location={location} />
       <main>
         {/* Hero → Menu → Location & Hours → About → Gallery → Catering → Testimonials → Reservation */}
-        <Hero           location={location} />
-        <Menu           items={items} specials={specials} />
-        <Location       location={location} />
-        <About          location={location} />
-        <Gallery        images={location?.gallery} instagram={location?.instagram} />
+        <Hero location={location} />
+        <Menu items={items} specials={specials} />
+        <Location location={location} />
+        <About location={location} />
+        <Gallery images={location?.gallery} instagram={location?.instagram} />
         <Catering />
         <Testimonials />
         <ReservationForm />

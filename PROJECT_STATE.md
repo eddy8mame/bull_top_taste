@@ -23,6 +23,13 @@
 - **`app/globals.css`** owns the entire storefront theme engine (see §3)
 - **`app/admin/admin.css`** owns all admin UI CSS, strictly scoped — never imported in the storefront
 
+### Tooling
+- **ESLint**: `eslint-config-next/core-web-vitals` + `eslint-config-next/typescript`
+- **Prettier**: semi-free, double quotes, 100 char print width, `es5` trailing commas
+- **Import sorting**: `@trivago/prettier-plugin-sort-imports` — grouped order: React → Next → third-party → `@/types` → `@/lib` → `@/context` → `@/components` → relative. Blank lines between groups.
+- **Tailwind class sorting**: `prettier-plugin-tailwindcss` (runs after import sorter)
+- **Format on save**: VS Code Prettier extension (`esbenp.prettier-vscode`)
+
 ### CMS
 
 - **Sanity** (Content Lake), GROQ queries
@@ -336,6 +343,6 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 * **v1.4.0:** Added localStorage cart persistence. Cart survives page refresh and browser close. Key: `'btt-cart'`.
 * **v1.3.0:** Resolved Sub-Modifier Pipeline. Replaced synthetic keys with explicit `parentOptionId` relational mapping. Re-wrote Kitchen and Floor 2-Pass algorithms to ensure perfect receipt accounting (dynamic base pricing) and operational clarity.
 * **v1.2.0:** Translated vanilla HTML Admin mockups into isolated React components. Preserved SWR and Sanity mutations. Scoped CSS under `.admin-shell`.
-* **v1.1.0:** Ripped out local `orderStore`. Wired Stripe webhooks directly to Sanity `create` mutations. 
+* **v1.1.0:** Ripped out local `orderStore`. Wired Stripe webhooks directly to Sanity `create` mutations.
 * **v1.0.0:** Migrated from single-tenant siteSettings to multi-tenant `location` schema with dynamic Tailwind v4 theming.
 ````

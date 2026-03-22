@@ -1,18 +1,17 @@
-import { NextRequest, NextResponse }  from "next/server"
-import { getSanityWriteClient }       from "@/lib/sanity"
-import { notifyCustomerOrderReady }   from "@/lib/notify"
-import type { Order }                 from "@/types"
+import { NextRequest, NextResponse } from "next/server"
+
+import type { Order } from "@/types"
+
+import { notifyCustomerOrderReady } from "@/lib/notify"
+import { getSanityWriteClient } from "@/lib/sanity"
 
 // POST /api/orders/[id]/ready — kitchen marks order ready; patches Sanity to "floor"
 // and fires a customer SMS via Twilio. The SMS is non-blocking: a Twilio failure
 // will never roll back the status patch or return a non-200 to the caller.
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id }    = await params
-  const client    = getSanityWriteClient()
-  const now       = new Date().toISOString()
+export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const client = getSanityWriteClient()
+  const now = new Date().toISOString()
 
   if (!client) {
     console.warn("[ready] Sanity write client unavailable — status not persisted")
@@ -22,14 +21,14 @@ export async function POST(
   // Fetch the fields needed to build the notification payload.
   // Using the write (non-CDN) client to guarantee we read the latest version.
   const raw = await client.fetch<{
-    _id:           string
-    customerName:  string
+    _id: string
+    customerName: string
     customerPhone: string
     customerEmail: string
-    type:          string
-    total:         number
-    createdAt:     string
-    notes?:        string
+    type: string
+    total: number
+    createdAt: string
+    notes?: string
   } | null>(
     `*[_type == "order" && _id == $id][0] {
        _id, customerName, customerPhone, customerEmail,
@@ -43,23 +42,20 @@ export async function POST(
   }
 
   // Persist the status change
-  const updated = await client
-    .patch(id)
-    .set({ status: "floor", readyAt: now })
-    .commit()
+  const updated = await client.patch(id).set({ status: "floor", readyAt: now }).commit()
 
   // Fire SMS to customer — non-blocking, never fail the request
   const order: Order = {
-    id:            raw._id,
-    status:        "floor",
-    type:          raw.type as "pickup" | "delivery",
-    customerName:  raw.customerName,
+    id: raw._id,
+    status: "floor",
+    type: raw.type as "pickup" | "delivery",
+    customerName: raw.customerName,
     customerEmail: raw.customerEmail,
     customerPhone: raw.customerPhone,
-    notes:         raw.notes,
-    items:         [],   // notification body doesn't need line items
-    total:         raw.total,
-    createdAt:     raw.createdAt,
+    notes: raw.notes,
+    items: [], // notification body doesn't need line items
+    total: raw.total,
+    createdAt: raw.createdAt,
   }
   notifyCustomerOrderReady(order).catch(err =>
     console.error("[ready] Failed to send ready SMS:", err)
