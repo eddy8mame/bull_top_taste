@@ -1,3 +1,5 @@
+// app/api/checkout/route.ts
+
 import { NextRequest, NextResponse } from "next/server"
 
 import type { CartItem, SanityOrderItem, SanityOrderModifier } from "@/types"
@@ -215,13 +217,15 @@ export async function POST(req: NextRequest) {
   })
 
   // ── 4. Persist order to Sanity ────────────────────────────────────────────
-  // We write to Sanity immediately after the session is created, using orderId
-  // as the Sanity document _id so the two systems stay linked via metadata.
+  // Written immediately after the Stripe session is created, before the customer
+  // completes payment. Status is "awaiting_payment" — this is a pre-flight record
+  // only. The notify webhook (app/api/notify/route.ts) advances status to "pending"
+  // on checkout.session.completed, at which point the order is real and surfaces
+  // in the kitchen dashboard.
   //
-  // Timing note: this runs before the customer completes payment. An abandoned
-  // checkout will leave a "pending" order in Sanity. The notify webhook
-  // (app/api/notify/route.ts) handles the checkout.session.completed event and
-  // can be used to confirm payment or patch the Stripe payment intent ID.
+  // An abandoned checkout leaves an "awaiting_payment" document in Sanity —
+  // never surfaced in kitchen or office views, but queryable as conversion
+  // funnel data in a future analytics update.
   //
   // Zero-Key safe: if the write client is unavailable (missing env vars), we
   // log the error but still return the Stripe session URL — the customer's
@@ -241,7 +245,7 @@ export async function POST(req: NextRequest) {
         // Set SANITY_LOCATION_ID to the _id of the location document in Sanity.
         ...(locationId ? { location: { _type: "reference", _ref: locationId } } : {}),
 
-        status: "pending",
+        status: "awaiting_payment",
         type: customer.type,
 
         customerName: customer.name,

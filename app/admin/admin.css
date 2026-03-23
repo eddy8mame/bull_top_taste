@@ -28,6 +28,12 @@
   --k-warn-border: rgba(186, 117, 23, 0.45);
   --k-crit-bg: rgba(163, 45, 45, 0.18);
   --k-crit-border: rgba(163, 45, 45, 0.45);
+  .k-confirmed-at {
+    font-size: 0.7rem;
+    color: var(--k-muted, #6b6b66);
+    margin-top: 2px;
+    letter-spacing: 0.01em;
+  }
 
   /* ── Floor palette ────────────────────────────────────────────────────────── */
   --f-bg: #f2f1ee;

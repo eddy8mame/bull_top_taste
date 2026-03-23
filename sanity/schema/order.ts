@@ -1,12 +1,16 @@
+//sanity/schema/order.ts
+
 import { defineArrayMember, defineField, defineType } from "sanity"
 
 // ─── Order status pipeline ────────────────────────────────────────────────────
-// pending  → created at checkout, awaiting kitchen acknowledgement
+// awaiting_payment → created at checkout, awaiting payment confirmation
+// pending  → payment confirmed, awaiting kitchen acknowledgement
 // kitchen  → kitchen has started prep (replaces old "preparing" label)
 // floor    → ready for pickup / handoff to front-of-house
 // completed → picked up / fulfilled
 const STATUS_OPTIONS = [
-  { title: "⏳ Pending   — awaiting kitchen", value: "pending" },
+  { title: "💳 Awaiting payment — checkout started, not yet paid", value: "awaiting_payment" },
+  { title: "⏳ Pending   — payment confirmed, awaiting kitchen", value: "pending" },
   { title: "🍳 Kitchen   — in prep", value: "kitchen" },
   { title: "🍽  Floor     — ready for pickup", value: "floor" },
   { title: "✅ Completed — picked up", value: "completed" },
@@ -27,6 +31,13 @@ const modifierSelectionDef = defineArrayMember({
       title: "Selected Options",
       type: "string",
       description: 'Comma-separated, e.g. "Large +$3.50, Rice & Peas".',
+    }),
+    defineField({
+      name: "parentKey",
+      title: "Parent Modifier Key",
+      type: "string",
+      description:
+        "_key of the parent SanityOrderModifier record. Present only on sub-modifier records.",
     }),
   ],
   preview: {
@@ -138,7 +149,7 @@ export const orderSchema = defineType({
         list: STATUS_OPTIONS,
         layout: "radio",
       },
-      initialValue: "pending",
+      initialValue: "awaiting_payment",
       validation: R => R.required(),
     }),
 
@@ -167,6 +178,24 @@ export const orderSchema = defineType({
       group: "status",
       description: "Set server-side at checkout. Read-only in Studio.",
       validation: R => R.required(),
+    }),
+
+    defineField({
+      name: "confirmedAt",
+      title: "Confirmed At",
+      type: "datetime",
+      group: "status",
+      description:
+        "Set by Stripe webhook on checkout.session.completed. Authoritative payment confirmation — order enters pending pipeline at this moment.",
+    }),
+
+    defineField({
+      name: "startedAt",
+      title: "Started At",
+      type: "datetime",
+      group: "status",
+      description:
+        "Set when kitchen staff manually accepts the ticket. Drives the running age timer on kitchen cards.",
     }),
 
     defineField({
@@ -266,6 +295,7 @@ export const orderSchema = defineType({
     },
     prepare({ customer, status, total, type }) {
       const STATUS_ICONS: Record<string, string> = {
+        awaiting_payment: "💳" ,
         pending: "⏳",
         kitchen: "🍳",
         floor: "🍽",

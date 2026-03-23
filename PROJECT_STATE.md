@@ -375,7 +375,20 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System Changelog
-* **v1.6.0 (Current):** Multiple UI fixes and refinements. Nav tab and stock panel class concatenation fixed. 86 toggle revalidation removed to preserve optimistic state. Order flicker resolved with 1500ms delayed revalidation. Checkout form autofill enabled. Cart cleared on order confirmation mount. Demo mode banner added to checkout. DoorDash URL added to Sanity schema. Hero simplified — CTAs and scroll indicator removed, padding reduced. Reservation and Location sections centered and tightened. Cart panel left-edge shadow added. Empty cart popular items pushed to bottom.
+* **v1.7.0 (Current):** Fixed critical issue where orders appeared in the
+kitchen pipeline before payment was confirmed. Introduced
+`awaiting_payment` as a pre-payment status written at checkout time.
+Stripe webhook now advances status to `pending` and stamps `confirmedAt`
+on payment confirmation — this is the authoritative signal that an order
+is real. Kitchen chime, Incoming column, and age timers all now anchor
+to confirmed orders only. `startedAt` and `confirmedAt` declared
+explicitly in Sanity schema alongside `parentKey` on modifier selections.
+Revenue by day in office dashboard anchored to `confirmedAt` to correctly
+attribute cross-midnight orders. Active order count excludes
+`awaiting_payment` documents. Two minor schema corrections: `initialValue`
+on status field updated to `awaiting_payment`, `💳` icon added to Studio
+preview map for abandoned checkout visibility.
+* **v1.6.0:** Multiple UI fixes and refinements. Nav tab and stock panel class concatenation fixed. 86 toggle revalidation removed to preserve optimistic state. Order flicker resolved with 1500ms delayed revalidation. Checkout form autofill enabled. Cart cleared on order confirmation mount. Demo mode banner added to checkout. DoorDash URL added to Sanity schema. Hero simplified — CTAs and scroll indicator removed, padding reduced. Reservation and Location sections centered and tightened. Cart panel left-edge shadow added. Empty cart popular items pushed to bottom.
 * **v1.5.0:** Added /checkout page with 2-column order summary and customer details form. Cart stripped of form and API call — now routes to /checkout. Delivery upsell moved to checkout page.
 * **v1.4.7:** Cart item editing via pre-populated ModifierModal. Tap any cart item to edit modifiers, size, add-ons, and special instructions in place. Quantity preserved on update.
 * **v1.4.6:** Added featured items quick-add panel to empty cart state. 2×2 grid sourced from Sanity location document. Items with required modifiers open ModifierModal inline. Direct add for items with no required modifiers.

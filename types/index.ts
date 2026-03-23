@@ -1,3 +1,5 @@
+//types/index.ts
+
 // ─── Modifiers ────────────────────────────────────────────────────────────────
 
 export interface ModifierOption {
@@ -78,10 +80,14 @@ export interface CartState {
 
 // ─── Orders ───────────────────────────────────────────────────────────────────
 
-// Status pipeline matches the Sanity order schema:
-//   pending → kitchen → floor → completed
-// ("kitchen" replaces the old "preparing"; "floor" replaces the old "ready")
-export type OrderStatus = "pending" | "kitchen" | "floor" | "completed"
+// Full status pipeline:
+// awaiting_payment → pending → kitchen → floor → completed
+// awaiting_payment: checkout started, payment not yet confirmed
+// pending: payment confirmed by Stripe webhook, awaiting kitchen acceptance
+// kitchen: cook has accepted and started prep
+// floor: order is ready, waiting for customer pickup
+// completed: picked up and fulfilled
+export type OrderStatus = "awaiting_payment" | "pending" | "kitchen" | "floor" | "completed"
 
 // Sanity document reference shape — used for the location field on Order.
 export interface SanityRef {
@@ -96,12 +102,7 @@ export interface SanityOrderModifier {
   _key: string // required by Sanity for keyed arrays
   groupName: string
   selections: string // e.g. "Large +$3.50, Rice & Peas"
-  // BACKLOG: parentKey — the _key of the SanityOrderModifier whose selected
-  // option spawned this sub-modifier group (e.g. the "Size Choice" record for
-  // Plantain-Sweet points to the "Recommend Sides and Apps" record).
-  // Set this at checkout write time; the floor modal receipt renderer can then
-  // collapse sub-modifier rows inline with their parent add-on row.
-  parentKey?: string
+  parentKey?: string // _key of the parent SanityOrderModifier for sub-modifier grouping
 }
 
 // Order line item as stored in the Sanity order document.
@@ -180,9 +181,10 @@ export interface AdminOrder {
   items: AdminOrderItem[]
   total: number
   createdAt: string
-  startedAt?: string // set when kitchen accepts (pending → kitchen)
+  confirmedAt?: string // set by Stripe webhook — payment confirmed, order enters pending
+  startedAt?: string // set when kitchen staff accepts the ticket (pending → kitchen)
   readyAt?: string // set when kitchen marks ready (kitchen → floor)
-  pickedUpAt?: string // set when floor staff confirms pickup
+  pickedUpAt?: string
 }
 
 // ─── Notifications ────────────────────────────────────────────────────────────

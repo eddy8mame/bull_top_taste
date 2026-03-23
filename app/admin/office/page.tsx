@@ -1,3 +1,5 @@
+//app/admin/office/page.tsx
+
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
@@ -50,7 +52,10 @@ function startOfMonth() {
 function deriveRevenueByDay(orders: AdminOrder[]) {
   const map = new Map<string, number>()
   for (const o of orders) {
-    const date = o.createdAt.split("T")[0]
+    // Anchor to confirmedAt so an order started at 11:58 PM but paid at 12:01 AM
+    // is attributed to the correct day. Falls back to createdAt for pre-migration records.
+    const anchor = o.confirmedAt ?? o.createdAt
+    const date = anchor.split("T")[0]
     map.set(date, (map.get(date) ?? 0) + o.total)
   }
   return Array.from(map.entries())
@@ -76,8 +81,13 @@ function deriveItemSales(orders: AdminOrder[]) {
 function kpis(slice: AdminOrder[], allOrders: AdminOrder[]) {
   const rev = slice.reduce((s, o) => s + o.total, 0)
   const avg = slice.length > 0 ? rev / slice.length : 0
-  const active = allOrders.filter(o => o.status !== "completed").length
 
+  // Exclude awaiting_payment from active count — those are not real orders yet
+  const active = allOrders.filter(
+    o => o.status !== "completed" && o.status !== "awaiting_payment"
+  ).length
+
+  // Pickup lag: readyAt → pickedUpAt (how long order sat at the pass)
   const lagOrders = slice.filter(o => o.readyAt && o.pickedUpAt)
   const avgLagMs =
     lagOrders.length > 0
@@ -152,8 +162,8 @@ function deriveCustomers(orders: AdminOrder[]): DerivedCustomer[] {
 // `location._id → location.restaurantName`. The `active` flag becomes
 // whether the tenant env var resolves to that document.
 const LOCATIONS = [
-  { id: "rpb", label: "Royal Palm Beach, FL", active: false },
   { id: "wpb", label: "West Palm Beach, FL", active: true },
+  { id: "rpb", label: "Royal Palm Beach, FL", active: false },
   { id: "all", label: "All Locations", active: false },
 ]
 
@@ -351,9 +361,14 @@ export default function OfficeDashboard() {
                 <div className="o-active-num">{monthKpi.active}</div>
                 <div className="o-active-label">orders in queue</div>
                 <ul className="o-active-breakdown">
-                  <li>{orders.filter(o => o.status === "pending").length} pending</li>
-                  <li>{orders.filter(o => o.status === "kitchen").length} in kitchen</li>
-                  <li>{orders.filter(o => o.status === "floor").length} ready for pickup</li>
+                  <ul className="o-active-breakdown">
+                    <li>
+                      {orders.filter(o => o.status === "awaiting_payment").length} awaiting payment
+                    </li>
+                    <li>{orders.filter(o => o.status === "pending").length} confirmed, queue</li>
+                    <li>{orders.filter(o => o.status === "kitchen").length} in kitchen</li>
+                    <li>{orders.filter(o => o.status === "floor").length} ready for pickup</li>
+                  </ul>
                 </ul>
               </div>
             </div>

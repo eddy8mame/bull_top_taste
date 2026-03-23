@@ -1,3 +1,5 @@
+// app/api/notify/route.ts
+
 import { NextRequest, NextResponse } from "next/server"
 
 import type { Order } from "@/types"
@@ -48,17 +50,24 @@ export async function POST(req: NextRequest) {
     // This is the authoritative "payment received" signal. We patch rather than
     // create so we don't produce a duplicate; the order document was pre-created
     // in /api/checkout.
-    if (orderId) {
-      const sanityClient = getSanityWriteClient()
-      if (sanityClient && paymentIntentId) {
-        try {
-          await sanityClient.patch(orderId).set({ stripePaymentIntentId: paymentIntentId }).commit()
-        } catch (err) {
-          // Log but do not propagate — Stripe must receive 200.
-          console.error(`[notify] Failed to patch order ${orderId} in Sanity:`, err)
-        }
-      }
+if (orderId) {
+  const sanityClient = getSanityWriteClient()
+  if (sanityClient && paymentIntentId) {
+    try {
+      await sanityClient
+        .patch(orderId)
+        .set({
+          stripePaymentIntentId: paymentIntentId,
+          status: "pending",
+          confirmedAt: new Date().toISOString(),
+        })
+        .commit()
+    } catch (err) {
+      // Log but do not propagate — Stripe must receive 200.
+      console.error(`[notify] Failed to patch order ${orderId} in Sanity:`, err)
     }
+  }
+}
 
     // ── Build a minimal Order object for the notification functions ──────────
     // The notification helpers (email / SMS) expect an Order-shaped object.

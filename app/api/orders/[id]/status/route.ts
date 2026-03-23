@@ -1,3 +1,5 @@
+// app/api/orders/[id]/status/route.ts
+
 import { NextRequest, NextResponse } from "next/server"
 
 import type { OrderStatus } from "@/types"
@@ -27,6 +29,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   // When an order is accepted into the kitchen, stamp startedAt so the
   // contextual age timer on the kitchen display counts from that moment.
+  // Note: "pending" here means payment-confirmed and awaiting kitchen acceptance —
+  // "awaiting_payment" orders are never surfaced in the kitchen view.
   const patch: Record<string, unknown> = { status }
   if (status === "kitchen") patch.startedAt = new Date().toISOString()
 

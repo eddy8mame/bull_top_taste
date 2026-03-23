@@ -1,3 +1,5 @@
+//app/admin/page.tsx
+
 "use client"
 
 import { useEffect, useRef, useState } from "react"
@@ -76,13 +78,6 @@ function isOrphanedSize(mod: {
   return mod.groupName.includes("Size Choice") && !mod.parentKey && !mod.selections.includes("+$")
 }
 
-// Identifies modifier groups that should render as itemised priced add-on rows
-// in the floor modal receipt. All other groups — including "Size Choice" with a
-// price adjustment — render as spec descriptor text with pricing stripped.
-function isAddonGroup(groupName: string): boolean {
-  return groupName === "Recommend Sides and Apps" || groupName === "Extra Sides and Apps"
-}
-
 // ── Time helpers ───────────────────────────────────────────────────────────────
 // Contextual age reference:
 //   pending  → createdAt   (how long since the customer placed it)
@@ -91,10 +86,10 @@ function isAddonGroup(groupName: string): boolean {
 function getAgeSeconds(order: AdminOrder, now: number): number {
   const ref =
     order.status === "kitchen"
-      ? (order.startedAt ?? order.createdAt)
+      ? (order.startedAt ?? order.confirmedAt ?? order.createdAt)
       : order.status === "floor"
         ? (order.readyAt ?? order.createdAt)
-        : order.createdAt
+        : (order.confirmedAt ?? order.createdAt)
   return Math.max(0, Math.floor((now - new Date(ref).getTime()) / 1000))
 }
 
@@ -463,6 +458,15 @@ function KitchenCard({
         <div>
           <div className="k-order-num">{fmtOrderNum(order.stripePaymentIntentId)}</div>
           <div className="k-customer">{order.customerName}</div>
+          {order.confirmedAt && (
+            <div className="k-confirmed-at">
+              in{" "}
+              {new Date(order.confirmedAt).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </div>
+          )}
         </div>
         <div className={`k-age${cls !== "ok" ? ` ${cls}` : ""}`}>{fmtAge(ageS)}</div>
       </div>

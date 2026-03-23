@@ -28,6 +28,7 @@ const ORDER_PROJECTION = `{
   notes,
   total,
   createdAt,
+  confirmedAt,
   startedAt,
   readyAt,
   pickedUpAt,
