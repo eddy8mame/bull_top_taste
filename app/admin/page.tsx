@@ -202,7 +202,9 @@ export default function AdminDashboard() {
         headers: { "Content-Type": "application/json" },
         body: status !== "floor" ? JSON.stringify({ status }) : undefined,
       })
-      mutateOrders() // revalidate to capture server timestamps (startedAt, readyAt)
+      // Delay revalidation by 1.5s to allow Sanity CDN to catch up
+      // and prevent the UI from flickering back to the old state.
+      setTimeout(() => mutateOrders(), 1500)
     } catch {
       mutateOrders(snapshot, false)
     }
@@ -217,7 +219,8 @@ export default function AdminDashboard() {
     setSelectedId(null)
     try {
       await fetch(`/api/orders/${id}/pickedup`, { method: "POST" })
-      mutateOrders()
+      // Delay revalidation by 1.5s to allow Sanity CDN to catch up
+      setTimeout(() => mutateOrders(), 1500)
     } catch {
       mutateOrders(snapshot, false)
     }
@@ -248,7 +251,7 @@ export default function AdminDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ itemId }),
       })
-      mutateUnavail()
+      // mutateUnavail() // uncomment after stock management is connected to sanity 
     } catch {
       mutateUnavail({ unavailable: prev }, false)
     }
@@ -264,13 +267,13 @@ export default function AdminDashboard() {
         {/* Left: Kitchen / Floor pill tabs */}
         <div className="top-left">
           <button
-            className={`nav-tab${mode === "kitchen" ? "active" : ""}`}
+            className={`nav-tab${mode === "kitchen" ? " " + "active" : ""}`}
             onClick={() => setMode("kitchen")}
           >
             Kitchen
           </button>
           <button
-            className={`nav-tab${mode === "floor" ? "active" : ""}`}
+            className={`nav-tab${mode === "floor" ? " " + "active" : ""}`}
             onClick={() => setMode("floor")}
           >
             Floor
@@ -287,7 +290,7 @@ export default function AdminDashboard() {
         <div className="top-right">
           <span className="clock">{clock}</span>
           <a href="/admin/office" className="cross-link">
-            ← Office
+            Office
           </a>
         </div>
       </div>
@@ -345,11 +348,11 @@ export default function AdminDashboard() {
                   return (
                     <div
                       key={item._id}
-                      className={`k-stock-item${is86 ? "out" : ""}`}
+                      className={`k-stock-item${is86 ? " "+"out" : ""}`}
                       onClick={() => toggle86(item._id)}
                     >
                       <span className="k-stock-name">{item.name}</span>
-                      <span className="k-stock-tag">{is86 ? "86'd" : "in"}</span>
+                      <span className="k-stock-tag">{is86 ? "86'd" : "86"}</span>
                     </div>
                   )
                 })}

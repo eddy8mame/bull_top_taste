@@ -39,7 +39,7 @@ export default function Location({ location }: Props) {
 
   return (
     <section id="location" className="bg-white px-6 py-20">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-4xl">
         <p className="text-brand-green mb-1 text-xs font-bold tracking-widest uppercase">Find Us</p>
         <h2 className="mb-2 font-serif text-4xl">Location</h2>
         <p className="text-brand-muted mb-10 max-w-lg leading-relaxed">

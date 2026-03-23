@@ -152,8 +152,8 @@ function deriveCustomers(orders: AdminOrder[]): DerivedCustomer[] {
 // `location._id → location.restaurantName`. The `active` flag becomes
 // whether the tenant env var resolves to that document.
 const LOCATIONS = [
-  { id: "rpb", label: "Royal Palm Beach, FL", active: true },
-  { id: "wpb", label: "West Palm Beach, FL", active: false },
+  { id: "rpb", label: "Royal Palm Beach, FL", active: false },
+  { id: "wpb", label: "West Palm Beach, FL", active: true },
   { id: "all", label: "All Locations", active: false },
 ]
 
@@ -283,7 +283,7 @@ export default function OfficeDashboard() {
             ))}
           </select>
           <a href="/admin" className="o-cross-link">
-            ← Dashboard
+            Dashboard
           </a>
         </div>
       </header>

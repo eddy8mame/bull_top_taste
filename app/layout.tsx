@@ -95,7 +95,7 @@ const FONT_VARIABLES = [
 // ─── Location slug ────────────────────────────────────────────────────────────
 // TODO: derive this from the request hostname in a middleware-based multi-tenant
 // setup. Hardcoded for local development; swap to dynamic resolution in prod.
-const LOCATION_SLUG = "bull-top-taste-rpb"
+const LOCATION_SLUG = "bull-top-taste-wpb"
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 

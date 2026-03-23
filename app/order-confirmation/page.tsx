@@ -2,6 +2,8 @@ import Link from "next/link"
 
 import { stripe } from "@/lib/stripe"
 
+import ClearCart from "./ClearCart"
+
 interface Props {
   searchParams: Promise<{ session_id?: string }>
 }
@@ -101,6 +103,8 @@ export default async function OrderConfirmation({ searchParams }: Props) {
           Back to Home
         </Link>
       </div>
+
+      <ClearCart />
     </main>
   )
 }

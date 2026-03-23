@@ -35,7 +35,7 @@ export default async function Home() {
         <Menu items={items} specials={specials} />
         <Location location={location} />
         <About location={location} />
-        <Gallery images={location?.gallery} instagram={location?.instagram} />
+        {/* <Gallery images={location?.gallery} instagram={location?.instagram} /> */}
         <Catering />
         <Testimonials />
         <ReservationForm />

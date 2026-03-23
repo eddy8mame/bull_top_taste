@@ -17,13 +17,13 @@ export default function Hero({ location }: Props) {
   const label = location?.heroLabel ?? DEFAULTS.label
   const headline = location?.heroHeadline ?? DEFAULTS.headline
   const subheadline = location?.heroSubheadline ?? DEFAULTS.subheadline
-  const primaryCta = location?.heroPrimaryCtaText ?? DEFAULTS.primaryCta
-  const secondaryCta = location?.heroSecondaryCtaText ?? DEFAULTS.secondaryCta
+  // const primaryCta = location?.heroPrimaryCtaText ?? DEFAULTS.primaryCta
+  // const secondaryCta = location?.heroSecondaryCtaText ?? DEFAULTS.secondaryCta
   const bgUrl = location?.heroBackgroundUrl
 
   return (
     <section
-      className="relative overflow-hidden px-6 py-28 text-center text-white"
+      className="relative overflow-hidden px-6 py-12 text-center text-white md:py-24"
       style={{
         backgroundColor: "#3d3d3d",
         ...(bgUrl
@@ -58,9 +58,9 @@ export default function Hero({ location }: Props) {
           {headline}
         </h1>
 
-        <p className="text-brand-gold mb-8 text-lg font-semibold md:text-xl">{subheadline}</p>
+        <p className="text-brand-gold text-lg font-semibold md:text-xl">{subheadline}</p>
 
-        <div className="flex flex-wrap justify-center gap-4">
+        {/* <div className="flex flex-wrap justify-center gap-4">
           <a
             href="#menu"
             className="bg-brand-gold text-brand-dark rounded px-8 py-3.5 text-sm font-bold tracking-wide uppercase transition-opacity hover:opacity-90"
@@ -73,10 +73,10 @@ export default function Hero({ location }: Props) {
           >
             {secondaryCta}
           </a>
-        </div>
+        </div> */}
 
         {/* Scroll indicator */}
-        <div className="mt-16 animate-bounce text-xl text-white/30">↓</div>
+        {/* <div className="mt-8 animate-bounce text-xl text-white/30">↓</div> */}
       </div>
     </section>
   )

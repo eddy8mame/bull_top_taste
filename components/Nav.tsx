@@ -57,7 +57,7 @@ export default function Nav({ location }: Props) {
           onClick={() => setIsOpen(true)}
           className="bg-brand-green hover:bg-brand-green-dark relative flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
         >
-          <span>🛒</span>
+          {/* <span>🛒</span> */}
           <span>Order Online</span>
           {count > 0 && (
             <span className="bg-brand-gold text-brand-dark absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold">
@@ -67,7 +67,7 @@ export default function Nav({ location }: Props) {
         </button>
 
         {/* Delivery CTA (secondary) */}
-        <a
+        {/* <a
           href={uberEatsUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -75,7 +75,7 @@ export default function Nav({ location }: Props) {
         >
           <span>🛵</span>
           <span>Delivery</span>
-        </a>
+        </a> */}
       </div>
     </nav>
   )

@@ -39,7 +39,7 @@ function ItemPhoto({ item }: { item: MenuItem }) {
     )
   }
   return (
-    <div className="from-brand-green/10 to-brand-green-dark/20 flex h-36 w-full shrink-0 items-center justify-center rounded-t-xl bg-gradient-to-br">
+    <div className="from-brand-green/10 to-brand-green-dark/20 flex h-36 w-full shrink-0 items-center justify-center rounded-t-xl bg-linear-to-br">
       <span className="text-3xl opacity-40">🍽️</span>
     </div>
   )
@@ -215,7 +215,7 @@ export default function MenuPage({ items, specials }: Props) {
       <div className="mx-auto max-w-6xl space-y-16 px-4 py-10">
         {/* Specials banner */}
         {specials.length > 0 && (
-          <div className="from-brand-green to-brand-green-dark flex flex-wrap items-center gap-6 rounded-2xl bg-gradient-to-r p-6">
+          <div className="from-brand-green to-brand-green-dark flex flex-wrap items-center gap-6 rounded-2xl bg-linear-to-r p-6">
             <span className="text-4xl">🌟</span>
             <div className="text-white">
               <h4 className="font-serif text-xl font-bold">Daily Lunch Specials</h4>
@@ -225,7 +225,7 @@ export default function MenuPage({ items, specials }: Props) {
               {specials.map(s => (
                 <div
                   key={s._id}
-                  className="bg-brand-gold text-brand-dark min-w-[120px] rounded-xl px-5 py-3 text-center"
+                  className="bg-brand-gold text-brand-dark min-w-30 rounded-xl px-5 py-3 text-center"
                 >
                   <span className="text-lg font-bold">${s.price.toFixed(2)}</span>
                   <span className="mt-0.5 block text-xs leading-snug">{s.items.join(" · ")}</span>

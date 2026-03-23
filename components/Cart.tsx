@@ -32,7 +32,10 @@ export default function Cart({ location }: Props) {
     <>
       <div className="fixed inset-0 z-40 bg-black/50" onClick={() => setIsOpen(false)} />
 
-      <aside className="fixed top-0 right-0 z-50 flex h-full w-full max-w-md flex-col overflow-y-auto bg-white shadow-2xl">
+      <aside
+        className="fixed top-0 right-0 z-50 flex h-full w-full max-w-md flex-col overflow-y-auto bg-white shadow-2xl"
+        style={{ boxShadow: "-8px 0 24px rgba(0,0,0,0.12)" }}
+      >
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
           <h2 className="font-serif text-xl">Your Order</h2>
           <button
@@ -44,11 +47,11 @@ export default function Cart({ location }: Props) {
         </div>
 
         {items.length === 0 ? (
-          <div className="flex flex-1 flex-col gap-6 px-6 py-8">
+          <div className="flex flex-1 flex-col justify-center px-6 py-8">
             {/* Empty state header */}
-            <div className="flex flex-col items-center gap-2 text-center">
+            <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
               <span className="text-5xl">🍽️</span>
-              <p className="text-brand-muted font-medium">Your cart is empty</p>
+              <p className="text-brand-muted font-medium">Your bag is empty</p>
               <button
                 onClick={() => setIsOpen(false)}
                 className="text-brand-green text-sm font-semibold underline"
@@ -57,9 +60,9 @@ export default function Cart({ location }: Props) {
               </button>
             </div>
 
-            {/* Quick add panel */}
+            {/* Quick add panel — pushed toward bottom with auto top margin */}
             {location?.featuredItems && location.featuredItems.length > 0 && (
-              <div>
+              <div className="mt-auto pb-6">
                 <p className="text-brand-muted mb-3 text-xs font-semibold tracking-wide uppercase">
                   Popular items
                 </p>
@@ -71,7 +74,6 @@ export default function Cart({ location }: Props) {
                         key={item._id}
                         className="flex flex-col overflow-hidden rounded-xl border border-gray-100"
                       >
-                        {/* Item image */}
                         <div className="relative h-24 w-full bg-gray-50">
                           {item.imageUrl ? (
                             <img
@@ -85,8 +87,6 @@ export default function Cart({ location }: Props) {
                             </div>
                           )}
                         </div>
-
-                        {/* Item info */}
                         <div className="flex flex-1 flex-col gap-1.5 p-2.5">
                           <p className="line-clamp-2 text-xs leading-snug font-semibold text-gray-900">
                             {item.name}
@@ -94,8 +94,6 @@ export default function Cart({ location }: Props) {
                           <p className="text-brand-muted text-xs">
                             {item.price !== null ? `$${item.price.toFixed(2)}` : "Market price"}
                           </p>
-
-                          {/* Add button */}
                           <button
                             type="button"
                             onClick={() => {
@@ -124,7 +122,7 @@ export default function Cart({ location }: Props) {
             )}
           </div>
         ) : (
-          <div  className="flex flex-1 flex-col">
+          <div className="flex flex-1 flex-col">
             {/* Pickup location card */}
             {location && (
               <div className="mx-6 mt-4 overflow-hidden rounded-xl border border-gray-100">

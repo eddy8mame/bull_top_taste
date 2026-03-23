@@ -55,37 +55,33 @@ function OrderItemRow({ item }: { item: CartItem }) {
     : { specs: [], addons: [] }
 
   return (
-    <div className="flex gap-3 py-3 border-b border-gray-100 last:border-0">
+    <div className="flex gap-3 border-b border-gray-100 py-3 last:border-0">
       {item.imageUrl && (
-        <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
+        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg">
           <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
         </div>
       )}
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-start gap-2">
-          <p className="font-semibold text-sm">
-            {item.quantity > 1 && (
-              <span className="text-brand-green mr-1">{item.quantity}×</span>
-            )}
+      <div className="min-w-0 flex-1">
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-sm font-semibold">
+            {item.quantity > 1 && <span className="text-brand-green mr-1">{item.quantity}×</span>}
             {item.name}
           </p>
-          <p className="font-semibold text-sm shrink-0">
+          <p className="shrink-0 text-sm font-semibold">
             ${(item.effectivePrice * item.quantity).toFixed(2)}
           </p>
         </div>
-        {specs.length > 0 && (
-          <p className="text-xs text-brand-muted mt-0.5">{specs.join(" · ")}</p>
-        )}
+        {specs.length > 0 && <p className="text-brand-muted mt-0.5 text-xs">{specs.join(", ")}</p>}
         {addons.map((addon, i) => (
-          <div key={i} className="flex justify-between text-xs mt-1">
-            <span className="text-gray-500 flex items-center gap-1">
+          <div key={i} className="mt-1 flex justify-between text-xs">
+            <span className="flex items-center gap-1 text-gray-500">
               <span className="text-gray-300">↳</span> {addon.name}
             </span>
             <span className="text-brand-green font-medium">+${addon.price.toFixed(2)}</span>
           </div>
         ))}
         {item.specialInstructions && (
-          <p className="text-xs text-yellow-700 bg-yellow-50 rounded px-1.5 py-0.5 mt-1 italic">
+          <p className="mt-1 rounded bg-yellow-50 px-1.5 py-0.5 text-xs text-yellow-700 italic">
             &quot;{item.specialInstructions}&quot;
           </p>
         )}
@@ -165,9 +161,43 @@ export default function CheckoutClient({ location }: Props) {
         <h1 className="font-serif text-xl">Checkout</h1>
       </div>
 
+      {/* 🚨 DEMO MODE BANNER */}
+      {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
+        <div className="flex items-center justify-center gap-3 border-b border-amber-200 bg-amber-50 px-6 py-3 text-center">
+          <span className="shrink-0 text-lg text-amber-600">⚠️</span>
+          <div>
+            <p className="text-sm font-semibold text-amber-800">
+              Test mode — do not enter real card details
+            </p>
+            <p className="mt-0.5 text-xs text-amber-700">
+              Use Stripe test card <span className="font-mono font-bold">4242 4242 4242 4242</span>{" "}
+              · any future expiry · any CVC
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 px-4 py-8 md:grid-cols-2">
         {/* ── Left column — Order summary ──────────────────────────────── */}
         <div className="flex flex-col gap-4">
+          {/* Delivery upsell */}
+          {location?.doorDashUrl && (
+            <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-center">
+              <p className="mb-1 text-sm font-medium text-red-900">Want delivery instead?</p>
+              <p className="mb-3 text-xs text-red-700">
+                Order through DoorDash and we&apos;ll bring it to you.
+              </p>
+              <a
+                href={location.doorDashUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block rounded-lg bg-[#FF3008] px-4 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90"
+              >
+                Order on DoorDash
+              </a>
+            </div>
+          )}
+
           {/* Pickup location */}
           {location && (
             <div className="rounded-xl border border-gray-100 bg-white p-4">
@@ -211,24 +241,6 @@ export default function CheckoutClient({ location }: Props) {
               <span className="text-brand-green">${total.toFixed(2)}</span>
             </div>
           </div>
-
-          {/* Delivery upsell */}
-          {location?.doorDashUrl && (
-            <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-center">
-              <p className="mb-1 text-sm font-medium text-red-900">Want delivery instead?</p>
-              <p className="mb-3 text-xs text-red-700">
-                Order through DoorDash and we&apos;ll bring it to you.
-              </p>
-              <a
-                href={location.doorDashUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block rounded-lg bg-[#FF3008] px-4 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90"
-              >
-                Order on DoorDash
-              </a>
-            </div>
-          )}
         </div>
 
         {/* ── Right column — Customer details + CTA ───────────────────── */}
@@ -243,6 +255,8 @@ export default function CheckoutClient({ location }: Props) {
 
             <input
               required
+              name="name"
+              autoComplete="name"
               placeholder="Full name *"
               value={formData.name}
               onChange={e => setFormData(p => ({ ...p, name: e.target.value }))}
@@ -251,6 +265,8 @@ export default function CheckoutClient({ location }: Props) {
             <input
               required
               type="email"
+              name="email"
+              autoComplete="email"
               placeholder="Email *"
               value={formData.email}
               onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
@@ -259,17 +275,12 @@ export default function CheckoutClient({ location }: Props) {
             <input
               required
               type="tel"
+              name="tel"
+              autoComplete="tel"
               placeholder="Phone *"
               value={formData.phone}
               onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))}
               className="focus:border-brand-green rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none"
-            />
-            <textarea
-              placeholder="Order notes (optional)"
-              value={formData.notes}
-              onChange={e => setFormData(p => ({ ...p, notes: e.target.value }))}
-              rows={2}
-              className="focus:border-brand-green resize-none rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none"
             />
 
             {error && <p className="text-center text-xs text-red-600">{error}</p>}

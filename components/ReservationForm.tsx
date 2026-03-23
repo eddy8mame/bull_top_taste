@@ -19,16 +19,16 @@ export default function ReservationForm() {
   return (
     <section id="reservations" className="bg-brand-light px-6 py-20">
       <div className="mx-auto max-w-6xl">
-        <p className="text-brand-green mb-1 text-xs font-bold tracking-widest uppercase">
+        <p className="text-brand-green text-center mb-1 text-xs font-bold tracking-widest uppercase">
           Book a Table
         </p>
-        <h2 className="mb-2 font-serif text-4xl">Reservations &amp; Enquiries</h2>
-        <p className="text-brand-muted mb-8 max-w-lg leading-relaxed">
+        <h2 className="mb-2 font-serif text-4xl text-center">Reservations &amp; Enquiries</h2>
+        <p className="mx-auto text-brand-muted mb-8 max-w-lg leading-relaxed">
           Interested in dining in, group bookings, or catering? Send us a message and we&apos;ll get
           back to you shortly.
         </p>
 
-        <div className="max-w-2xl rounded-xl border border-gray-100 bg-white p-8">
+        <div className="max-auto text-left rounded-xl border border-gray-100 bg-white p-8">
           <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="First Name *" id="fname" type="text" placeholder="e.g. Marcus" required />
             <Field label="Last Name" id="lname" type="text" placeholder="e.g. Brown" />

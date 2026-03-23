@@ -46,12 +46,12 @@ export default function Menu({ items, specials }: Props) {
     <>
       {modalItem && <ModifierModal item={modalItem} onClose={() => setModalItem(null)} />}
 
-      <section id="menu" className="bg-brand-light px-6 py-20">
+      <section id="menu" className="bg-brand-light px-6 py-10">
         <div className="mx-auto max-w-6xl">
           {/* Section header */}
-          <p className="text-brand-green mb-1 text-xs font-bold tracking-widest uppercase">
+          {/* <p className="text-brand-green mb-1 text-xs font-bold tracking-widest uppercase">
             Fan Favourites
-          </p>
+          </p> */}
           <div className="mb-2 flex items-end justify-between">
             <h2 className="font-serif text-4xl">Most Ordered</h2>
             <Link
@@ -61,9 +61,9 @@ export default function Menu({ items, specials }: Props) {
               View full menu →
             </Link>
           </div>
-          <p className="text-brand-muted mb-8 max-w-lg leading-relaxed">
+          {/* <p className="text-brand-muted mb-8 max-w-lg leading-relaxed">
             The dishes our customers keep coming back for — bold Jamaican flavours made fresh daily.
-          </p>
+          </p> */}
 
           {/* Specials banner */}
           {specials.length > 0 && (
@@ -102,7 +102,7 @@ export default function Menu({ items, specials }: Props) {
                       <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
                     </div>
                   ) : (
-                    <div className="from-brand-green/10 to-brand-green-dark/20 flex h-36 w-full shrink-0 items-center justify-center bg-gradient-to-br">
+                    <div className="from-brand-green/10 to-brand-green-dark/20 flex h-36 w-full shrink-0 items-center justify-center bg-linear-to-br">
                       <span className="text-3xl opacity-40">🍽️</span>
                     </div>
                   )}

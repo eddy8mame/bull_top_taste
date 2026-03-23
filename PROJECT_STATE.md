@@ -375,7 +375,8 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System Changelog
-* **v1.5.0 (Current):** Added /checkout page with 2-column order summary and customer details form. Cart stripped of form and API call — now routes to /checkout. Delivery upsell moved to checkout page.
+* **v1.6.0 (Current):** Multiple UI fixes and refinements. Nav tab and stock panel class concatenation fixed. 86 toggle revalidation removed to preserve optimistic state. Order flicker resolved with 1500ms delayed revalidation. Checkout form autofill enabled. Cart cleared on order confirmation mount. Demo mode banner added to checkout. DoorDash URL added to Sanity schema. Hero simplified — CTAs and scroll indicator removed, padding reduced. Reservation and Location sections centered and tightened. Cart panel left-edge shadow added. Empty cart popular items pushed to bottom.
+* **v1.5.0:** Added /checkout page with 2-column order summary and customer details form. Cart stripped of form and API call — now routes to /checkout. Delivery upsell moved to checkout page.
 * **v1.4.7:** Cart item editing via pre-populated ModifierModal. Tap any cart item to edit modifiers, size, add-ons, and special instructions in place. Quantity preserved on update.
 * **v1.4.6:** Added featured items quick-add panel to empty cart state. 2×2 grid sourced from Sanity location document. Items with required modifiers open ModifierModal inline. Direct add for items with no required modifiers.
 * **v1.4.5:** Replaced standalone remove button with contextual trash icon. Minus button becomes red trash icon at quantity 1. Hover deepens red to reinforce destructive intent.
