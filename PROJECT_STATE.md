@@ -374,7 +374,21 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 | Pre-commit hooks | Deferred to post-demo. Plan: husky + lint-staged running Prettier then ESLint --fix on staged .ts/.tsx files. Skip until collaborators are added or approaching production. |
 
 
-## System Changelog
+## System 
+* **v1.9.0 (Current):** Restructured customer tables in office dashboard
+  — email moved from Customer cell into a dedicated Contact column
+  alongside phone. Added CSV export buttons for top customers and
+  first-time customers. Fixed lag calculation in orders CSV export
+  (was measuring order lifetime, now correctly measures readyAt →
+  pickedUpAt). Fixed kitchen toggle in Settings always showing Closed
+  due to wrong response key. Fixed InfoIcon tooltip text inheriting
+  uppercase and letter-spacing from parent label classes.
+* **v1.8.0 (Current):** Added InfoIcon tooltip component to office
+  dashboard. All KPI cards, charts, bar lists, and table columns now
+  carry hover tooltips explaining what each metric represents and how
+  it is calculated. Added avg queue time (confirmedAt → startedAt) and
+  avg prep time (startedAt → readyAt) KPIs to the overview tab, giving
+  operators granular visibility into kitchen throughput vs. queue depth.
 * **v1.7.0 (Current):** Fixed critical issue where orders appeared in the
 kitchen pipeline before payment was confirmed. Introduced
 `awaiting_payment` as a pre-payment status written at checkout time.

@@ -1,3 +1,5 @@
+// app/api/orders/export/route.ts
+
 import { NextResponse } from "next/server"
 
 import type { AdminOrder, AdminOrderItem } from "@/types"
@@ -94,12 +96,10 @@ export async function GET() {
       : ""
 
     // Lag = minutes from order placed to pickup
-    const lag =
-      o.readyAt && o.pickedUpAt
-        ? String(
-            Math.round((new Date(o.pickedUpAt).getTime() - new Date(o.createdAt).getTime()) / 60000)
-          )
-        : ""
+const lag =
+  o.readyAt && o.pickedUpAt
+    ? String(Math.round((new Date(o.pickedUpAt).getTime() - new Date(o.readyAt).getTime()) / 60000))
+    : ""
 
     const cols = [
       o._id,

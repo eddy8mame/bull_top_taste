@@ -8,6 +8,8 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 
 import type { AdminOrder, AdminOrderItem } from "@/types"
 
+import { InfoIcon } from "@/components/admin/InfoIcon"
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const LAG_WARN_MINUTES = 7
@@ -101,7 +103,39 @@ function kpis(slice: AdminOrder[], allOrders: AdminOrder[]) {
       ? `${Math.floor(avgLagMs / 60000)}m ${Math.floor((avgLagMs % 60000) / 1000)}s`
       : "—"
 
-  return { rev, avg, active, avgLag, count: slice.length }
+  // Queue wait time: confirmedAt → startedAt (how long ticket sat before cook engaged)
+  // Active prep time: startedAt → readyAt (how long cook spent making the order)
+  // Both require all three timestamps — orders where Start was skipped are excluded.
+  const fullFlowOrders = slice.filter(o => o.confirmedAt && o.startedAt && o.readyAt)
+
+  const avgQueueMs =
+    fullFlowOrders.length > 0
+      ? fullFlowOrders.reduce(
+          (s, o) => s + new Date(o.startedAt!).getTime() - new Date(o.confirmedAt!).getTime(),
+          0
+        ) / fullFlowOrders.length
+      : null
+
+  const avgPrepMs =
+    fullFlowOrders.length > 0
+      ? fullFlowOrders.reduce(
+          (s, o) => s + new Date(o.readyAt!).getTime() - new Date(o.startedAt!).getTime(),
+          0
+        ) / fullFlowOrders.length
+      : null
+
+  const fmt = (ms: number | null) =>
+    ms !== null ? `${Math.floor(ms / 60000)}m ${Math.floor((ms % 60000) / 1000)}s` : "—"
+
+  return {
+    rev,
+    avg,
+    active,
+    avgLag,
+    avgQueueTime: fmt(avgQueueMs),
+    avgPrepTime: fmt(avgPrepMs),
+    count: slice.length,
+  }
 }
 
 // ─── New helpers (UI layer only) ──────────────────────────────────────────────
@@ -202,7 +236,7 @@ export default function OfficeDashboard() {
   const fetchKitchen = useCallback(async () => {
     const res = await fetch("/api/kitchen")
     const data = await res.json()
-    setKitchenOpen(data.kitchenOpen)
+    setKitchenOpen(data.open)
   }, [])
 
   useEffect(() => {
@@ -217,7 +251,7 @@ export default function OfficeDashboard() {
     try {
       const res = await fetch("/api/kitchen", { method: "POST" })
       const data = await res.json()
-      setKitchenOpen(data.kitchenOpen)
+      setKitchenOpen(data.open)
     } catch {
       setKitchenOpen(prev)
     } finally {
@@ -308,13 +342,42 @@ export default function OfficeDashboard() {
             {/* 4 KPI cards */}
             <div className="o-metrics-grid">
               {[
-                { label: "Revenue — month", value: `$${monthKpi.rev.toFixed(2)}` },
-                { label: "Orders — month", value: monthKpi.count },
-                { label: "Avg order", value: `$${monthKpi.avg.toFixed(2)}` },
-                { label: "Avg pickup lag", value: lifeKpi.avgLag },
-              ].map(({ label, value }) => (
+                {
+                  label: "Revenue — month",
+                  value: `$${monthKpi.rev.toFixed(2)}`,
+                  tip: "Total revenue from completed and active orders this month, based on when payment was confirmed.",
+                },
+                {
+                  label: "Orders — month",
+                  value: monthKpi.count,
+                  tip: "Total orders this month, counting from the moment payment was confirmed.",
+                },
+                {
+                  label: "Avg order",
+                  value: `$${monthKpi.avg.toFixed(2)}`,
+                  tip: "Average order value this month (total revenue divided by number of orders).",
+                },
+                {
+                  label: "Avg pickup lag",
+                  value: lifeKpi.avgLag,
+                  tip: "How long orders sit at the counter after being marked ready before the customer picks them up.",
+                },
+                {
+                  label: "Avg queue time",
+                  value: monthKpi.avgQueueTime,
+                  tip: "How long orders wait on the board before preparation begins. Measured from payment confirmation to when the kitchen taps Start.",
+                },
+                {
+                  label: "Avg prep time",
+                  value: monthKpi.avgPrepTime,
+                  tip: "How long the kitchen spends actively making the order. Measured from when the kitchen taps Start to when the food is marked ready.",
+                },
+              ].map(({ label, value, tip }) => (
                 <div key={label} className="o-metric-card">
-                  <div className="o-metric-label">{label}</div>
+                  <div className="o-metric-label" style={{ display: "flex", alignItems: "center" }}>
+                    {label}
+                    <InfoIcon tip={tip} />
+                  </div>
                   <div className="o-metric-value">{value}</div>
                 </div>
               ))}
@@ -324,8 +387,12 @@ export default function OfficeDashboard() {
             <div className="o-charts-row">
               {/* Revenue by day */}
               <div className="o-chart-card">
-                <div className="o-chart-title">
-                  Revenue by day <span className="o-chart-sub">this month</span>
+                <div className="o-chart-title" style={{ display: "flex", alignItems: "center" }}>
+                  Revenue by day{" "}
+                  <span className="o-chart-sub" style={{ marginLeft: 6 }}>
+                    this month
+                  </span>
+                  <InfoIcon tip="Daily revenue this month. Each bar represents the total value of orders confirmed on that day." />
                 </div>
                 {revenueByDay.length === 0 ? (
                   <p className="o-empty">No orders this month yet.</p>
@@ -355,8 +422,12 @@ export default function OfficeDashboard() {
 
               {/* Active orders snapshot */}
               <div className="o-chart-card">
-                <div className="o-chart-title">
-                  Active orders <span className="o-chart-sub">right now</span>
+                <div className="o-chart-title" style={{ display: "flex", alignItems: "center" }}>
+                  Active orders{" "}
+                  <span className="o-chart-sub" style={{ marginLeft: 6 }}>
+                    right now
+                  </span>
+                  <InfoIcon tip="A live snapshot of orders currently in the kitchen or waiting for pickup. Excludes abandoned checkouts." />
                 </div>
                 <div className="o-active-num">{monthKpi.active}</div>
                 <div className="o-active-label">orders in queue</div>
@@ -405,7 +476,10 @@ export default function OfficeDashboard() {
                         <th className="o-th-right">Total</th>
                         <th className="o-th-center">Ready</th>
                         <th className="o-th-center">Picked up</th>
-                        <th className="o-th-center">Lag</th>
+                        <th className="o-th-center" style={{ whiteSpace: "nowrap" }}>
+                          Lag
+                          <InfoIcon tip="Time between an order being marked ready and customer pickup. Green: <7 min. Amber: 7–15 min. Red: >15 min." />
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -463,7 +537,13 @@ export default function OfficeDashboard() {
             <div className="o-menu-grid">
               {/* Top by revenue */}
               <div className="o-section-card" style={{ marginBottom: 0 }}>
-                <div className="o-section-card-title">Top items by revenue</div>
+                <div
+                  className="o-section-card-title"
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  Top items by revenue
+                  <InfoIcon tip="Items ranked by total revenue generated across all orders, all time." />
+                </div>
                 {itemsByRevenue.length === 0 ? (
                   <p className="o-empty">No data yet.</p>
                 ) : (
@@ -490,7 +570,13 @@ export default function OfficeDashboard() {
 
               {/* Top by frequency */}
               <div className="o-section-card" style={{ marginBottom: 0 }}>
-                <div className="o-section-card-title">Top items by order frequency</div>
+                <div
+                  className="o-section-card-title"
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  Top items by order frequency
+                  <InfoIcon tip="Items ranked by how often they are ordered. High frequency + low revenue often indicates a popular low-margin item." />
+                </div>
                 {itemsByFreq.length === 0 ? (
                   <p className="o-empty">No data yet.</p>
                 ) : (
@@ -518,11 +604,15 @@ export default function OfficeDashboard() {
 
             {/* Add-on uptake placeholder */}
             <div className="o-section-card">
-              <div className="o-section-card-title">
+              <div
+                className="o-section-card-title"
+                style={{ display: "flex", alignItems: "center" }}
+              >
                 Add-on uptake
                 <span className="o-chart-sub" style={{ marginLeft: 8 }}>
                   % of orders including each add-on
                 </span>
+                <InfoIcon tip="Coming soon — the percentage of total orders that include this specific add-on." />
               </div>
               <p className="o-empty" style={{ paddingBlock: "24px" }}>
                 Modifier-level analytics will appear here in a future update.
@@ -537,23 +627,47 @@ export default function OfficeDashboard() {
         {activeSection === "customers" && (
           <>
             <div className="o-cust-grid">
-              <div className="o-metric-card">
-                <div className="o-metric-label">Total customers</div>
-                <div className="o-metric-value">{totalCustomers}</div>
-              </div>
-              <div className="o-metric-card">
-                <div className="o-metric-label">Repeat rate</div>
-                <div className="o-metric-value">{repeatRate}%</div>
-              </div>
-              <div className="o-metric-card">
-                <div className="o-metric-label">Avg lifetime spend</div>
-                <div className="o-metric-value">${avgLTV.toFixed(2)}</div>
-              </div>
+              {[
+                {
+                  label: "Total customers",
+                  value: totalCustomers,
+                  tip: "Unique customers, identified by email address, across all time.",
+                },
+                {
+                  label: "Repeat rate",
+                  value: `${repeatRate}%`,
+                  tip: "Percentage of customers who have placed two or more orders.",
+                },
+                {
+                  label: "Avg lifetime spend",
+                  value: `$${avgLTV.toFixed(2)}`,
+                  tip: "Average total amount spent per customer across their entire history.",
+                },
+              ].map(({ label, value, tip }) => (
+                <div key={label} className="o-metric-card">
+                  <div className="o-metric-label" style={{ display: "flex", alignItems: "center" }}>
+                    {label}
+                    <InfoIcon tip={tip} />
+                  </div>
+                  <div className="o-metric-value">{value}</div>
+                </div>
+              ))}
             </div>
 
             {/* Top customers by spend */}
             <div className="o-section-card">
-              <div className="o-section-card-title">Top customers by spend</div>
+              <div className="o-log-header">
+                <div
+                  className="o-section-card-title"
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  Top customers by spend
+                  <InfoIcon tip="Your highest-value customers ranked by total lifetime spend." />
+                </div>
+                <a href="/api/customers/export" download className="o-export-btn">
+                  Export CSV ↓
+                </a>
+              </div>
               {topCustomers.length === 0 ? (
                 <p className="o-empty">No data yet.</p>
               ) : (
@@ -561,7 +675,7 @@ export default function OfficeDashboard() {
                   <thead>
                     <tr>
                       <th>Customer</th>
-                      <th>Phone</th>
+                      <th>Contact</th>
                       <th>Orders</th>
                       <th className="o-th-right">Total spend</th>
                       <th>Last order</th>
@@ -572,9 +686,11 @@ export default function OfficeDashboard() {
                       <tr key={c.email}>
                         <td>
                           <div className="o-cust-name">{c.name}</div>
-                          <div className="o-log-contact">{c.email}</div>
                         </td>
-                        <td className="o-log-contact o-nowrap">{c.phone || "—"}</td>
+                        <td>
+                          <div className="o-log-contact">{c.email}</div>
+                          <div className="o-log-contact o-nowrap">{c.phone || "—"}</div>
+                        </td>
                         <td>{c.orders}</td>
                         <td className="o-total-cell">${c.spend.toFixed(2)}</td>
                         <td className="o-nowrap">{fmtRelative(c.lastDate)}</td>
@@ -587,7 +703,18 @@ export default function OfficeDashboard() {
 
             {/* Recent first-time customers */}
             <div className="o-section-card">
-              <div className="o-section-card-title">Recent first-time customers</div>
+              <div className="o-log-header">
+                <div
+                  className="o-section-card-title"
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  Recent first-time customers
+                  <InfoIcon tip="Customers who have placed exactly one order, showing the most recent first." />
+                </div>
+                <a href="/api/customers/new/export" download className="o-export-btn">
+                  Export CSV ↓
+                </a>
+              </div>
               {newCustomers.length === 0 ? (
                 <p className="o-empty">No first-time customers in this dataset.</p>
               ) : (
@@ -595,7 +722,7 @@ export default function OfficeDashboard() {
                   <thead>
                     <tr>
                       <th>Customer</th>
-                      <th>Phone</th>
+                      <th>Contact</th>
                       <th>First order</th>
                       <th className="o-th-right">Spend</th>
                     </tr>
@@ -605,9 +732,11 @@ export default function OfficeDashboard() {
                       <tr key={c.email}>
                         <td>
                           <div className="o-cust-name">{c.name}</div>
-                          <div className="o-log-contact">{c.email}</div>
                         </td>
-                        <td className="o-log-contact o-nowrap">{c.phone || "—"}</td>
+                        <td>
+                          <div className="o-log-contact">{c.email}</div>
+                          <div className="o-log-contact o-nowrap">{c.phone || "—"}</div>
+                        </td>
                         <td className="o-nowrap">{fmtRelative(c.lastDate)}</td>
                         <td className="o-total-cell">${c.spend.toFixed(2)}</td>
                       </tr>

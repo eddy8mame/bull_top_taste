@@ -1,3 +1,5 @@
+// app/api/kitchen/route.ts
+
 import { cookies } from "next/headers"
 import { NextRequest, NextResponse } from "next/server"
 
