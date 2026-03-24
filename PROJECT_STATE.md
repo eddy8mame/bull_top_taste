@@ -375,7 +375,15 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System 
-* **v1.9.0 (Current):** Restructured customer tables in office dashboard
+* **v2.0.0 (Current):** Implemented add-on uptake panel in office
+  dashboard Menu tab. Calculates ticket attach rate per upsell add-on
+  from order history — the percentage of confirmed orders that included
+  each add-on at least once. Uses a Set-based unique order count so
+  multi-entree orders with the same add-on count once per ticket.
+  isUpsellGroup() abstracts group classification for future Sanity
+  schema migration. Bar fills use absolute percentage width. Empty
+  state shown when no add-on data exists yet.
+* **v1.9.0:** Restructured customer tables in office dashboard
   — email moved from Customer cell into a dedicated Contact column
   alongside phone. Added CSV export buttons for top customers and
   first-time customers. Fixed lag calculation in orders CSV export

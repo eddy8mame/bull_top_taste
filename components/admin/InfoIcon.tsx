@@ -7,7 +7,7 @@
 
 export function InfoIcon({ tip }: { tip: string }) {
   return (
-    <div className="group relative ml-2 inline-flex cursor-help items-center">
+    <div className="group relative ml-2 inline-flex  items-center">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="13"

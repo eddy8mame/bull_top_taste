@@ -189,6 +189,71 @@ function deriveCustomers(orders: AdminOrder[]): DerivedCustomer[] {
   return Array.from(map.values()).sort((a, b) => b.spend - a.spend)
 }
 
+// ── Add-on uptake helpers ──────────────────────────────────────────────────────
+
+// Controls which modifier groups count toward add-on uptake analytics.
+// Currently name-based — when the Sanity menu schema gains an `isUpsellTracked`
+// boolean on modifier groups, replace the body of this function with a lookup
+// on that field. Add new group names here as the menu expands.
+function isUpsellGroup(groupName: string): boolean {
+  return groupName === "Recommend Sides and Apps" || groupName === "Extra Sides and Apps"
+}
+
+// Strips the price suffix from a single parsed selection token.
+// "Plantain-Sweet +$6.98" → "Plantain-Sweet"
+// "Jerk Sauce +$0.75"     → "Jerk Sauce"
+// "Festival"              → "Festival" (no-op when no suffix present)
+function normalizeAddonName(raw: string): string {
+  return raw.replace(/\s+\+\$[\d.]+$/, "").trim()
+}
+
+interface AddonUptakeRow {
+  name: string // normalized add-on name
+  orderCount: number // distinct orders that included this add-on at least once
+  attachRate: number // orderCount / totalOrders as a 0–100 integer percentage
+}
+
+// Ticket attach rate: for each known upsell add-on, what percentage of
+// confirmed orders included it at least once?
+//
+// Uses a Set per add-on to enforce uniqueness — if one order has three
+// entrees and two of them include Plantain, that still counts as one
+// order successfully upsold on Plantain.
+//
+// Scoped to confirmed orders only (excludes awaiting_payment) so abandoned
+// checkouts don't dilute the denominator.
+function deriveAddonUptake(orders: AdminOrder[]): AddonUptakeRow[] {
+  const confirmed = orders.filter(o => o.status !== "awaiting_payment")
+  const totalOrders = confirmed.length
+  if (totalOrders === 0) return []
+
+  const ordersByAddon = new Map<string, Set<string>>()
+
+  for (const order of confirmed) {
+    for (const item of order.items) {
+      for (const mod of item.modifiers ?? []) {
+        if (!isUpsellGroup(mod.groupName)) continue
+        if (!mod.selections) continue
+
+        const names = mod.selections.split(", ").map(normalizeAddonName).filter(Boolean)
+
+        for (const name of names) {
+          if (!ordersByAddon.has(name)) ordersByAddon.set(name, new Set())
+          ordersByAddon.get(name)!.add(order._id)
+        }
+      }
+    }
+  }
+
+  return Array.from(ordersByAddon.entries())
+    .map(([name, orderSet]) => ({
+      name,
+      orderCount: orderSet.size,
+      attachRate: Math.round((orderSet.size / totalOrders) * 100),
+    }))
+    .sort((a, b) => b.attachRate - a.attachRate)
+}
+
 // ─── Location list ────────────────────────────────────────────────────────────
 // Simulated — for demo purposes only.
 // TODO: Replace with a server-side fetch of `location` documents from Sanity,
@@ -276,6 +341,7 @@ export default function OfficeDashboard() {
   const customers = deriveCustomers(orders)
   const itemsByRevenue = [...itemSales].sort((a, b) => b.revenue - a.revenue)
   const itemsByFreq = itemSales // already sorted by count
+  const addonUptake = deriveAddonUptake(orders)
 
   const totalCustomers = customers.length
   const repeatRate =
@@ -602,7 +668,7 @@ export default function OfficeDashboard() {
               </div>
             </div>
 
-            {/* Add-on uptake placeholder */}
+            {/* Add-on uptake — ticket attach rate per upsell add-on */}
             <div className="o-section-card">
               <div
                 className="o-section-card-title"
@@ -612,11 +678,127 @@ export default function OfficeDashboard() {
                 <span className="o-chart-sub" style={{ marginLeft: 8 }}>
                   % of orders including each add-on
                 </span>
-                <InfoIcon tip="Coming soon — the percentage of total orders that include this specific add-on." />
+                <InfoIcon tip="Percentage of confirmed orders that included each add-on at least once. Multiple add-ons in a single order each count once per ticket." />
               </div>
-              <p className="o-empty" style={{ paddingBlock: "24px" }}>
-                Modifier-level analytics will appear here in a future update.
-              </p>
+
+              {addonUptake.length === 0 ? (
+                <p className="o-empty" style={{ paddingBlock: "24px" }}>
+                  No add-on data yet. This panel will populate as orders come in.
+                </p>
+              ) : (
+                <div style={{ marginTop: 12 }}>
+                  {/* Column headers */}
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 2fr 56px 64px",
+                      gap: "0 12px",
+                      padding: "0 0 8px",
+                      borderBottom: "0.5px solid rgba(0,0,0,0.08)",
+                      marginBottom: 10,
+                    }}
+                  >
+                    {["Add-on", "Attach rate", "Orders", "%"].map(h => (
+                      <span
+                        key={h}
+                        style={{
+                          fontSize: "0.7rem",
+                          color: "#9b9b96",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {h}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Rows */}
+                  {addonUptake.map(row => (
+                    <div
+                      key={row.name}
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 2fr 56px 64px",
+                        gap: "0 12px",
+                        alignItems: "center",
+                        padding: "7px 0",
+                        borderBottom: "0.5px solid rgba(0,0,0,0.04)",
+                      }}
+                    >
+                      {/* Add-on name */}
+                      <span
+                        style={{
+                          fontSize: "0.85rem",
+                          color: "#2e2e2c",
+                          fontWeight: 500,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {row.name}
+                      </span>
+
+                      {/* Bar — absolute width reflects true attach rate */}
+                      <div
+                        style={{
+                          height: 8,
+                          borderRadius: 4,
+                          background: "rgba(0,0,0,0.06)",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <div
+                          style={{
+                            height: "100%",
+                            width: `${row.attachRate}%`,
+                            borderRadius: 4,
+                            background: "#EF9F27",
+                            transition: "width 0.4s ease",
+                          }}
+                        />
+                      </div>
+
+                      {/* Order count */}
+                      <span
+                        style={{
+                          fontSize: "0.82rem",
+                          color: "#6b6b66",
+                          textAlign: "right",
+                        }}
+                      >
+                        {row.orderCount}
+                      </span>
+
+                      {/* Attach rate percentage */}
+                      <span
+                        style={{
+                          fontSize: "0.82rem",
+                          color: "#2e2e2c",
+                          fontWeight: 600,
+                          textAlign: "right",
+                        }}
+                      >
+                        {row.attachRate}%
+                      </span>
+                    </div>
+                  ))}
+
+                  {/* Footer — total confirmed orders used as denominator */}
+                  <div
+                    style={{
+                      marginTop: 12,
+                      fontSize: "0.72rem",
+                      color: "#9b9b96",
+                    }}
+                  >
+                    Based on {orders.filter(o => o.status !== "awaiting_payment").length} confirmed
+                    orders
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}
