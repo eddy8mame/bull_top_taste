@@ -34,6 +34,18 @@
   --color-brand-light: var(--theme-bg);
   --color-background: var(--theme-bg);
   --color-foreground: var(--theme-fg);
+  /* ── SaaS / marketing layer — immutable, not tenant-overridable ────────────── */
+  --color-saas-bg: #0a0a08;
+  --color-saas-surface: #111110;
+  --color-saas-text: #f0efe9;
+  --color-saas-muted: #9b9b96;
+  --color-saas-subtle: #6b6b66;
+  --color-saas-gold: #ef9f27;
+  --color-saas-green: #017530;
+  --color-saas-orange: #f15f24;
+  --color-saas-border: rgba(255, 255, 255, 0.08);
+  --color-saas-light: #f5f4f0;
+  --color-saas-light-text: #1a1a18;
 
   /* ── Static palette — admin dark UI only, intentionally unthemed ────────── */
   /* The kitchen/office dashboards use these directly and must not shift.      */
