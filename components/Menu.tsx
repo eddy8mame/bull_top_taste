@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 
 import Image from "next/image"
 import Link from "next/link"
@@ -27,7 +27,8 @@ export default function Menu({ items, specials }: Props) {
     .sort((a, b) => (b.orderCount ?? 0) - (a.orderCount ?? 0))
     .slice(0, TEASER_COUNT)
 
-  function handleAdd(item: MenuItem) {
+const handleAdd = useCallback(
+  (item: MenuItem) => {
     if ((item.modifierGroups?.length ?? 0) > 0) {
       setModalItem(item)
       return
@@ -40,7 +41,9 @@ export default function Menu({ items, specials }: Props) {
       effectivePrice: item.price,
     }
     addItem(cartItem)
-  }
+  },
+  [addItem]
+)
 
   return (
     <>
@@ -99,7 +102,13 @@ export default function Menu({ items, specials }: Props) {
                   {/* Photo */}
                   {item.imageUrl ? (
                     <div className="relative h-36 w-full shrink-0">
-                      <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover"
+                      />{" "}
                     </div>
                   ) : (
                     <div className="from-brand-green/10 to-brand-green-dark/20 flex h-36 w-full shrink-0 items-center justify-center bg-linear-to-br">
