@@ -395,59 +395,112 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.1.0 (Current):** Customer ready SMS now includes the order reference (last 6 chars
+* **v2.2.0 (Current):** Added editorial theme (Newsreader + Manrope, forest green
+  palette). Cart drawer widened to 550px. Empty state redesigned to match
+  editorial reference — shopping bag icon, bold heading, full-width browse
+  CTA. Quick add panel deferred.
+
+* **v2.1.0:** Customer ready SMS now includes the order reference (last 6 chars
   of Stripe payment intent, e.g. "order AB3F2C") matching what staff see on the
   floor card. Added SMS consent copy beneath the phone input on checkout for
   Twilio toll-free verification (30511). Floor card and modal order reference
   promoted from 10px muted to 13px bold for faster staff identification.
-* **v2.0.1:** Added processor-agnostic tax calculation via lib/tax.ts. Sanity-driven taxRate per location with 0.07 Palm Beach County fallback. Checkout page shows full subtotal/tax/total breakdown. Cart panel shows deferred tax note.
-* **v2.0.0:** Implemented add-on uptake panel in office
-  dashboard Menu tab. Calculates ticket attach rate per upsell add-on
-  from order history — the percentage of confirmed orders that included
-  each add-on at least once. Uses a Set-based unique order count so
-  multi-entree orders with the same add-on count once per ticket.
-  isUpsellGroup() abstracts group classification for future Sanity
-  schema migration. Bar fills use absolute percentage width. Empty
-  state shown when no add-on data exists yet.
-* **v1.9.0:** Restructured customer tables in office dashboard
-  — email moved from Customer cell into a dedicated Contact column
-  alongside phone. Added CSV export buttons for top customers and
-  first-time customers. Fixed lag calculation in orders CSV export
-  (was measuring order lifetime, now correctly measures readyAt →
-  pickedUpAt). Fixed kitchen toggle in Settings always showing Closed
-  due to wrong response key. Fixed InfoIcon tooltip text inheriting
-  uppercase and letter-spacing from parent label classes.
-* **v1.8.0:** Added InfoIcon tooltip component to office
-  dashboard. All KPI cards, charts, bar lists, and table columns now
-  carry hover tooltips explaining what each metric represents and how
-  it is calculated. Added avg queue time (confirmedAt → startedAt) and
-  avg prep time (startedAt → readyAt) KPIs to the overview tab, giving
-  operators granular visibility into kitchen throughput vs. queue depth.
-* **v1.7.0:** Fixed critical issue where orders appeared in the
-kitchen pipeline before payment was confirmed. Introduced
-`awaiting_payment` as a pre-payment status written at checkout time.
-Stripe webhook now advances status to `pending` and stamps `confirmedAt`
-on payment confirmation — this is the authoritative signal that an order
-is real. Kitchen chime, Incoming column, and age timers all now anchor
-to confirmed orders only. `startedAt` and `confirmedAt` declared
-explicitly in Sanity schema alongside `parentKey` on modifier selections.
-Revenue by day in office dashboard anchored to `confirmedAt` to correctly
-attribute cross-midnight orders. Active order count excludes
-`awaiting_payment` documents. Two minor schema corrections: `initialValue`
-on status field updated to `awaiting_payment`, `💳` icon added to Studio
-preview map for abandoned checkout visibility.
-* **v1.6.0:** Multiple UI fixes and refinements. Nav tab and stock panel class concatenation fixed. 86 toggle revalidation removed to preserve optimistic state. Order flicker resolved with 1500ms delayed revalidation. Checkout form autofill enabled. Cart cleared on order confirmation mount. Demo mode banner added to checkout. DoorDash URL added to Sanity schema. Hero simplified — CTAs and scroll indicator removed, padding reduced. Reservation and Location sections centered and tightened. Cart panel left-edge shadow added. Empty cart popular items pushed to bottom.
-* **v1.5.0:** Added /checkout page with 2-column order summary and customer details form. Cart stripped of form and API call — now routes to /checkout. Delivery upsell moved to checkout page.
-* **v1.4.7:** Cart item editing via pre-populated ModifierModal. Tap any cart item to edit modifiers, size, add-ons, and special instructions in place. Quantity preserved on update.
-* **v1.4.6:** Added featured items quick-add panel to empty cart state. 2×2 grid sourced from Sanity location document. Items with required modifiers open ModifierModal inline. Direct add for items with no required modifiers.
-* **v1.4.5:** Replaced standalone remove button with contextual trash icon. Minus button becomes red trash icon at quantity 1. Hover deepens red to reinforce destructive intent.
-* **v1.4.4:** Added categorized modifier summary to cart items. Specs collapsed to single descriptor line, priced add-ons itemized with ↳ arrow and price. Sub-modifiers merged inline with parent.
-* **v1.4.3:** Added interactive Mapbox map to cart pickup location card. Coordinates stored in Sanity per location. Directions link uses Google Maps dir/ endpoint with device current location as origin.
-* **v1.4.2:** Added pickup location card to filled cart state. Address renders as tap-to-maps link. Mapbox map embed deferred — placeholder in place.
-* **v1.4.1:** Removed DoorDash delivery card and links from cart panel. Delivery option relocated to order confirmation page (not yet built).
-* **v1.4.0:** Added localStorage cart persistence. Cart survives page refresh and browser close. Key: `'btt-cart'`.
-* **v1.3.0:** Resolved Sub-Modifier Pipeline. Replaced synthetic keys with explicit `parentOptionId` relational mapping. Re-wrote Kitchen and Floor 2-Pass algorithms to ensure perfect receipt accounting (dynamic base pricing) and operational clarity.
-* **v1.2.0:** Translated vanilla HTML Admin mockups into isolated React components. Preserved SWR and Sanity mutations. Scoped CSS under `.admin-shell`.
-* **v1.1.0:** Ripped out local `orderStore`. Wired Stripe webhooks directly to Sanity `create` mutations.
-* **v1.0.0:** Migrated from single-tenant siteSettings to multi-tenant `location` schema with dynamic Tailwind v4 theming.
+
+* **v2.0.1:** Added processor-agnostic tax calculation via lib/tax.ts.
+  Sanity-driven taxRate per location with 0.07 Palm Beach County fallback.
+  Checkout page shows full subtotal/tax/total breakdown. Cart panel shows
+  deferred tax note.
+
+* **v2.0.0:** Implemented add-on uptake panel in office dashboard Menu tab.
+  Calculates ticket attach rate per upsell add-on from order history — the
+  percentage of confirmed orders that included each add-on at least once.
+  Uses a Set-based unique order count so multi-entree orders with the same
+  add-on count once per ticket. isUpsellGroup() abstracts group classification
+  for future Sanity schema migration. Bar fills use absolute percentage width.
+  Empty state shown when no add-on data exists yet.
+
+* **v1.9.0:** Restructured customer tables in office dashboard — email moved
+  from Customer cell into a dedicated Contact column alongside phone. Added
+  CSV export buttons for top customers and first-time customers. Fixed lag
+  calculation in orders CSV export (was measuring order lifetime, now correctly
+  measures readyAt → pickedUpAt). Fixed kitchen toggle in Settings always
+  showing Closed due to wrong response key. Fixed InfoIcon tooltip text
+  inheriting uppercase and letter-spacing from parent label classes.
+
+* **v1.8.0:** Added InfoIcon tooltip component to office dashboard. All KPI
+  cards, charts, bar lists, and table columns now carry hover tooltips
+  explaining what each metric represents and how it is calculated. Added avg
+  queue time (confirmedAt → startedAt) and avg prep time (startedAt → readyAt)
+  KPIs to the overview tab, giving operators granular visibility into kitchen
+  throughput vs. queue depth.
+
+* **v1.7.0:** Fixed critical issue where orders appeared in the kitchen pipeline
+  before payment was confirmed. Introduced `awaiting_payment` as a pre-payment
+  status written at checkout time. Stripe webhook now advances status to
+  `pending` and stamps `confirmedAt` on payment confirmation — this is the
+  authoritative signal that an order is real. Kitchen chime, Incoming column,
+  and age timers all now anchor to confirmed orders only. `startedAt` and
+  `confirmedAt` declared explicitly in Sanity schema alongside `parentKey` on
+  modifier selections. Revenue by day in office dashboard anchored to
+  `confirmedAt` to correctly attribute cross-midnight orders. Active order
+  count excludes `awaiting_payment` documents. Two minor schema corrections:
+  `initialValue` on status field updated to `awaiting_payment`, `💳` icon added
+  to Studio preview map for abandoned checkout visibility.
+
+* **v1.6.0:** Multiple UI fixes and refinements. Nav tab and stock panel class
+  concatenation fixed. 86 toggle revalidation removed to preserve optimistic
+  state. Order flicker resolved with 1500ms delayed revalidation. Checkout
+  form autofill enabled. Cart cleared on order confirmation mount. Demo mode
+  banner added to checkout. DoorDash URL added to Sanity schema. Hero
+  simplified — CTAs and scroll indicator removed, padding reduced.
+  Reservation and Location sections centered and tightened. Cart panel
+  left-edge shadow added. Empty cart popular items pushed to bottom.
+
+* **v1.5.0:** Added /checkout page with 2-column order summary and customer
+  details form. Cart stripped of form and API call — now routes to /checkout.
+  Delivery upsell moved to checkout page.
+
+* **v1.4.7:** Cart item editing via pre-populated ModifierModal. Tap any cart
+  item to edit modifiers, size, add-ons, and special instructions in place.
+  Quantity preserved on update.
+
+* **v1.4.6:** Added featured items quick-add panel to empty cart state. 2×2 grid
+  sourced from Sanity location document. Items with required modifiers open
+  ModifierModal inline. Direct add for items with no required modifiers.
+
+* **v1.4.5:** Replaced standalone remove button with contextual trash icon.
+  Minus button becomes red trash icon at quantity 1. Hover deepens red to
+  reinforce destructive intent.
+
+* **v1.4.4:** Added categorized modifier summary to cart items. Specs collapsed
+  to single descriptor line, priced add-ons itemized with ↳ arrow and price.
+  Sub-modifiers merged inline with parent.
+
+* **v1.4.3:** Added interactive Mapbox map to cart pickup location card.
+  Coordinates stored in Sanity per location. Directions link uses Google Maps
+  dir/ endpoint with device current location as origin.
+
+* **v1.4.2:** Added pickup location card to filled cart state. Address renders
+  as tap-to-maps link. Mapbox map embed deferred — placeholder in place.
+
+* **v1.4.1:** Removed DoorDash delivery card and links from cart panel.
+  Delivery option relocated to order confirmation page (not yet built).
+
+* **v1.4.0:** Added localStorage cart persistence. Cart survives page refresh
+  and browser close. Key: `'btt-cart'`.
+
+* **v1.3.0:** Resolved Sub-Modifier Pipeline. Replaced synthetic keys with
+  explicit `parentOptionId` relational mapping. Re-wrote Kitchen and Floor
+  2-Pass algorithms to ensure perfect receipt accounting (dynamic base pricing)
+  and operational clarity.
+
+* **v1.2.0:** Translated vanilla HTML Admin mockups into isolated React
+  components. Preserved SWR and Sanity mutations. Scoped CSS under
+  `.admin-shell`.
+
+* **v1.1.0:** Ripped out local `orderStore`. Wired Stripe webhooks directly to
+  Sanity `create` mutations.
+
+* **v1.0.0:** Migrated from single-tenant siteSettings to multi-tenant
+  `location` schema with dynamic Tailwind v4 theming.
 ````

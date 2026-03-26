@@ -1,3 +1,5 @@
+// components/Cart.tsx
+
 "use client"
 
 import { useState } from "react";
@@ -44,6 +46,70 @@ import ModifierModal from "@/components/ModifierModal";
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 interface Props {
   location?: LocationFull | null
 }
@@ -64,93 +130,59 @@ export default function Cart({ location }: Props) {
       <div className="fixed inset-0 z-40 bg-black/50" onClick={() => setIsOpen(false)} />
 
       <aside
-        className="fixed top-0 right-0 z-50 flex h-full w-full max-w-md flex-col overflow-y-auto bg-white shadow-2xl"
-        style={{ boxShadow: "-8px 0 24px rgba(0,0,0,0.12)" }}
+        className="fixed top-0 right-0 z-50 flex h-full w-full max-w-[550px] flex-col overflow-y-auto bg-white shadow-2xl"
+        style={{ boxShadow: "-8px 0 24px rgba(0,0,0,0.06)" }}
       >
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-          <h2 className="font-serif text-xl">Your Order</h2>
+        <div className="flex items-start px-6 py-5">
           <button
             onClick={() => setIsOpen(false)}
-            className="text-2xl leading-none text-gray-400 hover:text-gray-600"
+            aria-label="Close cart"
+            className="-ml-1 flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
           >
-            ×
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-7 w-7 text-gray-800"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
 
         {items.length === 0 ? (
-          <div className="flex flex-1 flex-col justify-center px-6 py-8">
-            {/* Empty state header */}
-            <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
-              <span className="text-5xl">🍽️</span>
-              <p className="text-brand-muted font-medium">Your bag is empty</p>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="text-brand-green text-sm font-semibold underline"
+          <div className="flex flex-1 flex-col items-center justify-center px-10 py-8 text-center">
+            <div className="mb-8 flex h-32 w-32 items-center justify-center rounded-full bg-gray-50">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.25"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-brand-green h-14 w-14"
               >
-                Browse the full menu
-              </button>
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 01-8 0" />
+              </svg>
             </div>
-
-            {/* Quick add panel — pushed toward bottom with auto top margin */}
-            {location?.featuredItems && location.featuredItems.length > 0 && (
-              <div className="mt-auto pb-6">
-                <p className="text-brand-muted mb-3 text-xs font-semibold tracking-wide uppercase">
-                  Popular items
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  {location.featuredItems.slice(0, 4).map(item => {
-                    const hasRequired = item.modifierGroups?.some(g => g.required) ?? false
-                    return (
-                      <div
-                        key={item._id}
-                        className="flex flex-col overflow-hidden rounded-xl border border-gray-100"
-                      >
-                        <div className="relative h-24 w-full bg-gray-50">
-                          {item.imageUrl ? (
-                            <img
-                              src={item.imageUrl}
-                              alt={item.name}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center text-2xl">
-                              🍽️
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex flex-1 flex-col gap-1.5 p-2.5">
-                          <p className="line-clamp-2 text-xs leading-snug font-semibold text-gray-900">
-                            {item.name}
-                          </p>
-                          <p className="text-brand-muted text-xs">
-                            {item.price !== null ? `$${item.price.toFixed(2)}` : "Market price"}
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (hasRequired) {
-                                setQuickAddItem(item)
-                              } else {
-                                addItem({
-                                  ...item,
-                                  cartItemId: `${item._id}-${Date.now()}`,
-                                  quantity: 1,
-                                  effectivePrice: item.price ?? 0,
-                                  selectedModifiers: undefined,
-                                })
-                              }
-                            }}
-                            className="bg-brand-green hover:bg-brand-green-dark mt-auto flex w-full items-center justify-center gap-1 rounded-lg py-1.5 text-xs font-semibold text-white transition-colors"
-                          >
-                            {hasRequired ? "Customize" : "+ Add"}
-                          </button>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
+            <h2 className="mb-4 font-serif text-4xl font-bold text-gray-900">Your bag is empty</h2>
+            <p className="text-brand-muted mb-10 max-w-xs text-xl leading-relaxed">
+              It looks like you haven&apos;t added anything to your order yet
+            </p>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="bg-brand-green hover:bg-brand-green-dark w-full rounded-lg py-6 text-xl font-bold tracking-widest text-white uppercase transition-colors active:scale-[0.98]"
+            >
+              Browse the Menu
+            </button>
           </div>
         ) : (
           <div className="flex flex-1 flex-col">

@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 import Link from "next/link"
 
+import { getLocationFull } from "@/lib/sanity"
 import { stripe } from "@/lib/stripe"
 
 import ClearCart from "./ClearCart"
@@ -37,9 +38,9 @@ export default async function OrderConfirmation({ searchParams }: Props) {
   const lineItems = session?.line_items?.data ?? []
   const total = session ? (session.amount_total ?? 0) / 100 : null
 
-  // Location contact — swap to an env var or DB lookup for multi-location
-  const LOCATION_PHONE = "561.795.8440"
-  const LOCATION_PHONE_DIALPAD = "5617958440"
+  const location = await getLocationFull("bull-top-taste-wpb")
+  const LOCATION_PHONE = location?.phone ?? ""
+  const LOCATION_PHONE_DIALPAD = location?.phoneDialable?.replace(/\D/g, "") ?? ""
 
   return (
     <main className="bg-brand-light flex min-h-screen items-center justify-center px-6 py-16">

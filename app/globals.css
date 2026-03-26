@@ -131,6 +131,23 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
+   THEME: EDITORIAL  — Forest green & cream (refined, typographic, modern)
+═══════════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="editorial"] {
+  --theme-primary: #006b3d;          /* editorial green — buttons, highlights   */
+  --theme-secondary: #00502c;        /* deep forest green — headings, accents   */
+  --theme-secondary-dark: #003d22;   /* hover / pressed state                   */
+  --theme-tertiary: #974148;         /* muted terracotta accent                 */
+  --theme-bg: #f6fbf4;               /* barely-tinted green page background     */
+  --theme-fg: #181d19;               /* near-black body copy                    */
+  --theme-muted: #3f4941;            /* muted surface-variant text              */
+  --theme-card: #ffffff;             /* card / modal backgrounds                */
+  --theme-font-sans: var(--font-manrope);
+  --theme-font-serif: var(--font-newsreader);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
    THEME: OCEAN  — Coastal teal & coral (fresh, airy, modern seafood)
 ═══════════════════════════════════════════════════════════════════════════════ */
 

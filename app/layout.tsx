@@ -1,31 +1,63 @@
-import type { Metadata } from "next"
-import {
-  Cormorant_Garamond,
-  // ── Midnight ────────────────────────────────────────────────────────────────
-  DM_Sans,
-  // ── Tropical (default) ──────────────────────────────────────────────────────
-  Inter,
-  Lora,
-  Merriweather,
-  // ── Spice ───────────────────────────────────────────────────────────────────
-  Nunito,
-  // ── Ocean ───────────────────────────────────────────────────────────────────
-  Outfit,
-  Playfair_Display,
-} from "next/font/google"
+// app/layout.tsx
+import type { Metadata } from "next";
+import { Cormorant_Garamond,
+// ── Midnight ────────────────────────────────────────────────────────────────
+DM_Sans,
+// ── Tropical (default) ──────────────────────────────────────────────────────
+Inter, Lora,
+// ── Editorial ───────────────────────────────────────────────────────────────
+Manrope, Merriweather, Newsreader,
+// ── Spice ───────────────────────────────────────────────────────────────────
+Nunito,
+// ── Ocean ───────────────────────────────────────────────────────────────────
+Outfit, Playfair_Display } from "next/font/google";
 
-import { getLocationBySlug } from "@/lib/sanity"
 
-import { CartProvider } from "@/context/CartContext"
 
-import "./globals.css"
+import { getLocationBySlug } from "@/lib/sanity";
+
+
+
+import { CartProvider } from "@/context/CartContext";
+
+
+
+import "./globals.css";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ─── Font definitions ─────────────────────────────────────────────────────────
-// All eight fonts are loaded at build time. next/font sets each one as a CSS
+// All ten fonts are loaded at build time. next/font sets each one as a CSS
 // custom property on whichever element receives the .variable className.
 // Applying all variable classNames to <html> makes every font available to the
 // [data-theme="..."] blocks in globals.css, which resolve --theme-font-sans /
 // --theme-font-serif by pointing at the appropriate font variable.
+
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  variable: "--font-newsreader",
+  weight: ["400", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+})
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  display: "swap",
+})
 
 const inter = Inter({
   subsets: ["latin"],
@@ -90,12 +122,14 @@ const FONT_VARIABLES = [
   lora.variable,
   outfit.variable,
   merriweather.variable,
+  newsreader.variable,
+  manrope.variable,
 ].join(" ")
 
 // ─── Location slug ────────────────────────────────────────────────────────────
 // TODO: derive this from the request hostname in a middleware-based multi-tenant
 // setup. Hardcoded for local development; swap to dynamic resolution in prod.
-const LOCATION_SLUG = "bull-top-taste-wpb"
+const LOCATION_SLUG = "bull-top-taste-rpb"
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
