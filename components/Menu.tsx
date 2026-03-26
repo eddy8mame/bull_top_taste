@@ -92,7 +92,7 @@ const handleAdd = useCallback(
 
           {/* Featured grid */}
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {featured.map(item => {
+            {featured.map((item, index) => {
               const canOrder = item.price != null || (item.modifierGroups?.length ?? 0) > 0
               return (
                 <div
@@ -106,6 +106,7 @@ const handleAdd = useCallback(
                         src={item.imageUrl}
                         alt={item.name}
                         fill
+                        priority={index <4}
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover"
                       />{" "}

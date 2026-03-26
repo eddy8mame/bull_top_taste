@@ -1,4 +1,8 @@
+//components/Nav.tsx
+
 "use client"
+
+import { useEffect, useState } from "react"
 
 import Link from "next/link"
 
@@ -13,8 +17,12 @@ interface Props {
 export default function Nav({ location }: Props) {
   const { count, setIsOpen } = useCart()
 
-  const uberEatsUrl =
-    location?.uberEatsUrl ?? process.env.NEXT_PUBLIC_UBEREATS_URL ?? "https://www.ubereats.com"
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   const restaurantName = location?.restaurantName ?? "Bull Top Taste"
   const logoUrl = location?.logoUrl
 
@@ -59,7 +67,8 @@ export default function Nav({ location }: Props) {
         >
           {/* <span>🛒</span> */}
           <span>Order Online</span>
-          {count > 0 && (
+          {/* 3. Hydration fix: Only render the badge if mounted */}
+          {isMounted && count > 0 && (
             <span className="bg-brand-gold text-brand-dark absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold">
               {count}
             </span>

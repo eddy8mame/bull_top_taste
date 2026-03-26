@@ -1,17 +1,48 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import MapboxMap, { Marker } from "react-map-gl/mapbox"
+import { useState } from "react";
+import MapboxMap, { Marker } from "react-map-gl/mapbox";
 
-import ModifierModal from "@/components/ModifierModal"
-import type { CartItem, MenuItem } from "@/types"
 
-import "mapbox-gl/dist/mapbox-gl.css"
 
-import type { LocationFull } from "@/lib/sanity"
+import { useRouter } from "next/navigation";
 
-import { useCart } from "@/context/CartContext"
+
+
+import "mapbox-gl/dist/mapbox-gl.css";
+
+
+
+import type { CartItem, MenuItem } from "@/types";
+
+
+
+import type { LocationFull } from "@/lib/sanity";
+
+
+
+import { useCart } from "@/context/CartContext";
+
+
+
+import ModifierModal from "@/components/ModifierModal";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 interface Props {
   location?: LocationFull | null
@@ -307,8 +338,13 @@ export default function Cart({ location }: Props) {
             </ul>
 
             <div className="flex justify-between border-y border-gray-100 bg-gray-50 px-6 py-3 font-semibold">
-              <span>Total</span>
-              <span className="text-brand-green">${total.toFixed(2)}</span>
+              <div className="border-y border-gray-100 bg-gray-50 px-6 py-3">
+                <div className="flex justify-between font-semibold">
+                  <span>Subtotal</span>
+                  <span className="text-brand-green">${total.toFixed(2)}</span>
+                </div>
+                <p className="text-brand-muted mt-0.5 text-xs">+ tax calculated at checkout</p>
+              </div>
             </div>
 
             <div className="mx-6 mt-4 flex items-center gap-2 rounded-lg border border-green-100 bg-green-50 px-4 py-2.5">

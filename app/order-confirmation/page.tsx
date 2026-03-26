@@ -1,8 +1,15 @@
+import { Metadata } from "next"
 import Link from "next/link"
 
 import { stripe } from "@/lib/stripe"
 
 import ClearCart from "./ClearCart"
+
+export const metadata: Metadata = {
+  formatDetection: {
+    telephone: false,
+  },
+}
 
 interface Props {
   searchParams: Promise<{ session_id?: string }>

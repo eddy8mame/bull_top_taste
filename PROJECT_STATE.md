@@ -73,6 +73,8 @@ Replaces the old deprecated `siteSettings` singleton. One document per physical 
 
 **About group**: `aboutSection` object containing `{ heading, subheading, body, image, background }`, plus `gallery` (array of images, each with `alt` and `caption`)
 
+**Tax**: `taxRate` (number, 0–1) — sales tax rate for this location. Defaults to `DEFAULT_TAX_RATE` (0.07) when absent.
+
 **Catering group**: catering section copy fields
 
 **Hours & Ordering group**: `hours` (array of `{ days, time }` objects), `pickupWaitTime` (string), `kitchenOpen` (boolean — gates checkout API)
@@ -240,6 +242,22 @@ Tapping a cart item's content area opens `ModifierModal` in edit mode via `exist
 
 **Mode detection:** `existingItem` present → edit mode. CTA shows "Update Order", `handleAdd` calls `replaceItem` instead of `addItem`.
 
+### Tax calculation (lib/tax.ts)
+
+Processor-agnostic tax utility. Single source of truth for all price math regardless of payment method.
+```typescript
+calculateTotals(items: CartItem[], taxRate: number): {
+  subtotal: number   // sum of effectivePrice × quantity
+  tax: number        // rounded to 2dp
+  total: number      // subtotal + tax, rounded to 2dp
+  taxRateLabel: string  // e.g. "7%" or "8.25%"
+}
+```
+
+`DEFAULT_TAX_RATE = 0.065` (Palm Beach County, FL). Overridden per location via `location.taxRate` from Sanity. Displayed as subtotal / tax / total breakdown on `/checkout`. Cart panel shows subtotal with deferred tax note.
+
+**Multi-tenant note:** `taxRate` should be passed through `CheckoutBody` to `/api/checkout/route.ts` for full accuracy — currently server falls back to `DEFAULT_TAX_RATE`. Flagged as deferred item.
+
 ### Optimistic UI (`mutate`)
 
 Every action function follows the same pattern:
@@ -372,10 +390,12 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 | `startedAt` in Sanity Studio schema | `order.ts` doesn't have an explicit `startedAt` field definition (like `readyAt` does). Sanity accepts it from the API patch, but it should be added to the schema for Studio visibility |
 | Cart panel UI overhaul | Complete. All subtasks shipped: localStorage persistence, delivery card removed, pickup location card with Mapbox, modifier descriptor, removal UX, quick-add empty state, pre-populated edit modal. |
 | Pre-commit hooks | Deferred to post-demo. Plan: husky + lint-staged running Prettier then ESLint --fix on staged .ts/.tsx files. Skip until collaborators are added or approaching production. |
+| Tax rate in checkout API | `taxRate` not yet passed through `CheckoutBody` to `/api/checkout/route.ts`. Server currently falls back to `DEFAULT_TAX_RATE = 0.065`. Add `taxRate?: number` to `CheckoutBody` and pass from `CheckoutClient` for full multi-tenant accuracy. |
 
 
 ## System 
-* **v2.0.0 (Current):** Implemented add-on uptake panel in office
+* **v2.0.1 (Current):** Added processor-agnostic tax calculation via lib/tax.ts. Sanity-driven taxRate per location with 0.07 Palm Beach County fallback. Checkout page shows full subtotal/tax/total breakdown. Cart panel shows deferred tax note.
+* **v2.0.0:** Implemented add-on uptake panel in office
   dashboard Menu tab. Calculates ticket attach rate per upsell add-on
   from order history — the percentage of confirmed orders that included
   each add-on at least once. Uses a Set-based unique order count so
@@ -391,13 +411,13 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
   pickedUpAt). Fixed kitchen toggle in Settings always showing Closed
   due to wrong response key. Fixed InfoIcon tooltip text inheriting
   uppercase and letter-spacing from parent label classes.
-* **v1.8.0 (Current):** Added InfoIcon tooltip component to office
+* **v1.8.0:** Added InfoIcon tooltip component to office
   dashboard. All KPI cards, charts, bar lists, and table columns now
   carry hover tooltips explaining what each metric represents and how
   it is calculated. Added avg queue time (confirmedAt → startedAt) and
   avg prep time (startedAt → readyAt) KPIs to the overview tab, giving
   operators granular visibility into kitchen throughput vs. queue depth.
-* **v1.7.0 (Current):** Fixed critical issue where orders appeared in the
+* **v1.7.0:** Fixed critical issue where orders appeared in the
 kitchen pipeline before payment was confirmed. Introduced
 `awaiting_payment` as a pre-payment status written at checkout time.
 Stripe webhook now advances status to `pending` and stamps `confirmedAt`

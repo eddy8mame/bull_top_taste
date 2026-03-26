@@ -134,7 +134,7 @@ export default function AdminDashboard() {
   const [mode, setMode] = useState<Mode>("kitchen")
   const [kitchenOpen, setKitchenOpen] = useState(true)
   const [kitchenBusy, setKitchenBusy] = useState(false)
-  const [stockOpen, setStockOpen] = useState(true)
+  const [stockOpen, setStockOpen] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [now, setNow] = useState(() => Date.now())
   const prevPendingRef = useRef(0)

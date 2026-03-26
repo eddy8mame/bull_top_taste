@@ -6,7 +6,9 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 
 import type { CartItem, SelectedModifier } from "@/types"
+
 import type { LocationFull } from "@/lib/sanity"
+import { DEFAULT_TAX_RATE, calculateTotals } from "@/lib/tax"
 
 import { useCart } from "@/context/CartContext"
 
@@ -93,7 +95,13 @@ function OrderItemRow({ item }: { item: CartItem }) {
 // ── Main component ────────────────────────────────────────────────────────────
 export default function CheckoutClient({ location }: Props) {
   const router = useRouter()
-  const { items, total } = useCart()
+  const { items } = useCart()
+  const {
+    subtotal,
+    tax,
+    total: grandTotal,
+    taxRateLabel,
+  } = calculateTotals(items, location?.taxRate ?? DEFAULT_TAX_RATE)
 
   const [formData, setFormData] = useState({
     name: "",
@@ -117,7 +125,7 @@ export default function CheckoutClient({ location }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items,
-          total,
+          grandTotal,
           customer: { ...formData, type: "pickup" },
         }),
       })
@@ -236,9 +244,19 @@ export default function CheckoutClient({ location }: Props) {
                 <OrderItemRow key={item.cartItemId} item={item} />
               ))}
             </div>
-            <div className="mt-3 flex justify-between border-t border-gray-100 pt-3 font-semibold">
-              <span>Total</span>
-              <span className="text-brand-green">${total.toFixed(2)}</span>
+            <div className="mt-3 flex flex-col gap-2 border-t border-gray-100 pt-3 text-sm">
+              <div className="flex justify-between text-gray-600">
+                <span>Subtotal</span>
+                <span>${subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-gray-600">
+                <span>Sales tax ({taxRateLabel})</span>
+                <span>${tax.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between font-semibold text-gray-900">
+                <span>Total</span>
+                <span>${grandTotal.toFixed(2)}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -290,7 +308,9 @@ export default function CheckoutClient({ location }: Props) {
               disabled={loading}
               className="bg-brand-green hover:bg-brand-green-dark w-full rounded-xl py-4 text-sm font-semibold text-white transition-colors disabled:opacity-60"
             >
-              {loading ? "Redirecting to payment…" : `Proceed to payment — $${total.toFixed(2)}`}
+              {loading
+                ? "Redirecting to payment…"
+                : `Proceed to payment — $${grandTotal.toFixed(2)}`}{" "}
             </button>
 
             <p className="text-brand-muted text-center text-xs">Secured by Stripe · Pickup only</p>

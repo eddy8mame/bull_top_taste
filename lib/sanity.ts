@@ -158,6 +158,9 @@ export interface LocationFull extends LocationMeta {
   hours?: { days: string; time: string }[]
   pickupWaitTime?: string
   featuredItems?: MenuItem[]
+
+  // Tax Rate
+  taxRate?: number
 }
 
 // The full GROQ projection shared by both lookup paths.
@@ -185,7 +188,10 @@ const LOCATION_FULL_PROJECTION = `{
   },
 
   hours[] { days, time },
+  pickupWaitTime, hours[] { days, time },
   pickupWaitTime,
+  taxRate,
+
 
   "featuredItems": featuredItems[]->{
     _id, name, price,

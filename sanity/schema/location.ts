@@ -1,3 +1,4 @@
+// sanity/schema/location.ts
 import { defineArrayMember, defineField, defineType } from "sanity"
 
 // ─── Theme catalogue ──────────────────────────────────────────────────────────
@@ -336,6 +337,19 @@ export const locationSchema = defineType({
         "Controls the Kitchen Closed banner on the ordering page. " +
         "Toggle off to temporarily stop accepting new orders (e.g. end of service).",
       initialValue: true,
+    }),
+
+    defineField({
+      name: "taxRate",
+      title: "Sales Tax Rate",
+      type: "number",
+      description: "Enter as a decimal (e.g., 0.07 for 7%).",
+      validation: Rule =>
+        Rule.required()
+          .min(0)
+          .error("Tax rate cannot be negative.")
+          .max(0.2)
+          .error("Tax rate exceeds 20%. Please enter as a decimal (e.g., 0.07)."),
     }),
 
     defineField({

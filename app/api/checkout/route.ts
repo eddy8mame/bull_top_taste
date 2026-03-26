@@ -1,11 +1,28 @@
 // app/api/checkout/route.ts
+import { NextRequest, NextResponse } from "next/server";
 
-import { NextRequest, NextResponse } from "next/server"
 
-import type { CartItem, SanityOrderItem, SanityOrderModifier } from "@/types"
 
-import { getSanityReadClient, getSanityWriteClient } from "@/lib/sanity"
-import { stripe } from "@/lib/stripe"
+import type { CartItem, SanityOrderItem, SanityOrderModifier } from "@/types";
+
+
+
+import { getSanityReadClient, getSanityWriteClient } from "@/lib/sanity";
+import { stripe } from "@/lib/stripe";
+import { DEFAULT_TAX_RATE, calculateTotals } from "@/lib/tax";
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ─── Request body ─────────────────────────────────────────────────────────────
 
@@ -135,7 +152,7 @@ function toSanityItem(item: CartItem): SanityOrderItem {
 export async function POST(req: NextRequest) {
   const { items, customer }: CheckoutBody = await req.json()
 
-  const total = items.reduce((sum, i) => sum + i.effectivePrice * i.quantity, 0)
+  const { total } = calculateTotals(items, DEFAULT_TAX_RATE)
 
   // ── 0. Kitchen open/close gate ────────────────────────────────────────────
   // Checked before any Stripe or Sanity work. When the admin toggles the

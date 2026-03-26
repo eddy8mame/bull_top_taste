@@ -278,7 +278,7 @@ const TABS: { id: Section; label: string }[] = [
 export default function OfficeDashboard() {
   const [orders, setOrders] = useState<AdminOrder[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedLocation, setSelectedLocation] = useState("rpb")
+  const [selectedLocation, setSelectedLocation] = useState("wpb")
   const [activeSection, setActiveSection] = useState<Section>("overview")
   const [kitchenOpen, setKitchenOpen] = useState<boolean | null>(null)
   const [togglingKitchen, setTogglingKitchen] = useState(false)

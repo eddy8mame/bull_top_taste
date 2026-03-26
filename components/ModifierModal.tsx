@@ -396,7 +396,7 @@ function handleAdd() {
             <div className="flex-1">
               <h2 className="text-xl leading-snug font-bold">{item.name}</h2>
               {item.description && (
-                <p className="text-brand-muted mt-1 text-sm leading-relaxed">{item.description}</p>
+                <p className="text-brand-muted mt-1 text-md leading-relaxed">{item.description}</p>
               )}
             </div>
           </div>
@@ -408,7 +408,7 @@ function handleAdd() {
             {/* Item photo */}
             {item.imageUrl ? (
               <div className="relative h-44 w-full shrink-0">
-                <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                <Image src={item.imageUrl} alt={item.name} fill priority={true} className="object-cover" />
               </div>
             ) : (
               <ItemPhotoPlaceholder name={item.name} />
@@ -476,22 +476,22 @@ function handleAdd() {
                                   <span className="bg-brand-green block h-2.5 w-2.5 rounded-full" />
                                 )}
                               </span>
-                              <span className="flex-1 text-sm">{opt.name}</span>
+                              <span className="flex-1 text-md">{opt.name}</span>
                               {opt.priceAdjustment > 0 && (
-                                <span className="text-brand-muted shrink-0 text-sm">
+                                <span className="text-brand-muted shrink-0 text-md">
                                   +${opt.priceAdjustment.toFixed(2)}
                                 </span>
                               )}
-                              {hasSub && <span className="shrink-0 text-sm text-gray-300">›</span>}
+                              {hasSub && <span className="shrink-0 text-md text-gray-300">›</span>}
                             </button>
                           )}
 
                           {/* ── Stepper ──────────────────────────────────── */}
                           {mode === "stepper" && (
                             <div className="flex items-center gap-3 px-5 py-3.5">
-                              <span className="flex-1 text-sm">{opt.name}</span>
+                              <span className="flex-1 text-md">{opt.name}</span>
                               {opt.priceAdjustment > 0 && (
-                                <span className="text-brand-muted shrink-0 text-sm">
+                                <span className="text-brand-muted shrink-0 text-md">
                                   +${opt.priceAdjustment.toFixed(2)}
                                 </span>
                               )}
@@ -539,15 +539,15 @@ function handleAdd() {
                                   </span>
                                 )}
                               </span>
-                              <span className="flex-1 text-sm">{opt.name}</span>
+                              <span className="flex-1 text-md">{opt.name}</span>
                               {opt.priceAdjustment > 0 && (
-                                <span className="text-brand-muted shrink-0 text-sm">
+                                <span className="text-brand-muted shrink-0 text-md">
                                   +${opt.priceAdjustment.toFixed(2)}
                                 </span>
                               )}
                               {hasSub && (
                                 <span
-                                  className={`shrink-0 text-sm ${isSelected ? "text-brand-green font-medium" : "text-gray-300"}`}
+                                  className={`shrink-0 text-md ${isSelected ? "text-brand-green font-medium" : "text-gray-300"}`}
                                 >
                                   ›
                                 </span>
@@ -587,7 +587,7 @@ function handleAdd() {
                 onClick={() => setShowInstructions(v => !v)}
                 className="flex w-full items-center justify-between px-5 py-3.5 text-left transition-colors hover:bg-gray-50"
               >
-                <span className="text-sm text-gray-700">Add Special Instructions</span>
+                <span className="text-md text-gray-700">Add Special Instructions</span>
                 <span
                   className={`text-lg text-gray-400 transition-transform duration-150 ${showInstructions ? "rotate-90" : ""}`}
                 >
@@ -602,7 +602,7 @@ function handleAdd() {
                     value={specialInstructions}
                     onChange={e => setSpecialInstructions(e.target.value)}
                     rows={3}
-                    className="focus:border-brand-green w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none"
+                    className="focus:border-brand-green w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-md focus:outline-none"
                   />
                 </div>
               )}
@@ -615,7 +615,7 @@ function handleAdd() {
             <button
               onClick={handleAdd}
               disabled={!isValid}
-              className={`w-full rounded-2xl py-4 text-sm font-bold transition-all ${
+              className={`w-full rounded-2xl py-4 text-md font-bold transition-all ${
                 isValid
                   ? "bg-[#FF3008] text-white hover:brightness-90 active:scale-[.98]"
                   : "cursor-not-allowed bg-[#FF3008]/60 text-white"
