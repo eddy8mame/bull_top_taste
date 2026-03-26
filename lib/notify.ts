@@ -1,5 +1,4 @@
 // lib/notify.ts
-
 import { Resend } from "resend"
 import twilio from "twilio"
 
@@ -85,10 +84,14 @@ Questions? Call us at 561.795.8440 or email info@bulltoptaste.com
 export async function notifyCustomerOrderReady(order: Order) {
   if (!order.customerPhone) return
 
+  const ref = order.stripePaymentIntentId
+    ? ` (order ${order.stripePaymentIntentId.slice(-6).toUpperCase()})`
+    : ""
+
   await twilioClient.messages.create({
     from: process.env.TWILIO_PHONE_NUMBER ?? "",
     to: order.customerPhone,
-    body: `Hi ${order.customerName}! Your order at Bull Top Taste is ready for pickup. See you soon! Questions? Call 561.795.8440.`,
+    body: `Hi ${order.customerName}! Your Bull Top Taste order${ref} is ready for pickup. See you soon! Questions? Call 561.795.8440.`,
   })
 }
 

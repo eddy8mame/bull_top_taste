@@ -300,6 +300,10 @@ export default function CheckoutClient({ location }: Props) {
               onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))}
               className="focus:border-brand-green rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none"
             />
+            <p className="text-brand-muted -mt-2 text-xs">
+              By providing your phone number, you agree to receive automated text messages regarding
+              your order status. Message & data rates may apply. Reply STOP to opt out.
+            </p>
 
             {error && <p className="text-center text-xs text-red-600">{error}</p>}
 

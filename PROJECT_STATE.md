@@ -24,6 +24,7 @@
 - **`app/admin/admin.css`** owns all admin UI CSS, strictly scoped — never imported in the storefront
 
 ### Tooling
+
 - **ESLint**: `eslint-config-next/core-web-vitals` + `eslint-config-next/typescript`
 - **Prettier**: semi-free, double quotes, 100 char print width, `es5` trailing commas
 - **Import sorting**: `@trivago/prettier-plugin-sort-imports` — grouped order: React → Next → third-party → `@/types` → `@/lib` → `@/context` → `@/components` → relative. Blank lines between groups.
@@ -393,8 +394,13 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 | Tax rate in checkout API | `taxRate` not yet passed through `CheckoutBody` to `/api/checkout/route.ts`. Server currently falls back to `DEFAULT_TAX_RATE = 0.065`. Add `taxRate?: number` to `CheckoutBody` and pass from `CheckoutClient` for full multi-tenant accuracy. |
 
 
-## System 
-* **v2.0.1 (Current):** Added processor-agnostic tax calculation via lib/tax.ts. Sanity-driven taxRate per location with 0.07 Palm Beach County fallback. Checkout page shows full subtotal/tax/total breakdown. Cart panel shows deferred tax note.
+## System
+* **v2.1.0 (Current):** Customer ready SMS now includes the order reference (last 6 chars
+  of Stripe payment intent, e.g. "order AB3F2C") matching what staff see on the
+  floor card. Added SMS consent copy beneath the phone input on checkout for
+  Twilio toll-free verification (30511). Floor card and modal order reference
+  promoted from 10px muted to 13px bold for faster staff identification.
+* **v2.0.1:** Added processor-agnostic tax calculation via lib/tax.ts. Sanity-driven taxRate per location with 0.07 Palm Beach County fallback. Checkout page shows full subtotal/tax/total breakdown. Cart panel shows deferred tax note.
 * **v2.0.0:** Implemented add-on uptake panel in office
   dashboard Menu tab. Calculates ticket attach rate per upsell add-on
   from order history — the percentage of confirmed orders that included

@@ -1,4 +1,4 @@
- /* app/admin/admin.css */
+/* app/admin/admin.css */
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    ADMIN DASHBOARD — Isolated theme layer
@@ -674,8 +674,9 @@
   gap: 8px;
 }
 .admin-shell .f-order-num {
-  font-size: 10px;
-  color: #6b6b66;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a18;
   letter-spacing: 0.04em;
   margin-bottom: 2px;
 }
@@ -773,8 +774,9 @@
   background: #ffffff;
 }
 .admin-shell .m-num {
-  font-size: 10px;
-  color: #6b6b66;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a18;
   letter-spacing: 0.04em;
   margin-bottom: 2px;
 }

@@ -1,11 +1,43 @@
 // app/api/orders/[id]/ready/route.ts
+import { NextRequest, NextResponse } from "next/server";
 
-import { NextRequest, NextResponse } from "next/server"
 
-import type { Order } from "@/types"
 
-import { notifyCustomerOrderReady } from "@/lib/notify"
-import { getSanityWriteClient } from "@/lib/sanity"
+import type { Order } from "@/types";
+
+
+
+import { notifyCustomerOrderReady } from "@/lib/notify";
+import { getSanityWriteClient } from "@/lib/sanity";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // POST /api/orders/[id]/ready — kitchen marks order ready; patches Sanity to "floor"
 // and fires a customer SMS via Twilio. The SMS is non-blocking: a Twilio failure
@@ -31,10 +63,11 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     total: number
     createdAt: string
     notes?: string
+    stripePaymentIntentId?: string
   } | null>(
     `*[_type == "order" && _id == $id][0] {
        _id, customerName, customerPhone, customerEmail,
-       type, total, createdAt, notes
+       type, total, createdAt, notes, stripePaymentIntentId
      }`,
     { id }
   )
@@ -55,9 +88,10 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     customerEmail: raw.customerEmail,
     customerPhone: raw.customerPhone,
     notes: raw.notes,
-    items: [], // notification body doesn't need line items
+    items: [],
     total: raw.total,
     createdAt: raw.createdAt,
+    stripePaymentIntentId: raw.stripePaymentIntentId,
   }
   notifyCustomerOrderReady(order).catch(err =>
     console.error("[ready] Failed to send ready SMS:", err)
