@@ -395,7 +395,12 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.2.0 (Current):** Added editorial theme (Newsreader + Manrope, forest green
+* **v2.2.1 (Current):** Filled cart redesigned to editorial drawer pattern.
+  Restaurant name pulled from Sanity. Item thumbnails added. Quantity
+  control replaced with pill (trash + count + plus). Price shown per
+  item. Pickup/Mapbox card hidden pending redesign. CTA updated to
+  full-width green rounded button.
+* **v2.2.0:** Added editorial theme (Newsreader + Manrope, forest green
   palette). Cart drawer widened to 550px. Empty state redesigned to match
   editorial reference — shopping bag icon, bold heading, full-width browse
   CTA. Quick add panel deferred.
