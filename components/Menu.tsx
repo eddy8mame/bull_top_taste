@@ -36,6 +36,29 @@ import ModifierModal from "@/components/ModifierModal";
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 interface Props {
   items: MenuItem[]
   specials: Special[]
@@ -74,20 +97,42 @@ export default function Menu({ items, specials }: Props) {
     <>
       {modalItem && <ModifierModal item={modalItem} onClose={() => setModalItem(null)} />}
 
-      <section id="menu" className="bg-brand-light px-6 py-10">
+      <section id="menu" className="bg-white px-6 py-24">
         <div className="mx-auto max-w-6xl">
           {/* Section header */}
           {/* <p className="text-brand-green mb-1 text-xs font-bold tracking-widest uppercase">
             Fan Favourites
           </p> */}
-          <div className="mb-2 flex items-end justify-between">
-            <h2 className="font-serif text-4xl">Most Ordered</h2>
-            <Link
-              href="/menu"
-              className="text-brand-green hidden text-sm font-semibold hover:underline sm:block"
-            >
-              View full menu →
-            </Link>
+          <div className="mb-6 flex items-end justify-between">
+            <div>
+              <h2 className="font-serif text-5xl font-bold text-gray-900 md:text-6xl">
+                Most Ordered
+              </h2>
+              <p className="mt-2 text-xl text-gray-500">
+                Our community&apos;s favorite comfort classics, packed with authentic spice.
+              </p>
+            </div>
+            <div className="ml-8 hidden shrink-0 items-center gap-3 md:flex">
+              <Link
+                href="/menu"
+                className="text-brand-green flex items-center gap-2 text-xs font-black tracking-widest uppercase hover:underline"
+              >
+                View Full Menu
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4"
+                >
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </Link>
+            </div>
           </div>
           {/* <p className="text-brand-muted mb-8 max-w-lg leading-relaxed">
             The dishes our customers keep coming back for — bold Jamaican flavours made fresh daily.

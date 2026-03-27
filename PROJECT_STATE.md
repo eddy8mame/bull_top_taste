@@ -395,7 +395,11 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.4.2 (Current):** Location, Catering, and About sections restyled to
+* **v2.5.0 (Current):** Hero redesigned to two-column editorial layout with
+  large serif headline, gold badge, hero image in bordered frame,
+  floating tagline quote card. Menu section header enlarged with
+  subtitle and directional CTA link.
+* **v2.4.2 :** Location, Catering, and About sections restyled to
   editorial reference. Location gains full-width map with overlaid
   address card. Catering switches to light background with gold feature
   tiles, email/phone CTAs, Since 2011 badge. About gets larger serif
