@@ -395,7 +395,14 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.3.1(Current):** Delivery upsell card removed from checkout. Replaced with
+* **v2.3.2 (Current):** Upgraded the order confirmation page with an interactive confetti 
+  animation (isolated client component) and the 6-character Stripe order reference 
+  to perfectly sync the customer ticket with the staff Kitchen Display System (KDS). 
+  Stabilized the checkout flow by resolving a `localStorage` hydration mismatch, 
+  repairing the Google Maps routing link, and enforcing strict regex email validation 
+  in the custom form error UI.
+
+* **v2.3.1:** Delivery upsell card removed from checkout. Replaced with
   a subtle "Delivery instead" link inside the pickup card, visible only
   when a DoorDash URL is set on the location document.
 
@@ -403,7 +410,7 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
   simplified to back arrow and "Return to Menu". Pickup card, order
   summary, and contact/payment cards adopt tinted-shadow white surface
   treatment. Contact and payment details merged into a single right-column
-  
+
   card with contact above payment. CTA updated to full-width uppercase.
 * **v2.2.2:** Cart item rows now have top borders and subtle hover states
   reflecting editability. Added "Complement your cart" section to filled

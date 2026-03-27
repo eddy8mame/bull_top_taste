@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -112,13 +112,16 @@ export default function CheckoutClient({ location }: Props) {
     notes: "",
   })
 
+  const pickupWait = location?.pickupWaitTime ?? "15–20 min"
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [attempted, setAttempted] = useState(false)
-
-  const pickupWait = location?.pickupWaitTime ?? "15–20 min"
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // ── Checkout handler ──────────────────────────────────────────────────────
   async function handleCheckout(e: React.FormEvent) {
@@ -155,6 +158,11 @@ export default function CheckoutClient({ location }: Props) {
       setError("Something went wrong. Please try again.")
       setLoading(false)
     }
+  }
+
+  // Prevent hydration mismatch by waiting for browser mount
+  if (!isMounted) {
+    return null
   }
 
   // ── Empty cart state ──────────────────────────────────────────────────────
@@ -245,7 +253,7 @@ export default function CheckoutClient({ location }: Props) {
                   </p>
                   {location.address && (
                     <a
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location.address)}`}
+                      href={`http://googleusercontent.com/maps.google.com/?daddr=${encodeURIComponent(location.address)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-brand-muted mt-0.5 block text-sm hover:underline"
@@ -330,14 +338,19 @@ export default function CheckoutClient({ location }: Props) {
                   value={formData.email}
                   onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
                   className={`w-full rounded-lg bg-gray-50 px-4 py-3.5 text-base transition-all focus:ring-2 focus:outline-none ${
-                    attempted && !formData.email.trim()
+                    attempted &&
+                    (!formData.email.trim() || !EMAIL_REGEX.test(formData.email.trim()))
                       ? "bg-red-50 ring-2 ring-red-400"
                       : "focus:ring-green-100"
                   }`}
                 />
-                {attempted && !formData.email.trim() && (
+                {attempted && !formData.email.trim() ? (
                   <p className="mt-1.5 ml-1 text-xs text-red-500">Please enter your email</p>
-                )}
+                ) : attempted && !EMAIL_REGEX.test(formData.email.trim()) ? (
+                  <p className="mt-1.5 ml-1 text-xs text-red-500">
+                    Please enter a valid email address
+                  </p>
+                ) : null}
               </div>
 
               <div>

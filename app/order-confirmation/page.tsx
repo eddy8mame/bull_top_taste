@@ -1,11 +1,11 @@
 import { Metadata } from "next"
-import Image from "next/image"
 import Link from "next/link"
 
 import { getLocationFull } from "@/lib/sanity"
 import { stripe } from "@/lib/stripe"
 
 import ClearCart from "./ClearCart"
+import ConfettiEmoji from "./ConfettiEmoji"
 
 export const metadata: Metadata = {
   formatDetection: {
@@ -39,7 +39,17 @@ export default async function OrderConfirmation({ searchParams }: Props) {
   const lineItems = session?.line_items?.data ?? []
   const total = session ? (session.amount_total ?? 0) / 100 : null
 
-  const location = await getLocationFull("bull-top-taste-wpb")
+  // Extract the Payment Intent ID to match the staff dashboard reference
+  const paymentIntentId =
+    typeof session?.payment_intent === "string"
+      ? session.payment_intent
+      : session?.payment_intent?.id
+
+  const orderReference = paymentIntentId
+    ? paymentIntentId.slice(-6).toUpperCase()
+    : (session_id?.slice(-6).toUpperCase() ?? "NEW")
+
+  const location = await getLocationFull("bull-top-taste-rpb")
   const LOCATION_PHONE = location?.phone ?? ""
   const LOCATION_PHONE_DIALPAD = location?.phoneDialable?.replace(/\D/g, "") ?? ""
 
@@ -63,7 +73,10 @@ export default async function OrderConfirmation({ searchParams }: Props) {
       <main className="mx-auto w-full max-w-xl px-4 pt-10 pb-16">
         {/* Celebratory header */}
         <section className="mb-10 text-center">
-          <div className="mb-4 text-6xl">🎉</div>
+          <ConfettiEmoji />
+          <p className="text-brand-green mb-3 text-lg font-bold tracking-widest uppercase">
+            Order #{orderReference}
+          </p>
           <h1 className="mb-4 font-serif text-5xl font-bold text-gray-900 md:text-6xl">
             {customerName ? `Thanks, ${customerName.split(" ")[0]}!` : "Order Confirmed!"}
           </h1>
