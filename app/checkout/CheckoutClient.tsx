@@ -111,14 +111,31 @@ export default function CheckoutClient({ location }: Props) {
     phone: "",
     notes: "",
   })
+
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [attempted, setAttempted] = useState(false)
 
   const pickupWait = location?.pickupWaitTime ?? "15–20 min"
 
   // ── Checkout handler ──────────────────────────────────────────────────────
   async function handleCheckout(e: React.FormEvent) {
     e.preventDefault()
+    setAttempted(true)
+
+    const isEmailValid = EMAIL_REGEX.test(formData.email.trim())
+
+    if (
+      !formData.name.trim() ||
+      !formData.email.trim() ||
+      !isEmailValid ||
+      !formData.phone.trim()
+    ) {
+      return
+    }
+
     setLoading(true)
     setError(null)
     try {
@@ -270,6 +287,7 @@ export default function CheckoutClient({ location }: Props) {
         {/* ── Right column — Contact + Payment ───────────────────── */}
         <div className="sticky top-6">
           <form
+            noValidate
             onSubmit={handleCheckout}
             className="flex flex-col gap-6 rounded-xl bg-white p-6 shadow-[0_8px_24px_rgba(24,29,25,0.06)]"
           >
@@ -288,8 +306,15 @@ export default function CheckoutClient({ location }: Props) {
                   placeholder="Full name"
                   value={formData.name}
                   onChange={e => setFormData(p => ({ ...p, name: e.target.value }))}
-                  className="w-full rounded-lg bg-gray-50 px-4 py-3.5 text-base transition-all focus:ring-2 focus:ring-green-100 focus:outline-none"
+                  className={`w-full rounded-lg bg-gray-50 px-4 py-3.5 text-base transition-all focus:ring-2 focus:outline-none ${
+                    attempted && !formData.name.trim()
+                      ? "bg-red-50 ring-2 ring-red-400"
+                      : "focus:ring-green-100"
+                  }`}
                 />
+                {attempted && !formData.name.trim() && (
+                  <p className="mt-1.5 ml-1 text-xs text-red-500">Please enter your name</p>
+                )}
               </div>
 
               <div>
@@ -304,8 +329,15 @@ export default function CheckoutClient({ location }: Props) {
                   placeholder="Email"
                   value={formData.email}
                   onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
-                  className="w-full rounded-lg bg-gray-50 px-4 py-3.5 text-base transition-all focus:ring-2 focus:ring-green-100 focus:outline-none"
+                  className={`w-full rounded-lg bg-gray-50 px-4 py-3.5 text-base transition-all focus:ring-2 focus:outline-none ${
+                    attempted && !formData.email.trim()
+                      ? "bg-red-50 ring-2 ring-red-400"
+                      : "focus:ring-green-100"
+                  }`}
                 />
+                {attempted && !formData.email.trim() && (
+                  <p className="mt-1.5 ml-1 text-xs text-red-500">Please enter your email</p>
+                )}
               </div>
 
               <div>
@@ -320,11 +352,19 @@ export default function CheckoutClient({ location }: Props) {
                   placeholder="Phone"
                   value={formData.phone}
                   onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))}
-                  className="w-full rounded-lg bg-gray-50 px-4 py-3.5 text-base transition-all focus:ring-2 focus:ring-green-100 focus:outline-none"
+                  className={`w-full rounded-lg bg-gray-50 px-4 py-3.5 text-base transition-all focus:ring-2 focus:outline-none ${
+                    attempted && !formData.phone.trim()
+                      ? "bg-red-50 ring-2 ring-red-400"
+                      : "focus:ring-green-100"
+                  }`}
                 />
+                {attempted && !formData.phone.trim() && (
+                  <p className="mt-1.5 ml-1 text-xs text-red-500">Please enter your phone number</p>
+                )}
                 <p className="text-brand-muted mt-2 text-xs">
-                  By providing your phone number you agree to receive a text message when your order
-                  is ready for pickup.
+                  By providing your phone number, you agree to receive automated text messages
+                  regarding your order status. Message & data rates may apply. Reply STOP to opt
+                  out.
                 </p>
               </div>
             </div>
