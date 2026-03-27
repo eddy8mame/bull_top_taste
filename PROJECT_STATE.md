@@ -395,7 +395,12 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.2.1 (Current):** Filled cart redesigned to editorial drawer pattern.
+* **v2.2.2 (Current):** Cart item rows now have top borders and subtle hover states
+  reflecting editability. Added "Complement your cart" section to filled
+  cart — sourced from new complementItems field on the location document
+  in Sanity. Scrollable grid with prev/next arrows when more than 4 items.
+
+* **v2.2.1:** Filled cart redesigned to editorial drawer pattern.
   Restaurant name pulled from Sanity. Item thumbnails added. Quantity
   control replaced with pill (trash + count + plus). Price shown per
   item. Pickup/Mapbox card hidden pending redesign. CTA updated to

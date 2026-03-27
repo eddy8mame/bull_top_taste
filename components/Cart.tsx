@@ -2,8 +2,9 @@
 
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 
 import "mapbox-gl/dist/mapbox-gl.css"
@@ -22,12 +23,25 @@ interface Props {
 
 export default function Cart({ location }: Props) {
   const router = useRouter()
-  const { items, removeItem, updateQty, total, isOpen, setIsOpen } = useCart()
+  const { items, addItem, removeItem, updateQty, total, isOpen, setIsOpen } = useCart()
 
   const [quickAddItem, setQuickAddItem] = useState<MenuItem | null>(null)
   const [editingItem, setEditingItem] = useState<CartItem | null>(null)
+  const complementScrollRef = useRef<HTMLDivElement>(null)
+
+  const PAGE_SIZE = 4
 
   if (!isOpen) return null
+
+  function scrollComplement(direction: "prev" | "next") {
+    const el = complementScrollRef.current
+    if (!el) return
+    const itemWidth = el.scrollWidth / (location?.complementItems?.length ?? 1)
+    el.scrollBy({
+      left: direction === "next" ? itemWidth * PAGE_SIZE : -itemWidth * PAGE_SIZE,
+      behavior: "smooth",
+    })
+  }
 
   return (
     <>
@@ -91,6 +105,7 @@ export default function Cart({ location }: Props) {
         ) : (
           <div className="flex flex-1 flex-col">
             {/* Header */}
+            {/* Header */}
             <div className="px-6 pt-2 pb-6">
               <p className="mb-1 text-xs font-bold tracking-widest text-gray-900 uppercase">
                 Your Bag From
@@ -101,34 +116,37 @@ export default function Cart({ location }: Props) {
             </div>
 
             {/* Cart items */}
-            <section className="flex-1 space-y-10 overflow-y-auto px-6 pb-6">
-              {items.map(item => (
-                <div key={item.cartItemId} className="flex items-start gap-4">
+            <section className="flex-1 overflow-y-auto">
+              {items.map((item, index) => (
+                <div
+                  key={item.cartItemId}
+                  className={`mx-6 flex cursor-pointer items-start gap-4 border-t border-gray-100 py-4 transition-colors hover:bg-gray-50 ${
+                    index === items.length - 1 ? "" : ""
+                  }`}
+                  onClick={() => setEditingItem(item)}
+                >
                   {/* Thumbnail */}
-                  <div
-                    className="h-24 w-24 shrink-0 cursor-pointer overflow-hidden rounded-xl border border-gray-100 bg-gray-50"
-                    onClick={() => setEditingItem(item)}
-                  >
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
                     {item.imageUrl ? (
-                      <img
+                      <Image
                         src={item.imageUrl}
                         alt={item.name}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="64px"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-3xl">
+                      // Placeholder for items without images
+                      <div className="flex h-full w-full items-center justify-center text-2xl">
                         🍽️
                       </div>
                     )}
                   </div>
 
                   {/* Details */}
-                  <div
-                    className="min-w-0 flex-1 cursor-pointer"
-                    onClick={() => setEditingItem(item)}
-                  >
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-serif text-2xl leading-tight font-bold text-gray-900">
+                      <h3 className="font-serif text-xl leading-tight font-bold text-gray-900">
                         {item.name}
                       </h3>
 
@@ -141,7 +159,7 @@ export default function Cart({ location }: Props) {
                           type="button"
                           aria-label={`Remove ${item.name}`}
                           onClick={() => removeItem(item.cartItemId)}
-                          className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
+                          className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -151,7 +169,7 @@ export default function Cart({ location }: Props) {
                             strokeWidth="1.75"
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            className="h-5 w-5 text-gray-800"
+                            className="h-4 w-4 text-gray-800"
                           >
                             <polyline points="3 6 5 6 21 6" />
                             <path d="M19 6l-1 14H6L5 6" />
@@ -159,14 +177,14 @@ export default function Cart({ location }: Props) {
                             <path d="M9 6V4h6v2" />
                           </svg>
                         </button>
-                        <span className="w-5 text-center text-xl leading-none font-black text-gray-900">
+                        <span className="w-4 text-center text-base leading-none font-black text-gray-900">
                           {item.quantity}
                         </span>
                         <button
                           type="button"
                           aria-label={`Add another ${item.name}`}
                           onClick={() => updateQty(item.cartItemId, item.quantity + 1)}
-                          className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
+                          className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-500"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -176,7 +194,7 @@ export default function Cart({ location }: Props) {
                             strokeWidth="2"
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            className="h-5 w-5 text-gray-800"
+                            className="h-4 w-4 text-gray-800"
                           >
                             <line x1="12" y1="5" x2="12" y2="19" />
                             <line x1="5" y1="12" x2="19" y2="12" />
@@ -187,7 +205,7 @@ export default function Cart({ location }: Props) {
 
                     {/* Modifier summary — preserved exactly */}
                     {item.selectedModifiers && item.selectedModifiers.length > 0 && (
-                      <div className="mt-2">
+                      <div className="mt-1">
                         {(() => {
                           const specs: string[] = []
                           const addons: React.ReactNode[] = []
@@ -223,7 +241,7 @@ export default function Cart({ location }: Props) {
                                 addons.push(
                                   <li
                                     key={sel.optionId}
-                                    className="mt-1.5 flex items-center justify-between text-xs"
+                                    className="mt-1 flex items-center justify-between text-xs"
                                   >
                                     <span className="flex items-center gap-1.5 text-gray-600">
                                       <span className="text-gray-300">↳</span> {finalName}
@@ -244,7 +262,7 @@ export default function Cart({ location }: Props) {
                                   {specs.join(" · ")}
                                 </p>
                               )}
-                              {addons.length > 0 && <ul className="mt-2">{addons}</ul>}
+                              {addons.length > 0 && <ul className="mt-1">{addons}</ul>}
                             </>
                           )
                         })()}
@@ -257,13 +275,124 @@ export default function Cart({ location }: Props) {
                       </p>
                     )}
 
-                    <p className="mt-3 text-2xl font-bold text-gray-900">
+                    <p className="mt-2 text-base font-bold text-gray-900">
                       ${(item.effectivePrice * item.quantity).toFixed(2)}
                     </p>
                   </div>
                 </div>
               ))}
             </section>
+
+            {/* Complement your cart */}
+            {location?.complementItems && location.complementItems.length > 0 && (
+              <div className="mt-4 border-t border-gray-100 px-6 pt-4 pb-2">
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="font-serif text-xl font-bold text-gray-900">
+                    Complement your cart
+                  </h3>
+                  {location.complementItems.length > PAGE_SIZE && (
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        aria-label="Scroll left"
+                        onClick={() => scrollComplement("prev")}
+                        className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white transition-colors hover:bg-gray-50"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="h-4 w-4 text-gray-600"
+                        >
+                          <polyline points="15 18 9 12 15 6" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Scroll right"
+                        onClick={() => scrollComplement("next")}
+                        className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white transition-colors hover:bg-gray-50"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="h-4 w-4 text-gray-600"
+                        >
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div
+                  ref={complementScrollRef}
+                  className="grid auto-cols-[calc(25%-6px)] grid-flow-col gap-3 overflow-x-auto pb-2"
+                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                >
+                  {location.complementItems.map(item => {
+                    const hasRequired = item.modifierGroups?.some(g => g.required) ?? false
+                    return (
+                      <div
+                        key={item._id}
+                        className="flex flex-col overflow-hidden rounded-xl border border-gray-100"
+                      >
+                        <div className="relative h-20 w-full bg-gray-50">
+                          {item.imageUrl ? (
+                            <Image
+                              src={item.imageUrl}
+                              alt={item.name}
+                              fill
+                              className="object-cover"
+                              sizes="25vw"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-2xl">
+                              🍽️
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-1 flex-col gap-1 p-2">
+                          <p className="line-clamp-2 text-xs leading-snug font-semibold text-gray-900">
+                            {item.name}
+                          </p>
+                          <p className="text-brand-muted text-xs">
+                            {item.price !== null ? `$${item.price?.toFixed(2)}` : "Market price"}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (hasRequired) {
+                                setQuickAddItem(item)
+                              } else {
+                                addItem({
+                                  ...item,
+                                  cartItemId: `${item._id}-${Date.now()}`,
+                                  quantity: 1,
+                                  effectivePrice: item.price ?? 0,
+                                  selectedModifiers: undefined,
+                                })
+                              }
+                            }}
+                            className="bg-brand-green hover:bg-brand-green-dark mt-auto flex w-full items-center justify-center rounded-lg py-1.5 text-xs font-semibold text-white transition-colors"
+                          >
+                            {hasRequired ? "Customize" : "+ Add"}
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Subtotal */}
             <div className="mx-6 mt-4 flex items-center justify-between border-t-2 border-gray-100 pt-6">

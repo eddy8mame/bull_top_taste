@@ -1,14 +1,29 @@
 // sanity/schema/location.ts
-import { defineArrayMember, defineField, defineType } from "sanity"
+import { defineArrayMember, defineField, defineType } from "sanity";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ─── Theme catalogue ──────────────────────────────────────────────────────────
 // Each value maps to a data-theme="…" attribute on <html>.
 // The corresponding CSS variables are defined in globals.css.
 const THEME_OPTIONS = [
-  { title: "🌴 Tropical  — Jamaican green & gold (default)", value: "tropical" },
-  { title: "🌑 Midnight  — Deep navy & amber", value: "midnight" },
-  { title: "🌶 Spice     — Warm terracotta & cream", value: "spice" },
-  { title: "🌊 Ocean     — Coastal teal & white", value: "ocean" },
+  { title: "🌴 Tropical   — Jamaican green & gold (default)", value: "tropical" },
+  { title: "🌑 Midnight   — Deep navy & amber", value: "midnight" },
+  { title: "🌶 Spice      — Warm terracotta & cream", value: "spice" },
+  { title: "🌊 Ocean      — Coastal teal & white", value: "ocean" },
+  { title: "📰 Editorial  — Forest green & cream", value: "editorial" },
 ]
 
 // ─── Location document ────────────────────────────────────────────────────────
@@ -366,6 +381,21 @@ export const locationSchema = defineType({
         }),
       ],
       validation: R => R.max(4),
+    }),
+
+    defineField({
+      name: "complementItems",
+      title: "Complement Your Cart Items",
+      type: "array",
+      group: "hours",
+      description:
+        "Items shown in the 'Complement your cart' row in the filled cart drawer. Supports more than 4 — arrows appear when there are more than 4.",
+      of: [
+        defineArrayMember({
+          type: "reference",
+          to: [{ type: "menuItem" }],
+        }),
+      ],
     }),
     // ── Theme & Branding ──────────────────────────────────────────────────────
     // Theme is a preset token rather than free-form hex codes.

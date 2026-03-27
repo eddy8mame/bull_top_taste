@@ -1,6 +1,36 @@
-import { createClient } from "@sanity/client"
+import { createClient } from "@sanity/client";
 
-import type { MenuItem, ModifierGroup, SiteSettings, Special } from "@/types"
+
+
+import type { MenuItem, ModifierGroup, SiteSettings, Special } from "@/types";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ─── Client factory ───────────────────────────────────────────────────────────
 
@@ -91,7 +121,7 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
 // Minimal shape needed by the root layout for theming + metadata.
 export interface LocationMeta {
   restaurantName: string
-  theme: "tropical" | "midnight" | "spice" | "ocean"
+  theme: "tropical" | "midnight" | "spice" | "ocean" | "editorial"
   metaTitle?: string
   metaDescription?: string
   tagline?: string
@@ -161,6 +191,9 @@ export interface LocationFull extends LocationMeta {
 
   // Tax Rate
   taxRate?: number
+
+  // Complement cart items
+  complementItems?: MenuItem[]
 }
 
 // The full GROQ projection shared by both lookup paths.
@@ -192,6 +225,20 @@ const LOCATION_FULL_PROJECTION = `{
   pickupWaitTime,
   taxRate,
 
+  "complementItems": complementItems[]->{
+    _id, name, price,
+    "imageUrl": image.asset->url,
+    modifierGroups[] {
+      "_id": _key, name, required, min, max,
+      options[] {
+        "_id": _key, name, priceAdjustment,
+        subModifierGroups[] {
+          "_id": _key, name, required, min, max,
+          options[] { "_id": _key, name, priceAdjustment }
+        }
+      }
+    }
+  },
 
   "featuredItems": featuredItems[]->{
     _id, name, price,
