@@ -395,7 +395,13 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.2.2 (Current):** Cart item rows now have top borders and subtle hover states
+* **v2.3.0 (Current):** Checkout page restyled to editorial reference. Header
+  simplified to back arrow and "Return to Menu". Pickup card, order
+  summary, and contact/payment cards adopt tinted-shadow white surface
+  treatment. Contact and payment details merged into a single right-column
+  
+  card with contact above payment. CTA updated to full-width uppercase.
+* **v2.2.2:** Cart item rows now have top borders and subtle hover states
   reflecting editability. Added "Complement your cart" section to filled
   cart — sourced from new complementItems field on the location document
   in Sanity. Scrollable grid with prev/next arrows when more than 4 items.

@@ -1,3 +1,5 @@
+// app/checkout/CheckoutClient.tsx
+
 "use client"
 
 import { useState } from "react"
@@ -159,14 +161,26 @@ export default function CheckoutClient({ location }: Props) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="flex items-center gap-4 border-b border-gray-100 bg-white px-6 py-4">
+      <div className="flex items-center gap-3 border-b border-gray-100 bg-white px-6 py-4">
         <button
           onClick={() => router.back()}
-          className="text-brand-green flex items-center gap-1 text-sm font-medium hover:underline"
+          aria-label="Return to menu"
+          className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
         >
-          ← Back
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-6 w-6 text-gray-800"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
         </button>
-        <h1 className="font-serif text-xl">Checkout</h1>
+        <span className="text-sm font-semibold tracking-wide text-gray-800">Return to Menu</span>
       </div>
 
       {/* 🚨 DEMO MODE BANNER */}
@@ -208,14 +222,26 @@ export default function CheckoutClient({ location }: Props) {
 
           {/* Pickup location */}
           {location && (
-            <div className="rounded-xl border border-gray-100 bg-white p-4">
-              <p className="text-brand-muted mb-2 text-xs font-semibold tracking-wide uppercase">
-                Pickup at
-              </p>
-              <div className="flex items-start gap-2">
-                <span className="shrink-0 text-lg">🏪</span>
+            <div className="rounded-xl bg-white p-6 shadow-[0_8px_24px_rgba(24,29,25,0.06)]">
+              <h2 className="mb-5 font-serif text-xl font-bold text-gray-900">Pickup Details</h2>
+              <div className="flex items-start gap-4">
+                <div className="rounded-lg bg-gray-50 p-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-brand-green h-7 w-7"
+                  >
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                </div>
                 <div>
-                  <p className="text-brand-green text-sm font-semibold">
+                  <p className="font-serif text-lg font-semibold text-gray-900">
                     {location.restaurantName}
                   </p>
                   {location.address && (
@@ -223,101 +249,153 @@ export default function CheckoutClient({ location }: Props) {
                       href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location.address)}&travelmode=driving`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-brand-tertiary text-xs hover:underline"
+                      className="text-brand-muted mt-0.5 block text-sm hover:underline"
                     >
                       {location.address}
                     </a>
                   )}
-                  <p className="text-brand-muted mt-0.5 text-xs">Ready in {pickupWait}</p>
+                  <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-1.5 text-xs font-bold tracking-wider text-green-800 uppercase">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-3.5 w-3.5"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    Ready in {pickupWait}
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
           {/* Order items */}
-          <div className="rounded-xl border border-gray-100 bg-white p-4">
-            <p className="text-brand-muted mb-3 text-xs font-semibold tracking-wide uppercase">
-              Order summary
-            </p>
-            <div className="divide-y divide-gray-50">
+          <div className="rounded-xl bg-white p-6 shadow-[0_8px_24px_rgba(24,29,25,0.06)]">
+            <h2 className="mb-5 font-serif text-xl font-bold text-gray-900">Order Summary</h2>
+            <div className="divide-y divide-gray-100">
               {items.map(item => (
                 <OrderItemRow key={item.cartItemId} item={item} />
               ))}
             </div>
-            <div className="mt-3 flex flex-col gap-2 border-t border-gray-100 pt-3 text-sm">
-              <div className="flex justify-between text-gray-600">
+          </div>
+        </div>
+        {/* ── Right column — Contact + Payment ───────────────────── */}
+        <div className="sticky top-6">
+          <form
+            onSubmit={handleCheckout}
+            className="flex flex-col gap-6 rounded-xl bg-white p-6 shadow-[0_8px_24px_rgba(24,29,25,0.06)]"
+          >
+            {/* Contact information */}
+            <div className="flex flex-col gap-4">
+              <h2 className="font-serif text-xl font-bold text-gray-900">Contact Information</h2>
+
+              <div>
+                <label className="mb-2 ml-1 block text-xs font-bold tracking-widest text-gray-500 uppercase">
+                  Full Name
+                </label>
+                <input
+                  required
+                  name="name"
+                  autoComplete="name"
+                  placeholder="Full name"
+                  value={formData.name}
+                  onChange={e => setFormData(p => ({ ...p, name: e.target.value }))}
+                  className="w-full rounded-lg bg-gray-50 px-4 py-3.5 text-base transition-all focus:ring-2 focus:ring-green-100 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 ml-1 block text-xs font-bold tracking-widest text-gray-500 uppercase">
+                  Email
+                </label>
+                <input
+                  required
+                  type="email"
+                  name="email"
+                  autoComplete="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
+                  className="w-full rounded-lg bg-gray-50 px-4 py-3.5 text-base transition-all focus:ring-2 focus:ring-green-100 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 ml-1 block text-xs font-bold tracking-widest text-gray-500 uppercase">
+                  Phone
+                </label>
+                <input
+                  required
+                  type="tel"
+                  name="tel"
+                  autoComplete="tel"
+                  placeholder="Phone"
+                  value={formData.phone}
+                  onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))}
+                  className="w-full rounded-lg bg-gray-50 px-4 py-3.5 text-base transition-all focus:ring-2 focus:ring-green-100 focus:outline-none"
+                />
+                <p className="text-brand-muted mt-2 text-xs">
+                  By providing your phone number you agree to receive a text message when your order
+                  is ready for pickup.
+                </p>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-gray-100" />
+
+            {/* Payment details */}
+            <div className="flex flex-col gap-3">
+              <h2 className="font-serif text-xl font-bold text-gray-900">Payment Details</h2>
+
+              <div className="flex justify-between text-base text-gray-600">
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between text-base text-gray-600">
                 <span>Sales tax ({taxRateLabel})</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between font-semibold text-gray-900">
-                <span>Total</span>
-                <span>${grandTotal.toFixed(2)}</span>
+              <div className="flex justify-between border-t border-gray-100 pt-4">
+                <span className="font-serif text-xl font-bold text-gray-900">Total</span>
+                <span className="text-brand-green font-serif text-2xl font-extrabold">
+                  ${grandTotal.toFixed(2)}
+                </span>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* ── Right column — Customer details + CTA ───────────────────── */}
-        <div>
-          <form
-            onSubmit={handleCheckout}
-            className="flex flex-col gap-4 rounded-xl border border-gray-100 bg-white p-4"
-          >
-            <p className="text-brand-muted text-xs font-semibold tracking-wide uppercase">
-              Your details
-            </p>
-
-            <input
-              required
-              name="name"
-              autoComplete="name"
-              placeholder="Full name *"
-              value={formData.name}
-              onChange={e => setFormData(p => ({ ...p, name: e.target.value }))}
-              className="focus:border-brand-green rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none"
-            />
-            <input
-              required
-              type="email"
-              name="email"
-              autoComplete="email"
-              placeholder="Email *"
-              value={formData.email}
-              onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
-              className="focus:border-brand-green rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none"
-            />
-            <input
-              required
-              type="tel"
-              name="tel"
-              autoComplete="tel"
-              placeholder="Phone *"
-              value={formData.phone}
-              onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))}
-              className="focus:border-brand-green rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none"
-            />
-            <p className="text-brand-muted -mt-2 text-xs">
-              By providing your phone number, you agree to receive automated text messages regarding
-              your order status. Message & data rates may apply. Reply STOP to opt out.
-            </p>
+            {/* Secure badge */}
+            <div className="flex items-center gap-3 rounded-lg bg-gray-50 px-4 py-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-brand-green h-5 w-5 shrink-0"
+              >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <span className="text-sm text-gray-500">Secured by Stripe · Pickup only</span>
+            </div>
 
             {error && <p className="text-center text-xs text-red-600">{error}</p>}
 
             <button
               type="submit"
               disabled={loading}
-              className="bg-brand-green hover:bg-brand-green-dark w-full rounded-xl py-4 text-sm font-semibold text-white transition-colors disabled:opacity-60"
+              className="bg-brand-green hover:bg-brand-green-dark w-full rounded-xl py-5 text-base font-black tracking-widest text-white uppercase transition-all active:scale-[0.98] disabled:opacity-60"
             >
-              {loading
-                ? "Redirecting to payment…"
-                : `Proceed to payment — $${grandTotal.toFixed(2)}`}{" "}
+              {loading ? "Redirecting to payment…" : "Proceed to Payment"}
             </button>
-
-            <p className="text-brand-muted text-center text-xs">Secured by Stripe · Pickup only</p>
           </form>
         </div>
       </div>
