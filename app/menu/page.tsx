@@ -21,7 +21,7 @@ export default async function MenuRoute() {
       <Nav location={null} />
       <Cart location={null} />
 
-      <main className="bg-brand-light min-h-screen pt-16">
+      <main className="bg-brand-light min-h-screen">
         {/* Page header */}
         <div className="border-b border-gray-100 bg-white">
           <div className="mx-auto max-w-6xl px-4 py-8">

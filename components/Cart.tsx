@@ -2,113 +2,20 @@
 
 "use client"
 
-import { useRef, useState } from "react";
+import { useRef, useState } from "react"
 
+import Image from "next/image"
+import { useRouter } from "next/navigation"
 
+import "mapbox-gl/dist/mapbox-gl.css"
 
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import type { CartItem, MenuItem } from "@/types"
 
+import type { LocationFull } from "@/lib/sanity"
 
+import { useCart } from "@/context/CartContext"
 
-import "mapbox-gl/dist/mapbox-gl.css";
-
-
-
-import type { CartItem, MenuItem } from "@/types";
-
-
-
-import type { LocationFull } from "@/lib/sanity";
-
-
-
-import { useCart } from "@/context/CartContext";
-
-
-
-import ModifierModal from "@/components/ModifierModal";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import ModifierModal from "@/components/ModifierModal"
 
 interface Props {
   location?: LocationFull | null

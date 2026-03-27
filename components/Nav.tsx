@@ -28,7 +28,7 @@ export default function Nav({ location }: Props) {
 
 return (
     <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur-md shadow-sm">
-      <div className="mx-auto max-w-screen-xl">
+      <div className="mx-auto ">
         <div className="flex items-center justify-between px-6 py-4">
           {/* Branding */}
           <Link href="/" className="flex shrink-0 items-center gap-2">

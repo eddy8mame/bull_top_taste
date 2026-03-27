@@ -2,16 +2,39 @@
 
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useState } from "react";
 
-import Image from "next/image"
-import Link from "next/link"
 
-import type { CartItem, MenuItem, Special } from "@/types"
 
-import { useCart } from "@/context/CartContext"
+import Image from "next/image";
+import Link from "next/link";
 
-import ModifierModal from "@/components/ModifierModal"
+
+
+import type { CartItem, MenuItem, Special } from "@/types";
+
+
+
+import { useCart } from "@/context/CartContext";
+
+
+
+import ModifierModal from "@/components/ModifierModal";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 interface Props {
   items: MenuItem[]
@@ -107,7 +130,7 @@ export default function Menu({ items, specials }: Props) {
                 >
                   {/* Recessed image tray */}
                   <div className="m-3 rounded bg-gray-100 p-3 shadow-inner">
-                    <div className="relative h-40 w-full overflow-hidden rounded shadow-inner">
+                    <div className="relative h-50 w-full overflow-hidden rounded shadow-inner">
                       {item.imageUrl ? (
                         <Image
                           src={item.imageUrl}
@@ -125,23 +148,23 @@ export default function Menu({ items, specials }: Props) {
                     </div>
                   </div>
 
-                  <div className="flex flex-1 flex-col px-5 pt-2 pb-8">
+                  <div className="flex flex-1 flex-col px-4 pt-1.5 pb-8">
                     {item.tag && (
                       <p className="text-brand-green mb-1 text-[10px] font-bold tracking-widest uppercase">
                         {item.tag}
                       </p>
                     )}
-                    <h3 className="font-serif text-2xl leading-snug font-bold text-gray-900">
-                      {item.name}
-                    </h3>
-                    <p className="text-brand-muted mt-1 line-clamp-2 flex-1 text-base leading-relaxed">
-                      {item.description}
-                    </p>
-                    <div className="mt-3">
-                      <span className="text-brand-green font-serif text-2xl font-bold">
+                    <div className="mb-3 flex items-baseline justify-between gap-2">
+                      <h3 className="font-serif text-2xl leading-snug font-bold text-gray-900">
+                        {item.name}
+                      </h3>
+                      <span className="text-brand-green ml-2 shrink-0 font-serif text-2xl font-bold">
                         {item.price != null ? `$${item.price.toFixed(2)}` : "Market Price"}
                       </span>
                     </div>
+                    <p className="text-brand-muted line-clamp-2 flex-1 text-base leading-relaxed">
+                      {item.description}
+                    </p>
                   </div>
 
                   {/* Floating add button */}

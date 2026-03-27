@@ -30,7 +30,7 @@ export default async function Home() {
       <Nav location={location} />
       <Cart location={location} />
       <main>
-        {/* Hero → Menu → Location & Hours → About → Gallery → Catering → Testimonials → Reservation */}
+        {/* Hero → Menu → Reviews -> Location & Hours → Catering → About */}
         <Hero location={location} />
         <Menu items={items} specials={specials} />
         <Location location={location} />

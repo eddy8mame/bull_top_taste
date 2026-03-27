@@ -395,6 +395,10 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
+* **v2.4.1:** Testimonials section redesigned to light editorial
+  treatment. White cards with tinted shadow replace dark surface.
+  Italic serif quotes, filled star SVGs, uppercase author labels.
+  Google Places API migration path stubbed in comments.
 * **v2.4.0:** Menu cards restyled to styrofoam/takeout aesthetic —
   recessed image tray, floating frosted add button. Nav updated to
   editorial reference — italic serif brand name, uppercase tracked
