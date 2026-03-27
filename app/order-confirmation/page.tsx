@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import Image from "next/image"
 import Link from "next/link"
 
 import { getLocationFull } from "@/lib/sanity"
@@ -43,76 +44,150 @@ export default async function OrderConfirmation({ searchParams }: Props) {
   const LOCATION_PHONE_DIALPAD = location?.phoneDialable?.replace(/\D/g, "") ?? ""
 
   return (
-    <main className="bg-brand-light flex min-h-screen items-center justify-center px-6 py-16">
-      <div className="w-full max-w-md rounded-2xl border border-gray-100 bg-white p-10 shadow-sm">
-        {/* Header */}
-        <div className="mb-8 text-center">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/80 px-6 py-4 backdrop-blur-md">
+        <div className="mx-auto flex max-w-3xl items-center justify-between">
+          <span className="font-serif text-xl font-bold text-gray-900">
+            {location?.restaurantName ?? "Bull Top Taste"}
+          </span>
+          <Link
+            href="/"
+            className="text-sm font-bold text-gray-900 underline underline-offset-2 transition-opacity hover:opacity-70"
+          >
+            Return to Menu
+          </Link>
+        </div>
+      </header>
+
+      <main className="mx-auto w-full max-w-xl px-4 pt-10 pb-16">
+        {/* Celebratory header */}
+        <section className="mb-10 text-center">
           <div className="mb-4 text-6xl">🎉</div>
-          <h1 className="mb-2 font-serif text-3xl">
+          <h1 className="mb-4 font-serif text-5xl font-bold text-gray-900 md:text-6xl">
             {customerName ? `Thanks, ${customerName.split(" ")[0]}!` : "Order Confirmed!"}
           </h1>
-          <p className="text-brand-muted leading-relaxed">
+          <p className="mx-auto max-w-lg text-xl leading-relaxed text-gray-500 md:text-2xl">
             {orderType === "delivery"
               ? "Your order is confirmed and on its way to you."
               : "Your order is confirmed and we're getting it ready for pickup."}
           </p>
-        </div>
+        </section>
 
-        {/* Order summary */}
-        {lineItems.length > 0 && (
-          <div className="mb-6 overflow-hidden rounded-xl border border-gray-100">
-            <div className="bg-brand-light px-4 py-2.5">
-              <p className="text-brand-muted text-xs font-bold tracking-widest uppercase">
-                Order Summary
-              </p>
-            </div>
-            <ul className="divide-y divide-gray-50">
-              {lineItems.map(item => (
-                <li key={item.id} className="flex justify-between px-4 py-3 text-sm">
-                  <span className="font-medium">
-                    {item.quantity && item.quantity > 1 ? `${item.quantity}× ` : ""}
-                    {item.description}
-                  </span>
-                  <span className="text-brand-muted">
-                    ${((item.amount_total ?? 0) / 100).toFixed(2)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            {total !== null && (
-              <div className="flex justify-between border-t border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold">
-                <span>Total paid</span>
-                <span className="text-brand-green">${total.toFixed(2)}</span>
+        <div className="space-y-8">
+          {/* Order summary card */}
+          {lineItems.length > 0 && (
+            <section className="overflow-hidden rounded-xl bg-white shadow-[0_8px_24px_rgba(24,29,25,0.06)]">
+              <div className="p-6">
+                <h2 className="mb-5 border-b border-gray-100 pb-3 font-serif text-2xl font-bold text-gray-900">
+                  Order Summary
+                </h2>
+                <div className="mb-6 space-y-4">
+                  {lineItems.map(item => (
+                    <div key={item.id} className="flex items-start justify-between gap-4">
+                      <div>
+                        <h3 className="font-serif text-base font-bold text-gray-900">
+                          {item.description}
+                        </h3>
+                        <p className="mt-0.5 text-sm font-medium text-gray-500">
+                          Qty: {item.quantity ?? 1}
+                        </p>
+                      </div>
+                      <span className="shrink-0 text-base font-bold text-gray-900">
+                        {" "}
+                        ${((item.amount_total ?? 0) / 100).toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {total !== null && (
+                  <div className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-4">
+                    <span className="text-xs font-bold tracking-widest text-gray-500 uppercase">
+                      Total Paid
+                    </span>
+                    <span className="text-brand-green font-serif text-2xl font-bold">
+                      ${total.toFixed(2)}
+                    </span>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        )}
-
-        {/* What to expect */}
-        <div className="bg-brand-light text-brand-muted mb-6 space-y-1 rounded-xl px-5 py-4 text-sm leading-relaxed">
-          <p>✉️ A confirmation email is on its way to you.</p>
-          {customerPhone && (
-            <p>📱 We&apos;ll text you at {customerPhone} when your order is ready.</p>
+            </section>
           )}
+
+          {/* Next steps */}
+          <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="flex items-start gap-3 rounded-xl bg-gray-100 p-5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-brand-green mt-0.5 h-5 w-5 shrink-0"
+              >
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              <div>
+                <h4 className="mb-1 font-serif text-base font-bold text-gray-900">
+                  Check your inbox
+                </h4>
+                <p className="text-sm leading-snug text-gray-500">
+                  A confirmation email is on its way to you.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 rounded-xl bg-gray-100 p-5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-brand-green mt-0.5 h-5 w-5 shrink-0"
+              >
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+              </svg>
+              <div>
+                <h4 className="mb-1 font-serif text-base font-bold text-gray-900">Stay updated</h4>
+                <p className="text-sm leading-snug text-gray-500">
+                  We&apos;ll text you at{" "}
+                  <span className="font-bold text-gray-900">{customerPhone}</span> when your order
+                  is ready.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* CTA + contact */}
+          <section className="space-y-6 pt-2 text-center">
+            <Link
+              href="/"
+              className="bg-brand-green hover:bg-brand-green-dark block w-full rounded-xl py-5 text-base font-black tracking-widest text-white uppercase transition-all active:scale-[0.98]"
+            >
+              Back to Home
+            </Link>
+            {LOCATION_PHONE && (
+              <p className="text-base text-gray-500">
+                Questions?{" "}
+                <a
+                  href={`tel:${LOCATION_PHONE_DIALPAD}`}
+                  className="text-brand-green ml-1 font-bold"
+                >
+                  {LOCATION_PHONE}
+                </a>
+              </p>
+            )}
+          </section>
         </div>
-
-        {/* Contact */}
-        <p className="text-brand-muted mb-6 text-center text-sm">
-          Questions?{" "}
-          <a href={`tel:${LOCATION_PHONE_DIALPAD}`} className="text-brand-green font-medium">
-            {LOCATION_PHONE}
-          </a>
-        </p>
-
-        <Link
-          href="/"
-          className="bg-brand-green hover:bg-brand-green-dark block w-full rounded-lg px-6 py-3 text-center font-semibold text-white transition-colors"
-        >
-          Back to Home
-        </Link>
-      </div>
+      </main>
 
       <ClearCart />
-    </main>
+    </div>
   )
 }
