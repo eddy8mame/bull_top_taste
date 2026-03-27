@@ -395,19 +395,27 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
+* **v2.4.2 (Current):** Location, Catering, and About sections restyled to
+  editorial reference. Location gains full-width map with overlaid
+  address card. Catering switches to light background with gold feature
+  tiles, email/phone CTAs, Since 2011 badge. About gets larger serif
+  heading and white-bordered image frame.
+
 * **v2.4.1:** Testimonials section redesigned to light editorial
   treatment. White cards with tinted shadow replace dark surface.
   Italic serif quotes, filled star SVGs, uppercase author labels.
   Google Places API migration path stubbed in comments.
+
 * **v2.4.0:** Menu cards restyled to styrofoam/takeout aesthetic —
   recessed image tray, floating frosted add button. Nav updated to
   editorial reference — italic serif brand name, uppercase tracked
   links, gradient CTA. Sub-nav pills on menu page updated with gold
   gradient active state. Card restyling applied to both homepage
   Most Ordered grid and full menu page.
-* **v2.3.2 (Current):** Upgraded the order confirmation page with an interactive confetti 
-  animation (isolated client component) and the 6-character Stripe order reference 
-  to perfectly sync the customer ticket with the staff Kitchen Display System (KDS). 
+
+* **v2.3.2:** Upgraded the order confirmation page with an interactive confetti 
+  animation (isolated client component) and the 6-character Stripe order 
+  reference to perfectly sync the customer ticket with the staff Kitchen Display System (KDS). 
   Stabilized the checkout flow by resolving a `localStorage` hydration mismatch, 
   repairing the Google Maps routing link, and enforcing strict regex email validation 
   in the custom form error UI.
@@ -432,6 +440,7 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
   control replaced with pill (trash + count + plus). Price shown per
   item. Pickup/Mapbox card hidden pending redesign. CTA updated to
   full-width green rounded button.
+  
 * **v2.2.0:** Added editorial theme (Newsreader + Manrope, forest green
   palette). Cart drawer widened to 550px. Empty state redesigned to match
   editorial reference — shopping bag icon, bold heading, full-width browse

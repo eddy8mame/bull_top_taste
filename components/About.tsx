@@ -1,3 +1,5 @@
+// components/About.tsx
+
 import type { LocationFull } from "@/lib/sanity"
 
 const DEFAULTS = {
@@ -5,8 +7,8 @@ const DEFAULTS = {
   subheading: "Our Story",
   body: [
     "Welcome to Bull Top Taste Jamaican Restaurant, our location in Royal Palm Beach, where the vibrant flavors of Jamaica come to life on your plate.",
-    "Immerse yourself in the true essence of the island as we take pride in serving real authentic Jamaican dishes. From the moment you step through our doors, you\u2019ll be transported to the sunny beaches and lush landscapes of Jamaica, with every delectable bite you take.",
-    "Our talented chefs use traditional recipes handed down through generations, infusing each dish with the unique blend of spices and seasonings that make Jamaican cuisine so irresistible. From jerk chicken and oxtail to ackee and saltfish \u2014 our menu is filled with mouthwatering options that will satisfy your cravings and awaken your taste buds.",
+    "Immerse yourself in the true essence of the island as we take pride in serving real authentic Jamaican dishes. From the moment you step through our doors, you'll be transported to the sunny beaches and lush landscapes of Jamaica, with every delectable bite you take.",
+    "Our talented chefs use traditional recipes handed down through generations, infusing each dish with the unique blend of spices and seasonings that make Jamaican cuisine so irresistible. From jerk chicken and oxtail to ackee and saltfish — our menu is filled with mouthwatering options that will satisfy your cravings and awaken your taste buds.",
   ],
 }
 
@@ -21,61 +23,66 @@ export default function About({ location }: Props) {
   const imageUrl = about?.imageUrl
   const bgUrl = about?.backgroundUrl
 
-  // Sanity body is a single text block; split on double-newlines for paragraphs.
-  // Falls back to the hardcoded default paragraphs.
-  const paragraphs = about?.body ? about.body.split(/\n\n+/).filter(Boolean) : DEFAULTS.body
+  const paragraphs = about?.body
+    ? about.body.split(/\n\n+/).filter(Boolean)
+    : DEFAULTS.body
 
   return (
     <section
       id="about"
-      className="relative px-6 py-20"
-      style={{
-        backgroundColor: bgUrl ? undefined : "white",
-        ...(bgUrl
+      className="relative overflow-hidden px-6 py-24"
+      style={
+        bgUrl
           ? {
               backgroundImage: `url(${bgUrl})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }
-          : {}),
-      }}
+          : { backgroundColor: "white" }
+      }
     >
       {bgUrl && <div className="pointer-events-none absolute inset-0 bg-white/90" />}
 
-      <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2">
+      <div className="relative mx-auto max-w-6xl grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
         {/* Text */}
         <div>
-          <p className="text-brand-muted mb-1 text-xs font-bold tracking-widest uppercase">
+          <p className="text-brand-green mb-2 text-xs font-black uppercase tracking-widest">
             {subheading}
           </p>
-          <div className="bg-brand-green mb-4 h-0.5 w-10" />
-          <h2 className="text-brand-green mb-6 font-serif text-4xl">{heading}</h2>
-
-          {paragraphs.map((p, i) => (
-            <p
-              key={i}
-              className={`leading-relaxed text-gray-700 ${i < paragraphs.length - 1 ? "mb-4" : ""}`}
-            >
-              {p}
-            </p>
-          ))}
+          <h2 className="font-serif text-5xl font-bold text-gray-900 mb-8 leading-tight md:text-6xl">
+            {heading}
+          </h2>
+          <div className="space-y-5">
+            {paragraphs.map((p, i) => (
+              <p key={i} className="text-lg leading-relaxed text-gray-600">
+                {p}
+              </p>
+            ))}
+          </div>
         </div>
 
-        {/* Photo — Sanity image or placeholder */}
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gray-100 shadow-lg">
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={heading}
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          ) : (
-            <div className="bg-brand-charcoal/90 absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center text-sm text-white/60">
-              <span className="text-4xl">📸</span>
-              <span className="font-semibold">Staff / Restaurant Photo</span>
-              <span className="text-xs text-white/40">Replace with actual image in Sanity</span>
-            </div>
-          )}
+        {/* Image */}
+        <div className="relative">
+          <div className="absolute inset-0 bg-brand-green/5 -rotate-3 scale-105 rounded-3xl -z-10" />
+          <div className="aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl border-8 border-white">
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt={heading}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-gray-100 text-center p-8">
+                <span className="text-5xl">📸</span>
+                <span className="font-serif text-xl font-bold text-gray-400">
+                  Restaurant Photo
+                </span>
+                <span className="text-sm text-gray-400">
+                  Add an image in Sanity Studio
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </section>

@@ -1,3 +1,4 @@
+// components/Location.tsx
 import type { HoursEntry } from "@/types"
 
 import type { LocationFull } from "@/lib/sanity"
@@ -38,109 +39,130 @@ export default function Location({ location }: Props) {
   const directionsUrl = `https://maps.google.com/?q=${mapsQuery}`
 
   return (
-    <section id="location" className="bg-white px-6 py-20">
-      <div className="mx-auto max-w-4xl">
-        <p className="text-brand-green mb-1 text-xs font-bold tracking-widest uppercase">Find Us</p>
-        <h2 className="mb-2 font-serif text-4xl">Location</h2>
-        <p className="text-brand-muted mb-10 max-w-lg leading-relaxed">
-          Dine in, carry out, or order online — we&apos;re right in Royal Palm Beach.
-        </p>
+    <section id="location" className="bg-white px-6 py-24">
+      <div className="mx-auto max-w-6xl">
+        {/* Section header */}
+        <div className="mb-12">
+          <p className="text-brand-green mb-1 text-xs font-bold tracking-widest uppercase">
+            Find Us
+          </p>
+          <h2 className="font-serif text-5xl font-bold text-gray-900 md:text-6xl">Come Visit Us</h2>
+        </div>
 
-        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2">
-          {/* Map embed */}
-          <div className="aspect-video overflow-hidden rounded-xl border border-gray-100 shadow-sm lg:aspect-auto lg:h-80">
-            <iframe
-              title={`Map — ${name}`}
-              src={embedSrc}
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+        {/* Map — full width with overlaid address card */}
+        <div
+          className="relative w-full overflow-hidden rounded-3xl"
+          style={{
+            height: "450px",
+            boxShadow: "0 8px 24px rgba(24,29,25,0.06)",
+            border: "8px solid white",
+          }}
+        >
+          <iframe
+            title={`Map — ${name}`}
+            src={embedSrc}
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+
+          {/* Overlaid address card */}
+          <div
+            className="absolute bottom-6 left-6 rounded-xl border border-gray-100 bg-white p-6 shadow-lg"
+            style={{ maxWidth: "280px" }}
+          >
+            <h3 className="text-brand-green mb-1 font-serif text-xl font-bold">{name}</h3>
+            <p className="mb-4 text-sm leading-relaxed text-gray-500">{address}</p>
+            <a
+              href={directionsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brand-green flex items-center gap-1.5 text-xs font-black tracking-widest uppercase hover:underline"
+            >
+              Get Directions
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-3.5 w-3.5"
+              >
+                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        {/* Hours + Contact row */}
+        <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-3">
+          {/* Hours */}
+          <div className="md:col-span-2">
+            <p className="mb-4 text-xs font-black tracking-widest text-gray-400 uppercase">
+              Hours of Operation
+            </p>
+            <div className="space-y-2">
+              {hours.map(({ days, time }) => (
+                <div key={days} className="flex justify-between gap-4 text-sm">
+                  <span className="text-gray-500">{days}</span>
+                  <span className="text-right font-semibold text-gray-900">{time}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Details */}
-          <div className="flex flex-col gap-6">
-            <div>
-              <p className="text-brand-muted mb-1 text-xs font-bold tracking-widest uppercase">
-                Address
-              </p>
-              <p className="font-serif text-lg">{name}</p>
-              <p className="text-brand-muted text-sm">{address}</p>
+          {/* Contact + Social */}
+          <div>
+            <p className="mb-4 text-xs font-black tracking-widest text-gray-400 uppercase">
+              Contact
+            </p>
+            <div className="mb-6 space-y-2 text-sm">
               <a
-                href={directionsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand-green mt-1 inline-block text-sm font-semibold hover:underline"
+                href={`tel:${phoneDialable}`}
+                className="hover:text-brand-green flex items-center gap-2 font-medium text-gray-700 transition-colors"
               >
-                Get Directions →
+                {phone}
+              </a>
+              <a
+                href={`mailto:${email}`}
+                className="hover:text-brand-green flex items-center gap-2 font-medium text-gray-700 transition-colors"
+              >
+                {email}
               </a>
             </div>
 
-            <div>
-              <p className="text-brand-muted mb-2 text-xs font-bold tracking-widest uppercase">
-                Hours
-              </p>
-              <div className="space-y-1">
-                {hours.map(({ days, time }) => (
-                  <div key={days} className="flex justify-between gap-4 text-sm">
-                    <span className="text-brand-muted">{days}</span>
-                    <span className="text-right font-medium">{time}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-brand-muted mb-2 text-xs font-bold tracking-widest uppercase">
-                Contact
-              </p>
-              <div className="space-y-1 text-sm">
-                <p>
-                  <a
-                    href={`tel:${phoneDialable}`}
-                    className="hover:text-brand-green transition-colors"
-                  >
-                    📞 {phone}
-                  </a>
-                </p>
-                <p>
-                  <a href={`mailto:${email}`} className="hover:text-brand-green transition-colors">
-                    ✉️ {email}
-                  </a>
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-brand-muted mb-3 text-xs font-bold tracking-widest uppercase">
-                Follow Us
-              </p>
-              <div className="flex gap-3">
-                {instagram && (
-                  <a
-                    href={instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Instagram"
-                    className="hover:border-brand-green hover:text-brand-green flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium transition-colors"
-                  >
-                    <InstagramIcon /> Instagram
-                  </a>
-                )}
-                {facebook && (
-                  <a
-                    href={facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Facebook"
-                    className="hover:border-brand-green hover:text-brand-green flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium transition-colors"
-                  >
-                    <FacebookIcon /> Facebook
-                  </a>
-                )}
-              </div>
+            <p className="mb-3 text-xs font-black tracking-widest text-gray-400 uppercase">
+              Follow Us
+            </p>
+            <div className="flex gap-3">
+              {instagram && (
+                <a
+                  href={instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="hover:border-brand-green hover:text-brand-green flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold transition-colors"
+                >
+                  <InstagramIcon /> Instagram
+                </a>
+              )}
+              {facebook && (
+                <a
+                  href={facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  className="hover:border-brand-green hover:text-brand-green flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold transition-colors"
+                >
+                  <FacebookIcon /> Facebook
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -152,8 +174,8 @@ export default function Location({ location }: Props) {
 function InstagramIcon() {
   return (
     <svg
-      width="16"
-      height="16"
+      width="14"
+      height="14"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -170,7 +192,7 @@ function InstagramIcon() {
 
 function FacebookIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
       <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
     </svg>
   )
