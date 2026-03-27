@@ -161,69 +161,51 @@ export default function CheckoutClient({ location }: Props) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-gray-100 bg-white px-6 py-4">
+      <div className="border-b border-gray-100 bg-white px-6 py-4">
         <button
-          onClick={() => router.back()}
-          aria-label="Return to menu"
-          className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
+          onClick={() => router.push("/")}
+          className="group flex cursor-pointer items-center gap-3"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.75"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-6 w-6 text-gray-800"
-          >
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-        <span className="text-sm font-semibold tracking-wide text-gray-800">Return to Menu</span>
-      </div>
-
-      {/* 🚨 DEMO MODE BANNER */}
-      {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
-        <div className="flex items-center justify-center gap-3 border-b border-amber-200 bg-amber-50 px-6 py-3 text-center">
-          <span className="shrink-0 text-lg text-amber-600">⚠️</span>
-          <div>
-            <p className="text-sm font-semibold text-amber-800">
-              Test mode — do not enter real card details
-            </p>
-            <p className="mt-0.5 text-xs text-amber-700">
-              Use Stripe test card <span className="font-mono font-bold">4242 4242 4242 4242</span>{" "}
-              · any future expiry · any CVC
-            </p>
+          <div className="flex h-10 w-10 items-center justify-center rounded-full">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-6 w-6"
+            >
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
           </div>
-        </div>
-      )}
+          <span className="text-sm font-semibold tracking-wide group-hover:underline">
+            Return to Menu
+          </span>
+        </button>
+      </div>
 
       <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 px-4 py-8 md:grid-cols-2">
         {/* ── Left column — Order summary ──────────────────────────────── */}
         <div className="flex flex-col gap-4">
-          {/* Delivery upsell */}
-          {location?.doorDashUrl && (
-            <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-center">
-              <p className="mb-1 text-sm font-medium text-red-900">Want delivery instead?</p>
-              <p className="mb-3 text-xs text-red-700">
-                Order through DoorDash and we&apos;ll bring it to you.
-              </p>
-              <a
-                href={location.doorDashUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block rounded-lg bg-[#FF3008] px-4 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90"
-              >
-                Order on DoorDash
-              </a>
-            </div>
-          )}
-
           {/* Pickup location */}
           {location && (
             <div className="rounded-xl bg-white p-6 shadow-[0_8px_24px_rgba(24,29,25,0.06)]">
-              <h2 className="mb-5 font-serif text-xl font-bold text-gray-900">Pickup Details</h2>
+              <div className="mb-5 flex items-center justify-between">
+                <h2 className="font-serif text-xl font-bold text-gray-900">Pickup at</h2>
+                {location.doorDashUrl && (
+                  <a
+                    href={location.doorDashUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-bold text-gray-900 underline underline-offset-2"
+                  >
+                    Delivery instead
+                  </a>
+                )}
+              </div>
               <div className="flex items-start gap-4">
                 <div className="rounded-lg bg-gray-50 p-3">
                   <svg
@@ -246,7 +228,7 @@ export default function CheckoutClient({ location }: Props) {
                   </p>
                   {location.address && (
                     <a
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location.address)}&travelmode=driving`}
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location.address)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-brand-muted mt-0.5 block text-sm hover:underline"

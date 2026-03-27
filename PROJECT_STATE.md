@@ -395,7 +395,11 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.3.0 (Current):** Checkout page restyled to editorial reference. Header
+* **v2.3.1(Current):** Delivery upsell card removed from checkout. Replaced with
+  a subtle "Delivery instead" link inside the pickup card, visible only
+  when a DoorDash URL is set on the location document.
+
+* **v2.3.0:** Checkout page restyled to editorial reference. Header
   simplified to back arrow and "Return to Menu". Pickup card, order
   summary, and contact/payment cards adopt tinted-shadow white surface
   treatment. Contact and payment details merged into a single right-column
