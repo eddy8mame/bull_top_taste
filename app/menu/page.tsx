@@ -1,3 +1,4 @@
+// app/menu/page.tsx
 import { getActiveSpecials, getMenuItems } from "@/lib/sanity"
 
 import Cart from "@/components/Cart"

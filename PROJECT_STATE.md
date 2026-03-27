@@ -395,6 +395,12 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
+* **v2.4.0:** Menu cards restyled to styrofoam/takeout aesthetic —
+  recessed image tray, floating frosted add button. Nav updated to
+  editorial reference — italic serif brand name, uppercase tracked
+  links, gradient CTA. Sub-nav pills on menu page updated with gold
+  gradient active state. Card restyling applied to both homepage
+  Most Ordered grid and full menu page.
 * **v2.3.2 (Current):** Upgraded the order confirmation page with an interactive confetti 
   animation (isolated client component) and the 6-character Stripe order reference 
   to perfectly sync the customer ticket with the staff Kitchen Display System (KDS). 

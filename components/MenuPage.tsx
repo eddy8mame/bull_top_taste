@@ -1,14 +1,192 @@
+// components/MenuPage.tsx
+
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react";
 
-import Image from "next/image"
 
-import type { CartItem, MenuItem, Special } from "@/types"
 
-import { useCart } from "@/context/CartContext"
+import Image from "next/image";
 
-import ModifierModal from "@/components/ModifierModal"
+
+
+import type { CartItem, MenuItem, Special } from "@/types";
+
+
+
+import { useCart } from "@/context/CartContext";
+
+
+
+import ModifierModal from "@/components/ModifierModal";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 interface Props {
   items: MenuItem[]
@@ -31,16 +209,17 @@ function hasModifiers(item: MenuItem) {
 // ── Item photo / placeholder ──────────────────────────────────────────────────
 
 function ItemPhoto({ item }: { item: MenuItem }) {
-  if (item.imageUrl) {
-    return (
-      <div className="relative h-36 w-full shrink-0 overflow-hidden rounded-t-xl">
-        <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-      </div>
-    )
-  }
   return (
-    <div className="from-brand-green/10 to-brand-green-dark/20 flex h-36 w-full shrink-0 items-center justify-center rounded-t-xl bg-linear-to-br">
-      <span className="text-3xl opacity-40">🍽️</span>
+    <div className="m-3 rounded bg-gray-100 p-3 shadow-inner">
+      <div className="relative h-40 w-full overflow-hidden rounded shadow-inner">
+        {item.imageUrl ? (
+          <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gray-100">
+            <span className="text-3xl opacity-40">🍽️</span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -77,37 +256,57 @@ function ItemCard({
   const canOrder = (item.price != null || hasModifiers(item)) && kitchenOpen
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-xl border border-gray-100 bg-white transition-all hover:-translate-y-0.5 hover:shadow-md">
+    <div
+      className="relative flex flex-col rounded-lg border border-gray-200 bg-white transition-all hover:-translate-y-1 hover:shadow-lg"
+      style={{
+        boxShadow: "inset 0 0 10px rgba(0,0,0,0.03), 2px 2px 5px rgba(0,0,0,0.08)",
+      }}
+    >
       <ItemPhoto item={item} />
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col px-5 pt-2 pb-8">
         {item.tag && (
           <span className="text-brand-green mb-1 inline-block text-[10px] font-bold tracking-widest uppercase">
             {item.tag}
           </span>
         )}
-        <h3 className="mb-1 font-serif text-lg leading-snug">{item.name}</h3>
+        <h3 className="font-serif text-2xl leading-snug font-bold text-gray-900">{item.name}</h3>
         {item.description && (
-          <p className="text-brand-muted mb-3 line-clamp-2 flex-1 text-sm leading-relaxed">
+          <p className="text-brand-muted mt-1 line-clamp-2 flex-1 text-base leading-relaxed">
             {item.description}
           </p>
         )}
-        <div className="mt-auto flex items-center justify-between">
-          <span className="text-brand-green text-sm font-bold">{priceLabel(item)}</span>
-          {(item.price != null || hasModifiers(item)) && (
-            <button
-              onClick={handleClick}
-              disabled={!kitchenOpen}
-              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${
-                kitchenOpen
-                  ? "bg-brand-green hover:bg-brand-green-dark text-white"
-                  : "cursor-not-allowed bg-gray-200 text-gray-400"
-              }`}
-            >
-              {kitchenOpen ? "+ Add" : "Closed"}
-            </button>
-          )}
+        <div className="mt-3 flex items-baseline justify-between">
+          <span className="text-brand-green font-serif text-2xl font-bold">{priceLabel(item)}</span>
         </div>
       </div>
+
+      {/* Floating add button */}
+      {canOrder && (
+        <button
+          onClick={handleClick}
+          disabled={!kitchenOpen}
+          aria-label={`Add ${item.name}`}
+          className={`absolute -right-2 -bottom-4 z-10 flex h-12 w-12 items-center justify-center rounded-full shadow-xl transition-all hover:scale-110 active:scale-95 ${
+            kitchenOpen
+              ? "bg-brand-green/15 border-brand-green/20 text-brand-green hover:bg-brand-green/25 border backdrop-blur-sm"
+              : "cursor-not-allowed bg-gray-100 text-gray-400"
+          }`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-6 w-6"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+        </button>
+      )}
     </div>
   )
 }
@@ -175,6 +374,7 @@ export default function MenuPage({ items, specials }: Props) {
 
   return (
     <>
+      <style>{`.hide-scrollbar::-webkit-scrollbar{display:none}.hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}`}</style>
       {modalItem && <ModifierModal item={modalItem} onClose={() => setModalItem(null)} />}
 
       {/* Kitchen closed banner */}
@@ -187,13 +387,17 @@ export default function MenuPage({ items, specials }: Props) {
       )}
 
       {/* Sticky section nav — one pill per top-level section */}
-      <div className="sticky top-0 z-30 border-b border-gray-100 bg-white shadow-sm">
-        <div className="mx-auto max-w-6xl overflow-x-auto px-4">
-          <div className="flex min-w-max gap-1 py-3">
+      <div className="sticky top-[65px] z-30 border-b border-gray-100 bg-white/90 shadow-sm backdrop-blur-md">
+        <div className="hide-scrollbar mx-auto max-w-6xl overflow-x-auto px-4">
+          <div className="flex min-w-max gap-3 py-4">
             {mostOrdered.length > 0 && (
               <button
                 onClick={() => scrollTo("most-ordered")}
-                className={`rounded-full px-4 py-1.5 text-sm font-semibold whitespace-nowrap transition-colors ${activeSection === "most-ordered" ? "bg-brand-green text-white" : "text-brand-muted hover:text-brand-green"}`}
+                className={`rounded-full px-6 py-2.5 text-sm font-black tracking-widest whitespace-nowrap uppercase shadow-sm transition-all ${
+                  activeSection === "most-ordered"
+                    ? "from-brand-gold to-brand-primary bg-gradient-to-r text-gray-900 shadow-md"
+                    : "border border-gray-200 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
               >
                 Most Ordered
               </button>
@@ -202,7 +406,11 @@ export default function MenuPage({ items, specials }: Props) {
               <button
                 key={name}
                 onClick={() => scrollTo(name)}
-                className={`rounded-full px-4 py-1.5 text-sm font-semibold whitespace-nowrap transition-colors ${activeSection === name ? "bg-brand-green text-white" : "text-brand-muted hover:text-brand-green"}`}
+                className={`rounded-full px-6 py-2.5 text-sm font-black tracking-widest whitespace-nowrap uppercase shadow-sm transition-all ${
+                  activeSection === name
+                    ? "from-brand-gold to-brand-primary bg-gradient-to-r text-gray-900 shadow-md"
+                    : "border border-gray-200 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
               >
                 {name}
               </button>
@@ -244,7 +452,7 @@ export default function MenuPage({ items, specials }: Props) {
             }}
           >
             <SectionHeader label="Fan Favourites" title="Most Ordered" />
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {mostOrdered.map(item => (
                 <ItemCard
                   key={item._id}
@@ -278,7 +486,7 @@ export default function MenuPage({ items, specials }: Props) {
                       {categoryName}
                     </h3>
                   )}
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                     {categoryItems.map(item => (
                       <ItemCard
                         key={item._id}
@@ -300,12 +508,13 @@ export default function MenuPage({ items, specials }: Props) {
 
 function SectionHeader({ label, title }: { label?: string; title: string }) {
   return (
-    <div className="mb-6">
+    <div className="mb-8">
       {label && (
         <p className="text-brand-green mb-1 text-xs font-bold tracking-widest uppercase">{label}</p>
       )}
-      <h2 className="font-serif text-3xl">{title}</h2>
-      <div className="bg-brand-green mt-2 h-0.5 w-12 rounded" />
+      <h2 className="border-brand-green inline-block border-b-4 pb-2 font-serif text-4xl font-bold text-gray-900">
+        {title}
+      </h2>
     </div>
   )
 }

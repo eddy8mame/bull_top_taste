@@ -2,20 +2,113 @@
 
 "use client"
 
-import { useRef, useState } from "react"
+import { useRef, useState } from "react";
 
-import Image from "next/image"
-import { useRouter } from "next/navigation"
 
-import "mapbox-gl/dist/mapbox-gl.css"
 
-import type { CartItem, MenuItem } from "@/types"
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-import type { LocationFull } from "@/lib/sanity"
 
-import { useCart } from "@/context/CartContext"
 
-import ModifierModal from "@/components/ModifierModal"
+import "mapbox-gl/dist/mapbox-gl.css";
+
+
+
+import type { CartItem, MenuItem } from "@/types";
+
+
+
+import type { LocationFull } from "@/lib/sanity";
+
+
+
+import { useCart } from "@/context/CartContext";
+
+
+
+import ModifierModal from "@/components/ModifierModal";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 interface Props {
   location?: LocationFull | null
@@ -97,7 +190,7 @@ export default function Cart({ location }: Props) {
             </p>
             <button
               onClick={() => setIsOpen(false)}
-              className="bg-brand-green hover:bg-brand-green-dark w-full rounded-lg py-6 text-xl font-bold tracking-widest text-white uppercase transition-colors active:scale-[0.98]"
+              className="bg-brand-green hover:bg-brand-green-dark w-full rounded-xl py-5 text-base font-black tracking-widest text-white uppercase transition-all active:scale-[0.98]"
             >
               Browse the Menu
             </button>
@@ -105,12 +198,11 @@ export default function Cart({ location }: Props) {
         ) : (
           <div className="flex flex-1 flex-col">
             {/* Header */}
-            {/* Header */}
             <div className="px-6 pt-2 pb-6">
               <p className="mb-1 text-xs font-bold tracking-widest text-gray-900 uppercase">
                 Your Bag From
               </p>
-              <h1 className="font-serif text-5xl font-bold text-gray-900">
+              <h1 className="font-serif text-4xl font-bold text-gray-900">
                 {location?.restaurantName ?? "Bull Top Taste"}
               </h1>
             </div>
@@ -126,7 +218,8 @@ export default function Cart({ location }: Props) {
                   onClick={() => setEditingItem(item)}
                 >
                   {/* Thumbnail */}
-                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-gray-100 bg-gray-50">
+                    {" "}
                     {item.imageUrl ? (
                       <Image
                         src={item.imageUrl}
@@ -146,7 +239,7 @@ export default function Cart({ location }: Props) {
                   {/* Details */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-serif text-xl leading-tight font-bold text-gray-900">
+                      <h3 className="font-serif text-lg leading-tight font-bold text-gray-900">
                         {item.name}
                       </h3>
 
@@ -158,8 +251,12 @@ export default function Cart({ location }: Props) {
                         <button
                           type="button"
                           aria-label={`Remove ${item.name}`}
-                          onClick={() => removeItem(item.cartItemId)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
+                          onClick={() =>
+                            item.quantity === 1
+                              ? removeItem(item.cartItemId)
+                              : updateQty(item.cartItemId, item.quantity - 1)
+                          }
+                          className="group flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-red-50"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +266,7 @@ export default function Cart({ location }: Props) {
                             strokeWidth="1.75"
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            className="h-4 w-4 text-gray-800"
+                            className="h-4 w-4 text-gray-800 transition-colors group-hover:text-red-500"
                           >
                             <polyline points="3 6 5 6 21 6" />
                             <path d="M19 6l-1 14H6L5 6" />
@@ -184,7 +281,7 @@ export default function Cart({ location }: Props) {
                           type="button"
                           aria-label={`Add another ${item.name}`}
                           onClick={() => updateQty(item.cartItemId, item.quantity + 1)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-500"
+                          className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-300"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -396,21 +493,21 @@ export default function Cart({ location }: Props) {
 
             {/* Subtotal */}
             <div className="mx-6 mt-4 flex items-center justify-between border-t-2 border-gray-100 pt-6">
-              <span className="text-2xl font-bold text-gray-900">Subtotal</span>
-              <span className="font-serif text-3xl font-black text-gray-900">
+              <span className="font-serif text-xl font-bold text-gray-900">Subtotal</span>
+              <span className="text-brand-green font-serif text-2xl font-extrabold">
                 ${total.toFixed(2)}
               </span>
             </div>
 
             {/* CTA */}
-            <div className="px-6 pt-4 pb-8">
+            <div className="px-6 pt-5 pb-8">
               <button
                 type="button"
                 onClick={() => {
                   setIsOpen(false)
                   router.push("/checkout")
                 }}
-                className="bg-brand-green hover:bg-brand-green-dark w-full rounded-2xl py-6 text-xl font-black tracking-widest text-white uppercase transition-all active:scale-[0.98]"
+                className="bg-brand-green hover:bg-brand-green-dark w-full rounded-xl py-5 text-base font-black tracking-widest text-white uppercase transition-all active:scale-[0.98]"
               >
                 Proceed to Checkout
               </button>

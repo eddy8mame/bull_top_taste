@@ -1,6 +1,8 @@
+// components/Menu.tsx
+
 "use client"
 
-import { useState, useCallback } from "react"
+import { useCallback, useState } from "react"
 
 import Image from "next/image"
 import Link from "next/link"
@@ -27,23 +29,23 @@ export default function Menu({ items, specials }: Props) {
     .sort((a, b) => (b.orderCount ?? 0) - (a.orderCount ?? 0))
     .slice(0, TEASER_COUNT)
 
-const handleAdd = useCallback(
-  (item: MenuItem) => {
-    if ((item.modifierGroups?.length ?? 0) > 0) {
-      setModalItem(item)
-      return
-    }
-    if (item.price == null) return
-    const cartItem: CartItem = {
-      ...item,
-      cartItemId: `${item._id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      quantity: 1,
-      effectivePrice: item.price,
-    }
-    addItem(cartItem)
-  },
-  [addItem]
-)
+  const handleAdd = useCallback(
+    (item: MenuItem) => {
+      if ((item.modifierGroups?.length ?? 0) > 0) {
+        setModalItem(item)
+        return
+      }
+      if (item.price == null) return
+      const cartItem: CartItem = {
+        ...item,
+        cartItemId: `${item._id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        quantity: 1,
+        effectivePrice: item.price,
+      }
+      addItem(cartItem)
+    },
+    [addItem]
+  )
 
   return (
     <>
@@ -91,55 +93,79 @@ const handleAdd = useCallback(
           )}
 
           {/* Featured grid */}
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {" "}
             {featured.map((item, index) => {
               const canOrder = item.price != null || (item.modifierGroups?.length ?? 0) > 0
               return (
                 <div
                   key={item._id}
-                  className="flex flex-col overflow-hidden rounded-xl border border-gray-100 bg-white transition-all hover:-translate-y-1 hover:shadow-lg"
+                  className="relative flex flex-col rounded-lg border border-gray-200 bg-white transition-all hover:-translate-y-1 hover:shadow-lg"
+                  style={{
+                    boxShadow: "inset 0 0 10px rgba(0,0,0,0.03), 2px 2px 5px rgba(0,0,0,0.08)",
+                  }}
                 >
-                  {/* Photo */}
-                  {item.imageUrl ? (
-                    <div className="relative h-36 w-full shrink-0">
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.name}
-                        fill
-                        priority={index <4}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover"
-                      />{" "}
-                    </div>
-                  ) : (
-                    <div className="from-brand-green/10 to-brand-green-dark/20 flex h-36 w-full shrink-0 items-center justify-center bg-linear-to-br">
-                      <span className="text-3xl opacity-40">🍽️</span>
-                    </div>
-                  )}
-                  <div className="flex flex-1 flex-col p-4">
-                    {item.tag && (
-                      <p className="text-brand-green mb-1 text-xs font-bold tracking-widest uppercase">
-                        {item.tag}
-                      </p>
-                    )}
-                    <h3 className="mb-1 font-serif text-xl">{item.name}</h3>
-                    <p className="text-brand-muted mb-3 line-clamp-2 flex-1 text-sm leading-relaxed">
-                      {item.description}
-                    </p>
-                    <div className="mt-auto flex items-center justify-between">
-                      <span className="text-brand-green font-bold">
-                        {item.price != null ? `$${item.price.toFixed(2)}` : "Market Price"}
-                      </span>
-                      {canOrder && (
-                        <button
-                          onClick={() => handleAdd(item)}
-                          className="bg-brand-green hover:bg-brand-green-dark rounded-lg px-3 py-1.5 text-sm font-semibold text-white transition-colors"
-                        >
-                          + Add
-                        </button>
+                  {/* Recessed image tray */}
+                  <div className="m-3 rounded bg-gray-100 p-3 shadow-inner">
+                    <div className="relative h-40 w-full overflow-hidden rounded shadow-inner">
+                      {item.imageUrl ? (
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.name}
+                          fill
+                          priority={index < 4}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-gray-100">
+                          <span className="text-3xl opacity-40">🍽️</span>
+                        </div>
                       )}
                     </div>
                   </div>
+
+                  <div className="flex flex-1 flex-col px-5 pt-2 pb-8">
+                    {item.tag && (
+                      <p className="text-brand-green mb-1 text-[10px] font-bold tracking-widest uppercase">
+                        {item.tag}
+                      </p>
+                    )}
+                    <h3 className="font-serif text-2xl leading-snug font-bold text-gray-900">
+                      {item.name}
+                    </h3>
+                    <p className="text-brand-muted mt-1 line-clamp-2 flex-1 text-base leading-relaxed">
+                      {item.description}
+                    </p>
+                    <div className="mt-3">
+                      <span className="text-brand-green font-serif text-2xl font-bold">
+                        {item.price != null ? `$${item.price.toFixed(2)}` : "Market Price"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Floating add button */}
+                  {canOrder && (
+                    <button
+                      onClick={() => handleAdd(item)}
+                      aria-label={`Add ${item.name}`}
+                      className="border-brand-green/20 bg-brand-green/15 text-brand-green hover:bg-brand-green/25 absolute -right-2 -bottom-4 z-10 flex h-12 w-12 items-center justify-center rounded-full border shadow-xl backdrop-blur-sm transition-all hover:scale-110 active:scale-95"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-6 w-6"
+                      >
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               )
             })}
