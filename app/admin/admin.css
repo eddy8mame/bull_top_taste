@@ -84,11 +84,11 @@
   font-size: 14px;
 }
 
-.admin-shell .admin-page.kitchen {
-  background: var(--k-bg);
-}
+.admin-shell .admin-page.kitchen,
 .admin-shell .admin-page.floor {
-  background: var(--f-bg);
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
 }
 
 /* ─── Topbar ──────────────────────────────────────────────────────────────────
@@ -303,6 +303,7 @@
   background: rgba(255, 255, 255, 0.05);
   flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 .admin-shell .k-col {
   background: var(--k-bg);
@@ -343,8 +344,10 @@
   padding: 10px;
   overflow-y: auto;
   flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: min-content;
   gap: 8px;
   align-content: start;
 }
@@ -1213,14 +1216,19 @@
    The new page renders <div className="admin-page office">.
    The legacy .office-page selector (above) is left intact for safety.        */
 
-.admin-shell .admin-page.office {
+.admin-shell .admin-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 14px;
-  background: var(--o-bg);
-  color: var(--o-text);
+}
+
+.admin-shell .admin-page.kitchen,
+.admin-shell .admin-page.floor {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
 }
 
 /* ── Topbar additions ────────────────────────────────────────────────────────

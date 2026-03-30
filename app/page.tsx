@@ -1,16 +1,37 @@
-import { getActiveSpecials, getLocationFull, getMenuItems } from "@/lib/sanity"
+// app/page.tsx
+import { getActiveSpecials, getLocationFull, getMenuItems } from "@/lib/sanity";
 
-import About from "@/components/About"
-import Cart from "@/components/Cart"
-import Catering from "@/components/Catering"
-import Footer from "@/components/Footer"
-import Gallery from "@/components/Gallery"
-import Hero from "@/components/Hero"
-import Location from "@/components/Location"
-import Menu from "@/components/Menu"
-import Nav from "@/components/Nav"
-import ReservationForm from "@/components/ReservationForm"
-import Testimonials from "@/components/Testimonials"
+
+
+import About from "@/components/About";
+import Cart from "@/components/Cart";
+import Catering from "@/components/Catering";
+import Footer from "@/components/Footer";
+import Hero from "@/components/Hero";
+import Location from "@/components/Location";
+import Menu from "@/components/Menu";
+import Nav from "@/components/Nav";
+import ReservationForm from "@/components/ReservationForm";
+import Testimonials from "@/components/Testimonials";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const revalidate = 3600 // ISR: revalidate CMS content every hour
 
@@ -35,9 +56,9 @@ export default async function Home() {
         <Menu items={items} specials={specials} />
         <Location location={location} />
         <Testimonials />
-        {/* <Gallery images={location?.gallery} instagram={location?.instagram} /> */}
         <section id="catering" className="bg-gray-50 px-6 py-24">
-          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-16 lg:grid-cols-2">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-16 lg:grid-cols-2 lg:items-end">
+            {" "}
             <Catering />
             <ReservationForm />
           </div>

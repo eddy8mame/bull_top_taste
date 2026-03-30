@@ -115,10 +115,11 @@ function SubGroups({
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
+const EMPTY_GROUPS: ModifierGroup[] = []
 
 export default function ModifierModal({ item, onClose, existingItem }: Props) {
   const { addItem, replaceItem } = useCart()
-  const groups = item.modifierGroups ?? []
+  const groups = item.modifierGroups ?? EMPTY_GROUPS
   const [attempted, setAttempted] = useState(false)
   const [flashTrigger, setFlashTrigger] = useState(0)
   const groupRefs = useRef(new Map<string, HTMLDivElement>())
@@ -263,7 +264,11 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
   function toggleStepper(gKey: string, optKey: string, max: number) {
     setSelections(prev => {
       const cur = new Set(prev[gKey])
-      cur.has(optKey) ? cur.delete(optKey) : cur.size < max && cur.add(optKey)
+      if (cur.has(optKey)) {
+        cur.delete(optKey)
+      } else if (cur.size < max) {
+        cur.add(optKey)
+      }
       return { ...prev, [gKey]: cur }
     })
   }
@@ -271,7 +276,11 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
   function toggleCheckbox(gKey: string, optKey: string, max: number) {
     setSelections(prev => {
       const cur = new Set(prev[gKey])
-      cur.has(optKey) ? cur.delete(optKey) : cur.size < max && cur.add(optKey)
+      if (cur.has(optKey)) {
+        cur.delete(optKey)
+      } else if (cur.size < max) {
+        cur.add(optKey)
+      }
       return { ...prev, [gKey]: cur }
     })
   }
@@ -289,7 +298,11 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
   function subToggle(pgKey: string, optKey: string, sgKey: string, soKey: string, max: number) {
     setSubSel(prev => {
       const cur = new Set(prev[pgKey]?.[optKey]?.[sgKey] ?? [])
-      cur.has(soKey) ? cur.delete(soKey) : cur.size < max && cur.add(soKey)
+      if (cur.has(soKey)) {
+        cur.delete(soKey)
+      } else if (cur.size < max) {
+        cur.add(soKey)
+      }
       return {
         ...prev,
         [pgKey]: {
@@ -405,18 +418,18 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
           {/* ── Scrollable body ──────────────────────────────────────────── */}
           <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
             {/* Hero image with overlay */}
-            <div className="relative h-[280px] w-full shrink-0 overflow-hidden md:h-[320px]">
+            <div className="relative h-70 w-full shrink-0 overflow-hidden md:h-80">
               {" "}
               {item.imageUrl ? (
                 <Image src={item.imageUrl} alt={item.name} fill priority className="object-cover" />
               ) : (
-                <div className="from-brand-green/30 to-brand-green-dark/50 flex h-full w-full items-center justify-center bg-gradient-to-br">
+                <div className="from-brand-green/30 to-brand-green-dark/50 flex h-full w-full items-center justify-center bg-linear-to-br">
                   {" "}
                   <span className="text-6xl">🍽️</span>
                 </div>
               )}
               {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />{" "}
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />{" "}
               {/* Close button removed from hero — now in floating header */}
               {/* Item name + description overlaid */}
               <div className="absolute right-0 bottom-0 left-0 px-6 pb-6">
@@ -672,9 +685,7 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
                   <span className="text-brand-green text-sm font-bold tracking-widest uppercase">
                     Make {remaining} more required selection{remaining !== 1 ? "s" : ""}
                   </span>
-                  <span className="text-base text-gray-500">
-                     — ${effectivePrice.toFixed(2)}
-                  </span>
+                  <span className="text-base text-gray-500">— ${effectivePrice.toFixed(2)}</span>
                 </span>
               )}
             </button>

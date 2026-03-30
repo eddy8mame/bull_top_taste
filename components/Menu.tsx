@@ -94,7 +94,7 @@ export default function Menu({ items, specials }: Props) {
 
           {/* Specials banner */}
           {specials.length > 0 && (
-            <div className="from-brand-green to-brand-green-dark mb-8 flex flex-wrap items-center gap-4 rounded-xl bg-gradient-to-r p-5">
+            <div className="from-brand-green to-brand-green-dark mb-8 flex flex-wrap items-center gap-4 rounded-xl bg-linear-to-r p-5">
               <span className="text-3xl">🌟</span>
               <div className="text-white">
                 <h4 className="font-serif text-lg font-bold">Daily Lunch Specials</h4>

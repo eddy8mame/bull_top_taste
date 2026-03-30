@@ -212,7 +212,7 @@ export default function MenuPage({ items, specials }: Props) {
       )}
 
       {/* Sticky section nav — one pill per top-level section */}
-      <div className="sticky top-[65px] z-30 border-b border-gray-100 bg-white/90 shadow-sm backdrop-blur-md">
+      <div className="sticky top-16.25 z-30 border-b border-gray-100 bg-white/90 shadow-sm backdrop-blur-md">
         <div className="hide-scrollbar mx-auto max-w-5xl overflow-x-auto px-4">
           <div className="flex min-w-max gap-3 py-4">
             {mostOrdered.length > 0 && (
@@ -220,7 +220,7 @@ export default function MenuPage({ items, specials }: Props) {
                 onClick={() => scrollTo("most-ordered")}
                 className={`rounded-full px-6 py-2.5 text-sm font-black tracking-widest whitespace-nowrap uppercase shadow-sm transition-all ${
                   activeSection === "most-ordered"
-                    ? "from-brand-gold bg-gradient-to-r to-[#FEB615] text-gray-900 shadow-md"
+                    ? "from-brand-gold bg-linear-to-r to-[#FEB615] text-gray-900 shadow-md"
                     : "border border-gray-200 bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
@@ -233,7 +233,7 @@ export default function MenuPage({ items, specials }: Props) {
                 onClick={() => scrollTo(name)}
                 className={`rounded-full px-6 py-2.5 text-sm font-black tracking-widest whitespace-nowrap uppercase shadow-sm transition-all ${
                   activeSection === name
-                    ? "from-brand-gold bg-gradient-to-r to-[#FEB615] text-gray-900 shadow-md"
+                    ? "from-brand-gold bg-linear-to-r to-[#FEB615] text-gray-900 shadow-md"
                     : "border border-gray-200 bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >

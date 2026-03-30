@@ -2,13 +2,7 @@
 
 "use client"
 
-import { FormEvent, useState } from "react";
-
-
-
-
-
-
+import { FormEvent, useState } from "react"
 
 type Status = "idle" | "sending" | "sent" | "error"
 
@@ -35,20 +29,6 @@ export default function ReservationForm() {
   return (
     <div id="contact">
       <div>
-        {/* Section header */}
-        <div className="mb-10 text-center">
-          <p className="text-brand-green mb-2 text-xs font-black tracking-widest uppercase">
-            Get in Touch
-          </p>
-          <h2 className="font-serif text-5xl font-bold text-gray-900 md:text-6xl">
-            Catering &amp; Inquiries
-          </h2>
-          <p className="mx-auto mt-4 max-w-md leading-relaxed text-gray-500">
-            Interested in catering, group bookings, or have a question? Send us a message and
-            we&apos;ll get back to you shortly.
-          </p>
-        </div>
-
         {/* Form card */}
         <div
           className="rounded-2xl bg-white p-8"
@@ -131,7 +111,7 @@ export default function ReservationForm() {
             <button
               type="submit"
               disabled={status !== "idle"}
-              className="from-brand-green to-brand-green-dark w-full rounded-xl bg-gradient-to-r py-5 text-sm font-black tracking-widest text-white uppercase shadow-md transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+              className="from-brand-green to-brand-green-dark w-full rounded-xl bg-linear-to-r py-5 text-sm font-black tracking-widest text-white uppercase shadow-md transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
             >
               {status === "sending"
                 ? "Sending…"

@@ -1,4 +1,5 @@
 // components/About.tsx
+import Image from "next/image"
 
 import type { LocationFull } from "@/lib/sanity"
 
@@ -23,9 +24,7 @@ export default function About({ location }: Props) {
   const imageUrl = about?.imageUrl
   const bgUrl = about?.backgroundUrl
 
-  const paragraphs = about?.body
-    ? about.body.split(/\n\n+/).filter(Boolean)
-    : DEFAULTS.body
+  const paragraphs = about?.body ? about.body.split(/\n\n+/).filter(Boolean) : DEFAULTS.body
 
   return (
     <section
@@ -43,13 +42,13 @@ export default function About({ location }: Props) {
     >
       {bgUrl && <div className="pointer-events-none absolute inset-0 bg-white/90" />}
 
-      <div className="relative mx-auto max-w-6xl grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
+      <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 lg:grid-cols-2">
         {/* Text */}
         <div>
-          <p className="text-brand-green mb-2 text-xs font-black uppercase tracking-widest">
+          <p className="text-brand-green mb-2 text-xs font-black tracking-widest uppercase">
             {subheading}
           </p>
-          <h2 className="font-serif text-5xl font-bold text-gray-900 mb-8 leading-tight md:text-6xl">
+          <h2 className="mb-8 font-serif text-5xl leading-tight font-bold text-gray-900 md:text-6xl">
             {heading}
           </h2>
           <div className="space-y-5">
@@ -63,23 +62,16 @@ export default function About({ location }: Props) {
 
         {/* Image */}
         <div className="relative">
-          <div className="absolute inset-0 bg-brand-green/5 -rotate-3 scale-105 rounded-3xl -z-10" />
-          <div className="aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl border-8 border-white">
+          <div className="bg-brand-green/5 absolute inset-0 -z-10 scale-105 -rotate-3 rounded-3xl" />
+          <div className="relative aspect-4/5 overflow-hidden rounded-2xl border-8 border-white shadow-2xl">
+            {" "}
             {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt={heading}
-                className="h-full w-full object-cover"
-              />
+              <Image src={imageUrl} alt={heading} fill className="object-cover" />
             ) : (
-              <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-gray-100 text-center p-8">
+              <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-gray-100 p-8 text-center">
                 <span className="text-5xl">📸</span>
-                <span className="font-serif text-xl font-bold text-gray-400">
-                  Restaurant Photo
-                </span>
-                <span className="text-sm text-gray-400">
-                  Add an image in Sanity Studio
-                </span>
+                <span className="font-serif text-xl font-bold text-gray-400">Restaurant Photo</span>
+                <span className="text-sm text-gray-400">Add an image in Sanity Studio</span>
               </div>
             )}
           </div>

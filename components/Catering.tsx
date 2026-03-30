@@ -50,7 +50,7 @@ const FEATURES = [
 
 export default function Catering() {
   return (
-    <div className="overflow-hidden">
+    <div>
       <div>
         <div className="flex flex-col gap-16">
           {/* Left — heading, features, CTAs */}
@@ -67,7 +67,7 @@ export default function Catering() {
             <div className="mb-12 space-y-8">
               {FEATURES.map(f => (
                 <div key={f.title} className="flex items-start gap-5">
-                  <div className="from-brand-gold flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br to-[#FEB615] text-gray-900 shadow-md">
+                  <div className="from-brand-gold flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-linear-to-br to-[#FEB615] text-gray-900 shadow-md">
                     {f.icon}
                   </div>
                   <div>
@@ -84,7 +84,7 @@ export default function Catering() {
             <div className="flex flex-wrap gap-4">
               <a
                 href={`mailto:${CATERING_EMAIL}`}
-                className="from-brand-green to-brand-green-dark inline-flex items-center gap-2 rounded-md bg-gradient-to-r px-6 py-3.5 text-xs font-black tracking-widest text-white uppercase shadow-md transition-opacity hover:opacity-90 active:scale-95"
+                className="from-brand-green to-brand-green-dark inline-flex items-center gap-2 rounded-md bg-linear-to-r px-6 py-3.5 text-xs font-black tracking-widest text-white uppercase shadow-md transition-opacity hover:opacity-90 active:scale-95"
               >
                 Email Us
               </a>
@@ -98,10 +98,10 @@ export default function Catering() {
           </div>
 
           {/* Right — decorative image with "Since 2011" badge */}
-          <div className="relative">
-            <div className="from-brand-gold/20 to-brand-green/10 absolute inset-0 -z-10 scale-105 -skew-x-3 rounded-2xl bg-gradient-to-br" />
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl">
-              <div className="from-brand-green/80 to-brand-green-dark/90 absolute inset-0 flex items-center justify-center bg-gradient-to-br">
+          <div className="relative pt-6 pr-6">
+            <div className="from-brand-gold/20 to-brand-green/10 absolute inset-0 -z-10 scale-105 -skew-x-3 rounded-2xl bg-linear-to-br" />
+            <div className="relative aspect-4/5 overflow-hidden rounded-2xl shadow-2xl">
+              <div className="from-brand-green/80 to-brand-green-dark/90 absolute inset-0 flex items-center justify-center bg-linear-to-br">
                 <div className="px-8 text-center text-white">
                   <span className="block font-serif text-3xl leading-snug italic opacity-90">
                     &ldquo;Bringing the taste of Jamaica to every table since 2011.&rdquo;
@@ -111,7 +111,7 @@ export default function Catering() {
             </div>
 
             {/* Since 2011 badge */}
-            <div className="from-brand-gold absolute -top-6 -right-6 z-20 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br to-[#FEB615] shadow-xl">
+            <div className="from-brand-gold absolute -top-6 -right-6 z-20 flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-br to-[#FEB615] shadow-xl">
               <span className="text-center text-xs leading-tight font-black tracking-tighter text-gray-900 uppercase">
                 Since
                 <br />

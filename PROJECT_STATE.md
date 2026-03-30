@@ -395,6 +395,8 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
+* **v2.6.4:**: About section image migrated to next/image.
+
 * **v2.6.3:**  Hero image wired from Sanity.
   - heroBackground field from location document now renders in the
   styrofoam card on the hero section.

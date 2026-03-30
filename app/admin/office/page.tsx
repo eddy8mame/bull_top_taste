@@ -196,7 +196,7 @@ function deriveCustomers(orders: AdminOrder[]): DerivedCustomer[] {
 // boolean on modifier groups, replace the body of this function with a lookup
 // on that field. Add new group names here as the menu expands.
 function isUpsellGroup(groupName: string): boolean {
-  return groupName === "Recommend Sides and Apps" || groupName === "Extra Sides and Apps"
+  return groupName === "Recommended Sides & Apps" || groupName === "Extra Sides and Apps"
 }
 
 // Strips the price suffix from a single parsed selection token.
