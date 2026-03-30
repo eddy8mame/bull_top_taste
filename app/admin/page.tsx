@@ -458,15 +458,6 @@ function KitchenCard({
         <div>
           <div className="k-order-num">{fmtOrderNum(order.stripePaymentIntentId)}</div>
           <div className="k-customer">{order.customerName}</div>
-          {order.confirmedAt && (
-            <div className="k-confirmed-at">
-              in{" "}
-              {new Date(order.confirmedAt).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </div>
-          )}
         </div>
         <div className={`k-age${cls !== "ok" ? ` ${cls}` : ""}`}>{fmtAge(ageS)}</div>
       </div>

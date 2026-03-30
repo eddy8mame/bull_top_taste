@@ -343,9 +343,10 @@
   padding: 10px;
   overflow-y: auto;
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
+  align-content: start;
 }
 .admin-shell .k-empty {
   font-size: 12px;
@@ -358,9 +359,11 @@
 .admin-shell .k-card {
   background: var(--k-surface);
   border-radius: 10px;
-  border: 1px solid var(--k-border);
+  border: 2px solid var(--k-border);
   overflow: hidden;
   transition: border-color 0.2s;
+  display: flex;
+  flex-direction: column;
 }
 .admin-shell .k-card.warn {
   border-color: var(--k-warn-border);
@@ -378,14 +381,14 @@
   gap: 8px;
 }
 .admin-shell .k-order-num {
-  font-size: 10px;
-  color: var(--k-text3);
+  font-size: 16px;
+  color: var(--k-text);
+  font-weight: 600;
   letter-spacing: 0.04em;
   margin-bottom: 1px;
 }
 .admin-shell .k-customer {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 15px;
   color: var(--k-text);
 }
 .admin-shell .k-phone {
@@ -434,6 +437,7 @@
 .admin-shell .k-items {
   padding: 8px 12px;
   border-bottom: 0.5px solid var(--k-border);
+  flex: 1;
 }
 .admin-shell .k-ticket-item {
   padding: 5px 0;
@@ -450,14 +454,14 @@
   margin-bottom: 2px;
 }
 .admin-shell .k-qty {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 700;
   color: var(--k-amber);
   flex-shrink: 0;
 }
 .admin-shell .k-iname {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 700;
   color: var(--k-text);
 }
 
@@ -466,16 +470,17 @@
 }
 .admin-shell .k-spec {
   display: block;
-  font-size: 11px;
-  line-height: 1.6;
-  color: var(--k-text2);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--k-text);
 }
 .admin-shell .k-spec-label {
-  font-size: 10px;
-  color: var(--k-text3);
+  font-size: 11px;
+  color: var(--k-amber);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-right: 3px;
+  margin-right: 4px;
+  font-weight: 600;
 }
 
 .admin-shell .k-note {
@@ -496,16 +501,17 @@
 }
 .admin-shell .k-btn {
   width: 100%;
-  padding: 7px;
+  padding: 10px;
   border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   transition: background 0.12s;
   letter-spacing: 0.02em;
   border: none;
   font-family: inherit;
 }
+
 .admin-shell .k-btn.start {
   background: rgba(255, 255, 255, 0.06);
   color: #c8c8c2;
@@ -648,7 +654,7 @@
 .admin-shell .f-card {
   background: #ffffff;
   border-radius: 12px;
-  border: 1.5px solid rgba(0, 0, 0, 0.09);
+  border: 2px solid rgba(0, 0, 0, 0.09);
   overflow: hidden;
   cursor: pointer;
   transition: border-color 0.15s;

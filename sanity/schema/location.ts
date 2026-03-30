@@ -1,19 +1,5 @@
 // sanity/schema/location.ts
-import { defineArrayMember, defineField, defineType } from "sanity";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import { defineArrayMember, defineField, defineType } from "sanity"
 
 // ─── Theme catalogue ──────────────────────────────────────────────────────────
 // Each value maps to a data-theme="…" attribute on <html>.

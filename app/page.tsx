@@ -34,11 +34,15 @@ export default async function Home() {
         <Hero location={location} />
         <Menu items={items} specials={specials} />
         <Location location={location} />
-        <About location={location} />
-        {/* <Gallery images={location?.gallery} instagram={location?.instagram} /> */}
-        <Catering />
         <Testimonials />
-        <ReservationForm />
+        {/* <Gallery images={location?.gallery} instagram={location?.instagram} /> */}
+        <section id="catering" className="bg-gray-50 px-6 py-24">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-16 lg:grid-cols-2">
+            <Catering />
+            <ReservationForm />
+          </div>
+        </section>
+        <About location={location} />
       </main>
       <Footer location={location} />
     </>

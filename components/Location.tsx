@@ -39,7 +39,8 @@ export default function Location({ location }: Props) {
   const directionsUrl = `https://maps.google.com/?q=${mapsQuery}`
 
   return (
-    <section id="location" className="bg-white px-6 py-24">
+    <section id="location" className="px-6 py-24" style={{ backgroundColor: "#dfe4dd" }}>
+      {" "}
       <div className="mx-auto max-w-6xl">
         {/* Section header */}
         <div className="mb-12">

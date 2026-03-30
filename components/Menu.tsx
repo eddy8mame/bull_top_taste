@@ -2,62 +2,16 @@
 
 "use client"
 
-import { useCallback, useState } from "react";
+import { useCallback, useState } from "react"
 
+import Image from "next/image"
+import Link from "next/link"
 
+import type { CartItem, MenuItem, Special } from "@/types"
 
-import Image from "next/image";
-import Link from "next/link";
+import { useCart } from "@/context/CartContext"
 
-
-
-import type { CartItem, MenuItem, Special } from "@/types";
-
-
-
-import { useCart } from "@/context/CartContext";
-
-
-
-import ModifierModal from "@/components/ModifierModal";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import ModifierModal from "@/components/ModifierModal"
 
 interface Props {
   items: MenuItem[]
@@ -97,7 +51,7 @@ export default function Menu({ items, specials }: Props) {
     <>
       {modalItem && <ModifierModal item={modalItem} onClose={() => setModalItem(null)} />}
 
-      <section id="menu" className="bg-white px-6 py-24">
+      <section id="menu" className="bg-brand-light px-6 py-24">
         <div className="mx-auto max-w-6xl">
           {/* Section header */}
           {/* <p className="text-brand-green mb-1 text-xs font-bold tracking-widest uppercase">

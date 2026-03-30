@@ -50,30 +50,31 @@ const FEATURES = [
 
 export default function Catering() {
   return (
-    <section id="catering" className="overflow-hidden bg-gray-50 px-6 py-24">
-      <div className="mx-auto max-w-6xl">
-        <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 items-start">
-
+    <div className="overflow-hidden">
+      <div>
+        <div className="flex flex-col gap-16">
           {/* Left — heading, features, CTAs */}
           <div>
-            <p className="text-brand-green mb-2 text-xs font-black uppercase tracking-widest">
+            <p className="text-brand-green mb-2 text-xs font-black tracking-widest uppercase">
               Catering & Events
             </p>
-            <h2 className="font-serif text-5xl font-bold text-gray-900 mb-10 leading-tight md:text-6xl">
-              Catering with<br />Authenticity.
+            <h2 className="mb-10 font-serif text-5xl leading-tight font-bold text-gray-900 md:text-6xl">
+              Catering with
+              <br />
+              Authenticity.
             </h2>
 
-            <div className="space-y-8 mb-12">
+            <div className="mb-12 space-y-8">
               {FEATURES.map(f => (
                 <div key={f.title} className="flex items-start gap-5">
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-gold to-[#FEB615] text-gray-900 shadow-md">
+                  <div className="from-brand-gold flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br to-[#FEB615] text-gray-900 shadow-md">
                     {f.icon}
                   </div>
                   <div>
-                    <h4 className="text-xs font-black uppercase tracking-widest text-gray-900 mb-1">
+                    <h4 className="mb-1 text-xs font-black tracking-widest text-gray-900 uppercase">
                       {f.title}
                     </h4>
-                    <p className="text-gray-500 leading-relaxed">{f.body}</p>
+                    <p className="leading-relaxed text-gray-500">{f.body}</p>
                   </div>
                 </div>
               ))}
@@ -83,13 +84,13 @@ export default function Catering() {
             <div className="flex flex-wrap gap-4">
               <a
                 href={`mailto:${CATERING_EMAIL}`}
-                className="inline-flex items-center gap-2 rounded-md bg-gradient-to-r from-brand-green to-brand-green-dark px-6 py-3.5 text-xs font-black uppercase tracking-widest text-white shadow-md transition-opacity hover:opacity-90 active:scale-95"
+                className="from-brand-green to-brand-green-dark inline-flex items-center gap-2 rounded-md bg-gradient-to-r px-6 py-3.5 text-xs font-black tracking-widest text-white uppercase shadow-md transition-opacity hover:opacity-90 active:scale-95"
               >
                 Email Us
               </a>
               <a
                 href={`tel:${CATERING_PHONE}`}
-                className="inline-flex items-center gap-2 rounded-md border-2 border-brand-green px-6 py-3.5 text-xs font-black uppercase tracking-widest text-brand-green transition-colors hover:bg-brand-green hover:text-white active:scale-95"
+                className="border-brand-green text-brand-green hover:bg-brand-green inline-flex items-center gap-2 rounded-md border-2 px-6 py-3.5 text-xs font-black tracking-widest uppercase transition-colors hover:text-white active:scale-95"
               >
                 {CATERING_PHONE_DISPLAY}
               </a>
@@ -98,11 +99,11 @@ export default function Catering() {
 
           {/* Right — decorative image with "Since 2011" badge */}
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-brand-gold/20 to-brand-green/10 -skew-x-3 scale-105 rounded-2xl -z-10" />
-            <div className="aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-green/80 to-brand-green-dark/90 flex items-center justify-center">
-                <div className="text-center text-white px-8">
-                  <span className="font-serif italic text-3xl leading-snug block opacity-90">
+            <div className="from-brand-gold/20 to-brand-green/10 absolute inset-0 -z-10 scale-105 -skew-x-3 rounded-2xl bg-gradient-to-br" />
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl">
+              <div className="from-brand-green/80 to-brand-green-dark/90 absolute inset-0 flex items-center justify-center bg-gradient-to-br">
+                <div className="px-8 text-center text-white">
+                  <span className="block font-serif text-3xl leading-snug italic opacity-90">
                     &ldquo;Bringing the taste of Jamaica to every table since 2011.&rdquo;
                   </span>
                 </div>
@@ -110,14 +111,16 @@ export default function Catering() {
             </div>
 
             {/* Since 2011 badge */}
-            <div className="absolute -top-6 -right-6 z-20 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-brand-gold to-[#FEB615] shadow-xl">
-              <span className="text-center text-xs font-black uppercase leading-tight tracking-tighter text-gray-900">
-                Since<br />2011
+            <div className="from-brand-gold absolute -top-6 -right-6 z-20 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br to-[#FEB615] shadow-xl">
+              <span className="text-center text-xs leading-tight font-black tracking-tighter text-gray-900 uppercase">
+                Since
+                <br />
+                2011
               </span>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }

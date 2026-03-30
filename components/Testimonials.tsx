@@ -34,7 +34,8 @@ const reviews = [
 
 export default function Testimonials() {
   return (
-    <section className="bg-gray-50 px-6 py-24" id="reviews">
+    <section className="px-6 py-24" id="reviews" style={{ backgroundColor: "#ebefe8" }}>
+      {" "}
       <div className="mx-auto max-w-6xl">
         {/* Section header */}
         <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
