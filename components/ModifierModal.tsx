@@ -2,139 +2,13 @@
 
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react"
 
+import Image from "next/image"
 
+import type { CartItem, MenuItem, ModifierGroup, SelectedModifier } from "@/types"
 
-import Image from "next/image";
-
-
-
-import type { CartItem, MenuItem, ModifierGroup, SelectedModifier } from "@/types";
-
-
-
-import { useCart } from "@/context/CartContext";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import { useCart } from "@/context/CartContext"
 
 interface Props {
   item: MenuItem
@@ -233,13 +107,6 @@ function SubGroups({
                 )
               })}
             </div>
-
-            {/* Sub-group validation error */}
-            {sg.required && !metMin && (
-              <p className="mt-2 flex items-center gap-1 pl-4 text-sm font-medium text-red-500">
-                <span className="text-base">●</span> Selection Required
-              </p>
-            )}
           </div>
         )
       })}
@@ -258,8 +125,9 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   // ── Scroll lock ────────────────────────────────────────────────────────────
-  useEffect(() => {
+  REPLACE: useEffect(() => {
     document.body.style.overflow = "hidden"
+    if (scrollRef.current) scrollRef.current.scrollTop = 0
     return () => {
       document.body.style.overflow = ""
     }
@@ -390,7 +258,6 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
   // ── Handlers ───────────────────────────────────────────────────────────────
   function selectRadio(gKey: string, optKey: string) {
     setSelections(prev => ({ ...prev, [gKey]: new Set([optKey]) }))
-    setAttempted(false)
   }
 
   function toggleStepper(gKey: string, optKey: string, max: number) {
@@ -399,7 +266,6 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
       cur.has(optKey) ? cur.delete(optKey) : cur.size < max && cur.add(optKey)
       return { ...prev, [gKey]: cur }
     })
-    setAttempted(false)
   }
 
   function toggleCheckbox(gKey: string, optKey: string, max: number) {
@@ -408,7 +274,6 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
       cur.has(optKey) ? cur.delete(optKey) : cur.size < max && cur.add(optKey)
       return { ...prev, [gKey]: cur }
     })
-    setAttempted(false)
   }
 
   function subRadio(pgKey: string, optKey: string, sgKey: string, soKey: string) {
@@ -511,8 +376,9 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
     <>
       <div className="fixed inset-0 z-50 bg-black/60" onClick={onClose} />
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 md:inset-0 md:flex md:items-center md:justify-center">
-        <div className="pointer-events-auto flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl md:max-h-[85vh] md:max-w-lg md:rounded-2xl">
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex flex-col justify-end md:inset-0 md:flex-row md:items-center md:justify-center">
+        {" "}
+        <div className="pointer-events-auto flex max-h-screen w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl md:max-h-[95vh] md:max-w-lg md:rounded-2xl">
           {" "}
           {/* ── Persistent frosted header ─────────────────────────────────── */}
           <header className="flex shrink-0 items-center px-4 py-4 shadow-sm backdrop-blur-xl">
@@ -537,7 +403,7 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
             </button>
           </header>
           {/* ── Scrollable body ──────────────────────────────────────────── */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto">
+          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
             {/* Hero image with overlay */}
             <div className="relative h-[280px] w-full shrink-0 overflow-hidden md:h-[320px]">
               {" "}
@@ -585,7 +451,6 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
                 : []
 
               const unmetCount = group.required ? Math.max(0, group.min - (selected.size ?? 0)) : 0
-              const isFlashing = attempted && group.required && !metMin
 
               const hasError = attempted && group.required && !metMin
 
@@ -596,23 +461,21 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
                     if (node) groupRefs.current.set(gKey, node)
                     else groupRefs.current.delete(gKey)
                   }}
-                  className={`border-b border-gray-100 ${hasError ? "animate-flash-red" : ""}`}
+                  className={`border-b border-gray-100`}
                 >
                   {/* Group header */}
                   <div
-                    className={`flex items-start justify-between px-6 py-5 ${isOptional ? "cursor-pointer transition-colors hover:bg-gray-50" : ""} ${isFlashing ? "animate-flash-red" : ""}`}
+                    className={`flex items-start justify-between px-6 py-5 ${isOptional ? "cursor-pointer transition-colors hover:bg-gray-50" : ""}`}
                     onClick={isOptional ? () => toggleOptional(gKey) : undefined}
                   >
                     <div className="min-w-0 flex-1">
-                      <p
-                        className={`font-serif text-xl font-semibold transition-colors ${isFlashing ? "text-red-500" : "text-brand-green"}`}
-                      >
+                      <p className={`font-serif text-xl font-semibold transition-colors`}>
                         {group.name}
                       </p>
                       {/* Required hint — counts down, disappears when met */}
                       {group.required && unmetCount > 0 && (
                         <p
-                          className={`mt-0.5 text-sm font-medium transition-colors ${isFlashing ? "text-red-400" : "text-gray-500"}`}
+                          className={`mt-0.5 text-sm font-medium transition-colors ${hasError ? "text-red-400" : "text-gray-500"}`}
                         >
                           Please select {unmetCount}
                         </p>
@@ -630,11 +493,7 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
 
                     {/* Required badge */}
                     {group.required && (
-                      <span
-                        className={`ml-4 shrink-0 self-start rounded-full px-3 py-1 text-xs font-bold tracking-wide uppercase ${
-                          metMin ? "bg-brand-green text-white" : "bg-brand-green text-white"
-                        }`}
-                      >
+                      <span className="bg-brand-green ml-4 shrink-0 self-start rounded-full px-3 py-1 text-xs font-bold tracking-wide text-white uppercase">
                         {metMin ? "✓ Done" : "Required"}
                       </span>
                     )}
@@ -678,7 +537,6 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
                               </button>
                             )}
 
-                            {/* ── Stepper (required max > 1) ── */}
                             {/* ── Stepper (required max > 1) ── */}
                             {mode === "stepper" && (
                               <button
@@ -772,13 +630,6 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
                       })}
                     </div>
                   )}
-
-                  {/* Required group unmet error */}
-                  {group.required && !metMin && selected.size > 0 && (
-                    <p className="flex items-center gap-1 px-6 pb-4 text-sm font-medium text-red-500">
-                      <span className="text-base">●</span> Please complete this selection
-                    </p>
-                  )}
                 </div>
               )
             })}
@@ -817,12 +668,12 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
                   Add to Order — ${effectivePrice.toFixed(2)}
                 </span>
               ) : (
-                <span className="flex flex-col items-center gap-0.5">
+                <span className="flex flex-row items-center justify-center gap-0.5">
                   <span className="text-brand-green text-sm font-bold tracking-widest uppercase">
                     Make {remaining} more required selection{remaining !== 1 ? "s" : ""}
                   </span>
                   <span className="text-base text-gray-500">
-                    to Add to Order — ${effectivePrice.toFixed(2)}
+                     — ${effectivePrice.toFixed(2)}
                   </span>
                 </span>
               )}

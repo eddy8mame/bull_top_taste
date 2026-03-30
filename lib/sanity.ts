@@ -1,6 +1,16 @@
-import { createClient } from "@sanity/client"
+import { createClient } from "@sanity/client";
 
-import type { MenuItem, ModifierGroup, SiteSettings, Special } from "@/types"
+
+
+import type { MenuItem, ModifierGroup, SiteSettings, Special } from "@/types";
+
+
+
+
+
+
+
+
 
 // ─── Client factory ───────────────────────────────────────────────────────────
 
@@ -191,7 +201,6 @@ const LOCATION_FULL_PROJECTION = `{
   },
 
   hours[] { days, time },
-  pickupWaitTime, hours[] { days, time },
   pickupWaitTime,
   taxRate,
 

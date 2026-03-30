@@ -395,6 +395,13 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
+* **v2.6.3:**  Hero image wired from Sanity.
+  - heroBackground field from location document now renders in the
+  styrofoam card on the hero section.
+  - Graceful fallback to placeholder when image is absent.
+  - Background gradient migrated from style prop to Tailwind
+  arbitrary utilities.
+
 * **v2.6.2:**  ModifierModal validation scroll and flash repaired.
   - CTA button no longer disabled when invalid — handleAdd now always
   fires, enabling scroll and flash error behavior.
