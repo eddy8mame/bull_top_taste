@@ -76,7 +76,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const total = useMemo(
+  const subTotal = useMemo(
     () => items.reduce((sum, i) => sum + i.effectivePrice * i.quantity, 0),
     [items]
   )
@@ -85,7 +85,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   return (
     <CartContext.Provider
-      value={{ items, addItem, removeItem, replaceItem, updateQty, clearCart, total, count, isOpen, setIsOpen }}
+      value={{ items, addItem, removeItem, replaceItem, updateQty, clearCart, subTotal, count, isOpen, setIsOpen }}
     >
       {children}
     </CartContext.Provider>

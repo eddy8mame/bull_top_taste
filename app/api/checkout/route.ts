@@ -29,6 +29,7 @@ import { DEFAULT_TAX_RATE, calculateTotals } from "@/lib/tax";
 interface CheckoutBody {
   items: CartItem[]
   total: number
+  taxRate: number
   customer: {
     name: string
     email: string
@@ -150,9 +151,9 @@ function toSanityItem(item: CartItem): SanityOrderItem {
 // ─── POST /api/checkout ───────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
-  const { items, customer }: CheckoutBody = await req.json()
+  const { items, customer, taxRate }: CheckoutBody = await req.json()
 
-  const { total } = calculateTotals(items, DEFAULT_TAX_RATE)
+  const { total } = calculateTotals(items, taxRate ?? DEFAULT_TAX_RATE)
 
   // ── 0. Kitchen open/close gate ────────────────────────────────────────────
   // Checked before any Stripe or Sanity work. When the admin toggles the
@@ -217,8 +218,24 @@ export async function POST(req: NextRequest) {
 
   // ── 3. Create Stripe Checkout Session ────────────────────────────────────
 
+  const { tax } = calculateTotals(items, taxRate ?? DEFAULT_TAX_RATE)
+
+  const sessionLineItems = [
+    ...lineItems,
+    {
+      price_data: {
+        currency: "usd",
+        unit_amount: Math.round(tax * 100),
+        product_data: {
+          name: `Sales Tax (${((taxRate ?? DEFAULT_TAX_RATE) * 100).toFixed(2).replace(/\.?0+$/, "")}%)`,
+        },
+      },
+      quantity: 1,
+    },
+  ]
+
   const session = await stripe.checkout.sessions.create({
-    line_items: lineItems,
+    line_items: sessionLineItems,
     mode: "payment",
     customer_email: customer.email,
     metadata: {

@@ -72,7 +72,7 @@ export interface CartState {
   updateQty: (cartItemId: string, qty: number) => void
   replaceItem: (cartItemId: string, updated: CartItem) => void 
   clearCart: () => void
-  total: number
+  subTotal: number
   count: number
   isOpen: boolean
   setIsOpen: (open: boolean) => void

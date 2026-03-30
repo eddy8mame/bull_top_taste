@@ -23,7 +23,7 @@ interface Props {
 
 export default function Cart({ location }: Props) {
   const router = useRouter()
-  const { items, addItem, removeItem, updateQty, total, isOpen, setIsOpen } = useCart()
+  const { items, addItem, removeItem, updateQty, subTotal, isOpen, setIsOpen } = useCart()
 
   const [quickAddItem, setQuickAddItem] = useState<MenuItem | null>(null)
   const [editingItem, setEditingItem] = useState<CartItem | null>(null)
@@ -402,7 +402,7 @@ export default function Cart({ location }: Props) {
             <div className="mx-6 mt-4 flex items-center justify-between border-t-2 border-gray-100 pt-6">
               <span className="font-serif text-xl font-bold text-gray-900">Subtotal</span>
               <span className="text-brand-green font-serif text-2xl font-extrabold">
-                ${total.toFixed(2)}
+                ${subTotal.toFixed(2)}
               </span>
             </div>
 

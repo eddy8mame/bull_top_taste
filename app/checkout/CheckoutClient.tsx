@@ -147,7 +147,8 @@ export default function CheckoutClient({ location }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items,
-          grandTotal,
+          total: grandTotal,
+          taxRate: location?.taxRate ?? DEFAULT_TAX_RATE,
           customer: { ...formData, type: "pickup" },
         }),
       })

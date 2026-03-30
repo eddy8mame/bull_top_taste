@@ -395,10 +395,20 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.5.0 (Current):** Hero redesigned to two-column editorial layout with
+* **v2.6.0 (Current):** Fixed tax rate threading through checkout pipeline. 
+  taxRate now required in CheckoutBody and passed to server-side calculateTotals,
+  replacing the DEFAULT_TAX_RATE hardcode. Renamed total → subtotal in
+  CartState interface and useCart destructure for semantic accuracy. Fixed
+  mismatched grandTotal/total key in CheckoutClient POST body. Tax now
+  appears as an explicit labeled line item in the Stripe Checkout Session.
+  Fixed Sales Tax label displaying rounded percentage — now formats correctly
+  for fractional rates (e.g. 6.5% not 7%).
+
+* **v2.5.0:** Hero redesigned to two-column editorial layout with
   large serif headline, gold badge, hero image in bordered frame,
   floating tagline quote card. Menu section header enlarged with
   subtitle and directional CTA link.
+
 * **v2.4.2 :** Location, Catering, and About sections restyled to
   editorial reference. Location gains full-width map with overlaid
   address card. Catering switches to light background with gold feature
@@ -417,11 +427,11 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
   gradient active state. Card restyling applied to both homepage
   Most Ordered grid and full menu page.
 
-* **v2.3.2:** Upgraded the order confirmation page with an interactive confetti 
-  animation (isolated client component) and the 6-character Stripe order 
-  reference to perfectly sync the customer ticket with the staff Kitchen Display System (KDS). 
-  Stabilized the checkout flow by resolving a `localStorage` hydration mismatch, 
-  repairing the Google Maps routing link, and enforcing strict regex email validation 
+* **v2.3.2:** Upgraded the order confirmation page with an interactive confetti
+  animation (isolated client component) and the 6-character Stripe order
+  reference to perfectly sync the customer ticket with the staff Kitchen Display System (KDS).
+  Stabilized the checkout flow by resolving a `localStorage` hydration mismatch,
+  repairing the Google Maps routing link, and enforcing strict regex email validation
   in the custom form error UI.
 
 * **v2.3.1:** Delivery upsell card removed from checkout. Replaced with
@@ -444,7 +454,7 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
   control replaced with pill (trash + count + plus). Price shown per
   item. Pickup/Mapbox card hidden pending redesign. CTA updated to
   full-width green rounded button.
-  
+
 * **v2.2.0:** Added editorial theme (Newsreader + Manrope, forest green
   palette). Cart drawer widened to 550px. Empty state redesigned to match
   editorial reference — shopping bag icon, bold heading, full-width browse
