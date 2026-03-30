@@ -48,9 +48,9 @@ export default function Hero({ location }: Props) {
             </h1>
             <a
               href="/menu"
-              className="inline-block rounded-md bg-gray-900 px-10 py-4 text-sm font-black tracking-widest text-white uppercase shadow-xl transition-all hover:bg-gray-700 active:scale-95"
+              className="rounded-md bg-brand-green hover:bg-brand-green-dark inline-block px-10 py-4 text-sm font-black tracking-widest text-white uppercase shadow-xl transition-all active:scale-95"
             >
-              View Menu
+              Explore the Menu
             </a>
           </div>
 

@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default function Nav({ location }: Props) {
-  const { count, setIsOpen } = useCart()
+  const { setIsOpen } = useCart()
 
   const [isMounted, setIsMounted] = useState(false)
   const [activeSection, setActiveSection] = useState<string>("")
@@ -108,11 +108,6 @@ export default function Nav({ location }: Props) {
               className="from-brand-green to-brand-green-dark relative flex items-center gap-2 rounded-md bg-linear-to-r px-5 py-2.5 text-xs font-black tracking-widest text-white uppercase shadow-md transition-opacity hover:opacity-90 active:scale-95"
             >
               <span>Order Online</span>
-              {isMounted && count > 0 && (
-                <span className="bg-brand-gold text-brand-dark absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold">
-                  {count}
-                </span>
-              )}
             </button>
           </div>
         </div>

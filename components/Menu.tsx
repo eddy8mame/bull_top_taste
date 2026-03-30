@@ -2,16 +2,85 @@
 
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useState } from "react";
 
-import Image from "next/image"
-import Link from "next/link"
 
-import type { CartItem, MenuItem, Special } from "@/types"
 
-import { useCart } from "@/context/CartContext"
+import Image from "next/image";
+import Link from "next/link";
 
-import ModifierModal from "@/components/ModifierModal"
+
+
+import type { CartItem, MenuItem, Special } from "@/types";
+
+
+
+import { useCart } from "@/context/CartContext";
+
+
+
+import ModifierModal from "@/components/ModifierModal";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 interface Props {
   items: MenuItem[]
@@ -29,23 +98,10 @@ export default function Menu({ items, specials }: Props) {
     .sort((a, b) => (b.orderCount ?? 0) - (a.orderCount ?? 0))
     .slice(0, TEASER_COUNT)
 
-  const handleAdd = useCallback(
-    (item: MenuItem) => {
-      if ((item.modifierGroups?.length ?? 0) > 0) {
-        setModalItem(item)
-        return
-      }
-      if (item.price == null) return
-      const cartItem: CartItem = {
-        ...item,
-        cartItemId: `${item._id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-        quantity: 1,
-        effectivePrice: item.price,
-      }
-      addItem(cartItem)
-    },
-    [addItem]
-  )
+  const handleAdd = useCallback((item: MenuItem) => {
+    if (item.price == null && (item.modifierGroups?.length ?? 0) === 0) return
+    setModalItem(item)
+  }, [])
 
   return (
     <>
@@ -61,31 +117,11 @@ export default function Menu({ items, specials }: Props) {
             <div>
               <h2 className="font-serif text-5xl font-bold text-gray-900 md:text-6xl">
                 Most Ordered
+                <div className="bg-brand-green mt-3 h-1 rounded-full" />
               </h2>
-              <p className="mt-2 text-xl text-gray-500">
+              {/* <p className="mt-2 text-xl text-gray-500">
                 Our community&apos;s favorite comfort classics, packed with authentic spice.
-              </p>
-            </div>
-            <div className="ml-8 hidden shrink-0 items-center gap-3 md:flex">
-              <Link
-                href="/menu"
-                className="text-brand-green flex items-center gap-2 text-xs font-black tracking-widest uppercase hover:underline"
-              >
-                View Full Menu
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-4 w-4"
-                >
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
-              </Link>
+              </p> */}
             </div>
           </div>
           {/* <p className="text-brand-muted mb-8 max-w-lg leading-relaxed">
@@ -116,13 +152,17 @@ export default function Menu({ items, specials }: Props) {
 
           {/* Featured grid */}
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {" "}
             {featured.map((item, index) => {
               const canOrder = item.price != null || (item.modifierGroups?.length ?? 0) > 0
               return (
                 <div
                   key={item._id}
-                  className="relative flex flex-col rounded-lg border border-gray-200 bg-white transition-all hover:-translate-y-1 hover:shadow-lg"
+                  role="button"
+                  tabIndex={canOrder ? 0 : -1}
+                  aria-label={`Add ${item.name} to order`}
+                  onClick={() => canOrder && handleAdd(item)}
+                  onKeyDown={e => e.key === "Enter" && canOrder && handleAdd(item)}
+                  className="relative flex cursor-pointer flex-col rounded-lg border border-gray-200 bg-white transition-all hover:-translate-y-1 hover:shadow-lg"
                   style={{
                     boxShadow: "inset 0 0 10px rgba(0,0,0,0.03), 2px 2px 5px rgba(0,0,0,0.08)",
                   }}
@@ -166,12 +206,11 @@ export default function Menu({ items, specials }: Props) {
                     </p>
                   </div>
 
-                  {/* Floating add button */}
+                  {/* + icon — purely decorative signifier, not interactive */}
                   {canOrder && (
-                    <button
-                      onClick={() => handleAdd(item)}
-                      aria-label={`Add ${item.name}`}
-                      className="border-brand-green/20 bg-brand-green/15 text-brand-green hover:bg-brand-green/25 absolute -right-2 -bottom-4 z-10 flex h-12 w-12 items-center justify-center rounded-full border shadow-xl backdrop-blur-sm transition-all hover:scale-110 active:scale-95"
+                    <span
+                      aria-hidden="true"
+                      className="border-brand-green/20 bg-brand-green/15 text-brand-green absolute -right-2 -bottom-4 z-10 flex h-12 w-12 items-center justify-center rounded-full border shadow-xl backdrop-blur-sm"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -186,30 +225,20 @@ export default function Menu({ items, specials }: Props) {
                         <line x1="12" y1="5" x2="12" y2="19" />
                         <line x1="5" y1="12" x2="19" y2="12" />
                       </svg>
-                    </button>
+                    </span>
                   )}
                 </div>
               )
             })}
           </div>
 
-          {/* Mobile CTA */}
-          <div className="mt-8 text-center sm:hidden">
+          <div className="mt-12 text-center">
             <Link
               href="/menu"
-              className="border-brand-green text-brand-green hover:bg-brand-green inline-block rounded-xl border-2 px-6 py-3 font-bold transition-colors hover:text-white"
+              className="bg-brand-green hover:bg-brand-green-dark inline-flex items-center gap-2 rounded-xl px-10 py-4 text-sm font-black tracking-widest text-white uppercase shadow-md transition-all active:scale-95"
             >
               View Full Menu
-            </Link>
-          </div>
 
-          {/* Desktop CTA row */}
-          <div className="mt-8 hidden text-center sm:block">
-            <Link
-              href="/menu"
-              className="border-brand-green text-brand-green hover:bg-brand-green inline-block rounded-xl border-2 px-8 py-3 font-bold transition-colors hover:text-white"
-            >
-              View Full Menu →
             </Link>
           </div>
         </div>

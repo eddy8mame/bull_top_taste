@@ -5,6 +5,7 @@ import { getActiveSpecials, getLocationFull, getMenuItems } from "@/lib/sanity";
 
 import About from "@/components/About";
 import Cart from "@/components/Cart";
+import CartFab from "@/components/CartFab";
 import Catering from "@/components/Catering";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
@@ -37,7 +38,7 @@ export const revalidate = 3600 // ISR: revalidate CMS content every hour
 
 // Default slug — single-location fallback. In multi-tenant mode, this would
 // come from the URL or a middleware-injected header.
-const DEFAULT_SLUG = process.env.SANITY_LOCATION_SLUG ?? "bull-top-taste-royal-palm-beach"
+const DEFAULT_SLUG = process.env.SANITY_LOCATION_SLUG ?? "bull-top-taste-rpb"
 
 export default async function Home() {
   const [items, specials, location] = await Promise.all([
@@ -50,6 +51,7 @@ export default async function Home() {
     <>
       <Nav location={location} />
       <Cart location={location} />
+      <CartFab />
       <main>
         {/* Hero → Menu → Reviews -> Location & Hours → Catering → About */}
         <Hero location={location} />

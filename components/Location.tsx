@@ -1,7 +1,61 @@
 // components/Location.tsx
-import type { HoursEntry } from "@/types"
+"use client"
 
-import type { LocationFull } from "@/lib/sanity"
+import { useState } from "react";
+
+
+
+import type { HoursEntry } from "@/types";
+
+
+
+import type { LocationFull } from "@/lib/sanity";
+
+
+
+
+
+
+
+
+
+
+
+function MapEmbed({ embedSrc, name }: { embedSrc: string; name: string }) {
+  const [active, setActive] = useState(false)
+
+  return (
+    <div
+      className="relative w-full overflow-hidden rounded-3xl"
+      style={{
+        height: "450px",
+        boxShadow: "0 8px 24px rgba(24,29,25,0.06)",
+        border: "8px solid white",
+      }}
+    >
+      <iframe
+        title={`Map — ${name}`}
+        src={embedSrc}
+        width="100%"
+        height="100%"
+        style={{ border: 0, pointerEvents: active ? "auto" : "none" }}
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+      />
+      {!active && (
+        <div
+          className="absolute inset-0 flex cursor-pointer items-center justify-center bg-transparent"
+          onClick={() => setActive(true)}
+          aria-label="Click to interact with map"
+        >
+          <div className="rounded-xl bg-white/90 px-5 py-3 text-xs font-black tracking-widest text-gray-700 uppercase shadow-md backdrop-blur-sm">
+            Click to interact
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 const DEFAULT_HOURS: HoursEntry[] = [
   { days: "Monday – Saturday", time: "9:00 am – 10:00 pm" },
@@ -56,18 +110,9 @@ export default function Location({ location }: Props) {
           style={{
             height: "450px",
             boxShadow: "0 8px 24px rgba(24,29,25,0.06)",
-            border: "8px solid white",
           }}
         >
-          <iframe
-            title={`Map — ${name}`}
-            src={embedSrc}
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
+          <MapEmbed embedSrc={embedSrc} name={name} />
 
           {/* Overlaid address card */}
           <div
@@ -75,12 +120,11 @@ export default function Location({ location }: Props) {
             style={{ maxWidth: "280px" }}
           >
             <h3 className="text-brand-green mb-1 font-serif text-xl font-bold">{name}</h3>
-            <p className="mb-4 text-sm leading-relaxed text-gray-500">{address}</p>
             <a
               href={directionsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-brand-green flex items-center gap-1.5 text-xs font-black tracking-widest uppercase hover:underline"
+              className="text-brand-green flex items-center gap-1.5 text-sm font-black tracking-widest uppercase hover:underline"
             >
               Get Directions
               <svg
@@ -110,9 +154,10 @@ export default function Location({ location }: Props) {
             </p>
             <div className="space-y-2">
               {hours.map(({ days, time }) => (
-                <div key={days} className="flex justify-between gap-4 text-sm">
-                  <span className="text-gray-500">{days}</span>
-                  <span className="text-right font-semibold text-gray-900">{time}</span>
+                <div key={days} className="flex items-baseline gap-2 text-sm">
+                  <span className="shrink-0 text-gray-500">{days}</span>
+                  <span className="min-w-0 flex-1 border-b border-dotted border-gray-300" />
+                  <span className="shrink-0 font-semibold text-gray-900 tabular-nums">{time}</span>
                 </div>
               ))}
             </div>
@@ -148,7 +193,7 @@ export default function Location({ location }: Props) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
-                  className="hover:border-brand-green hover:text-brand-green flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold transition-colors"
+                  className="border-brand-green/30 text-brand-green hover:bg-brand-green hover:border-brand-green flex items-center gap-2 rounded-lg border-2 px-4 py-2.5 text-xs font-black tracking-wide uppercase transition-all hover:text-white"
                 >
                   <InstagramIcon /> Instagram
                 </a>
@@ -159,7 +204,7 @@ export default function Location({ location }: Props) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Facebook"
-                  className="hover:border-brand-green hover:text-brand-green flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold transition-colors"
+                  className="border-brand-green/30 text-brand-green hover:bg-brand-green hover:border-brand-green flex items-center gap-2 rounded-lg border-2 px-4 py-2.5 text-xs font-black tracking-wide uppercase transition-all hover:text-white"
                 >
                   <FacebookIcon /> Facebook
                 </a>
@@ -175,8 +220,8 @@ export default function Location({ location }: Props) {
 function InstagramIcon() {
   return (
     <svg
-      width="14"
-      height="14"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -193,7 +238,8 @@ function InstagramIcon() {
 
 function FacebookIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+
       <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
     </svg>
   )

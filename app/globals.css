@@ -27,6 +27,7 @@
        These map to Tailwind utilities: bg-brand-green, text-brand-gold, etc.  */
   --color-brand-green: var(--theme-secondary);
   --color-brand-green-dark: var(--theme-secondary-dark);
+  --color-brand-cart-badge: var(--theme-cart-badge);
   --color-brand-gold: var(--theme-primary);
   --color-brand-tertiary: var(--theme-tertiary);
   --color-brand-muted: var(--theme-muted);
@@ -60,8 +61,14 @@
 }
 
 @keyframes flash-red {
-  0%, 100% { background-color: transparent; }
-  25%, 75% { background-color: rgb(254 226 226); }
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  25%,
+  75% {
+    background-color: rgb(254 226 226);
+  }
 }
 
 .animate-flash-red {
@@ -144,16 +151,17 @@
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 [data-theme="editorial"] {
-  --theme-primary: #006b3d;          /* editorial green — buttons, highlights   */
-  --theme-secondary: #00502c;        /* deep forest green — headings, accents   */
-  --theme-secondary-dark: #003d22;   /* hover / pressed state                   */
-  --theme-tertiary: #974148;         /* muted terracotta accent                 */
-  --theme-bg: #f6fbf4;               /* barely-tinted green page background     */
-  --theme-fg: #181d19;               /* near-black body copy                    */
-  --theme-muted: #3f4941;            /* muted surface-variant text              */
-  --theme-card: #ffffff;             /* card / modal backgrounds                */
+  --theme-primary: #006b3d; /* editorial green — buttons, highlights   */
+  --theme-secondary: #00502c; /* deep forest green — headings, accents   */
+  --theme-secondary-dark: #003d22; /* hover / pressed state                   */
+  --theme-tertiary: #974148; /* muted terracotta accent                 */
+  --theme-bg: #f6fbf4; /* barely-tinted green page background     */
+  --theme-fg: #181d19; /* near-black body copy                    */
+  --theme-muted: #3f4941; /* muted surface-variant text              */
+  --theme-card: #ffffff; /* card / modal backgrounds                */
   --theme-font-sans: var(--font-manrope);
   --theme-font-serif: var(--font-newsreader);
+  --theme-cart-badge: #792932;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

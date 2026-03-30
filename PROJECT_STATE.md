@@ -395,6 +395,12 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
+* **v2.6.5:**: Location section improvements.
+  - Dotted leader lines added to hours rows for readability.
+  - Instagram and Facebook links styled as prominent brand-green
+  bordered buttons.
+  - Map scroll trap resolved via click-to-interact overlay on mobile.
+
 * **v2.6.4:**: About section image migrated to next/image.
 
 * **v2.6.3:**  Hero image wired from Sanity.
