@@ -2,13 +2,139 @@
 
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import Image from "next/image"
 
-import type { CartItem, MenuItem, ModifierGroup, SelectedModifier } from "@/types"
 
-import { useCart } from "@/context/CartContext"
+import Image from "next/image";
+
+
+
+import type { CartItem, MenuItem, ModifierGroup, SelectedModifier } from "@/types";
+
+
+
+import { useCart } from "@/context/CartContext";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 interface Props {
   item: MenuItem
@@ -126,6 +252,10 @@ function SubGroups({
 export default function ModifierModal({ item, onClose, existingItem }: Props) {
   const { addItem, replaceItem } = useCart()
   const groups = item.modifierGroups ?? []
+  const [attempted, setAttempted] = useState(false)
+  const [flashTrigger, setFlashTrigger] = useState(0)
+  const groupRefs = useRef(new Map<string, HTMLDivElement>())
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   // ── Scroll lock ────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -260,6 +390,7 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
   // ── Handlers ───────────────────────────────────────────────────────────────
   function selectRadio(gKey: string, optKey: string) {
     setSelections(prev => ({ ...prev, [gKey]: new Set([optKey]) }))
+    setAttempted(false)
   }
 
   function toggleStepper(gKey: string, optKey: string, max: number) {
@@ -268,6 +399,7 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
       cur.has(optKey) ? cur.delete(optKey) : cur.size < max && cur.add(optKey)
       return { ...prev, [gKey]: cur }
     })
+    setAttempted(false)
   }
 
   function toggleCheckbox(gKey: string, optKey: string, max: number) {
@@ -276,6 +408,7 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
       cur.has(optKey) ? cur.delete(optKey) : cur.size < max && cur.add(optKey)
       return { ...prev, [gKey]: cur }
     })
+    setAttempted(false)
   }
 
   function subRadio(pgKey: string, optKey: string, sgKey: string, soKey: string) {
@@ -304,7 +437,26 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
 
   // ── Add to cart ────────────────────────────────────────────────────────────
   function handleAdd() {
-    if (!isValid) return
+    if (!isValid) {
+      setAttempted(true)
+      setFlashTrigger(prev => prev + 1)
+      const firstUnmet = groups.find((g, gi) => {
+        const gKey = groupKey(g, gi)
+        return g.required && (selections[gKey]?.size ?? 0) < g.min
+      })
+      if (firstUnmet) {
+        const gKey = groupKey(firstUnmet, groups.indexOf(firstUnmet))
+        requestAnimationFrame(() => {
+          const target = groupRefs.current.get(gKey)
+          const container = scrollRef.current
+          if (target && container) {
+            const targetTop = target.offsetTop - container.offsetTop
+            container.scrollTo({ top: targetTop - 24, behavior: "smooth" })
+          }
+        })
+      }
+      return
+    }
     const selectedModifiers: SelectedModifier[] = []
     groups.forEach((g, gi) => {
       const gKey = groupKey(g, gi)
@@ -385,7 +537,7 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
             </button>
           </header>
           {/* ── Scrollable body ──────────────────────────────────────────── */}
-          <div className="flex-1 overflow-y-auto">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto">
             {/* Hero image with overlay */}
             <div className="relative h-[280px] w-full shrink-0 overflow-hidden md:h-[320px]">
               {" "}
@@ -432,21 +584,37 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
                     .filter(Boolean)
                 : []
 
+              const unmetCount = group.required ? Math.max(0, group.min - (selected.size ?? 0)) : 0
+              const isFlashing = attempted && group.required && !metMin
+
+              const hasError = attempted && group.required && !metMin
+
               return (
-                <div key={gKey} className="border-b border-gray-100">
+                <div
+                  key={`${gKey}-${hasError ? flashTrigger : "static"}`}
+                  ref={node => {
+                    if (node) groupRefs.current.set(gKey, node)
+                    else groupRefs.current.delete(gKey)
+                  }}
+                  className={`border-b border-gray-100 ${hasError ? "animate-flash-red" : ""}`}
+                >
                   {/* Group header */}
                   <div
-                    className={`flex items-start justify-between px-6 py-5 ${isOptional ? "cursor-pointer transition-colors hover:bg-gray-50" : ""}`}
+                    className={`flex items-start justify-between px-6 py-5 ${isOptional ? "cursor-pointer transition-colors hover:bg-gray-50" : ""} ${isFlashing ? "animate-flash-red" : ""}`}
                     onClick={isOptional ? () => toggleOptional(gKey) : undefined}
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="text-brand-green font-serif text-xl font-semibold">
+                      <p
+                        className={`font-serif text-xl font-semibold transition-colors ${isFlashing ? "text-red-500" : "text-brand-green"}`}
+                      >
                         {group.name}
                       </p>
-                      {/* Required hint */}
-                      {group.required && group.min > 1 && (
-                        <p className="mt-0.5 text-sm font-medium text-gray-500">
-                          Select {group.min}
+                      {/* Required hint — counts down, disappears when met */}
+                      {group.required && unmetCount > 0 && (
+                        <p
+                          className={`mt-0.5 text-sm font-medium transition-colors ${isFlashing ? "text-red-400" : "text-gray-500"}`}
+                        >
+                          Please select {unmetCount}
                         </p>
                       )}
                       {/* Optional summary */}
@@ -640,11 +808,8 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
           <div className="shrink-0 border-t border-gray-100 px-5 py-4">
             <button
               onClick={handleAdd}
-              disabled={!isValid}
               className={`w-full rounded-2xl py-5 font-bold transition-all active:scale-[.98] ${
-                isValid
-                  ? "bg-brand-green hover:bg-brand-green-dark text-white"
-                  : "cursor-not-allowed bg-gray-100"
+                isValid ? "bg-brand-green hover:bg-brand-green-dark text-white" : "bg-gray-100"
               }`}
             >
               {isValid ? (

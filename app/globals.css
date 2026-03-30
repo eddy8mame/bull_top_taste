@@ -59,6 +59,15 @@
   --font-serif: var(--theme-font-serif);
 }
 
+@keyframes flash-red {
+  0%, 100% { background-color: transparent; }
+  25%, 75% { background-color: rgb(254 226 226); }
+}
+
+.animate-flash-red {
+  animation: flash-red 0.6s ease-in-out;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════════
    DEFAULT FALLBACK  (must come first so theme blocks override it)
    Applied to :root so any element outside [data-theme] still resolves tokens.
