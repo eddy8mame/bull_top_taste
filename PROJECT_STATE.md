@@ -395,6 +395,13 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
+* **v2.6.6:**: Location section refinements.
+  - Pulsing Open Now / Closed badge added next to section heading,
+  hardcoded against known hours in ET. Deferred to Sanity field.
+  - Map white border removed; shadow retained.
+  - Address card simplified — city/state line replaces full address,
+  letting the map pin handle precise location duty.
+
 * **v2.6.5:**: Location section improvements.
   - Dotted leader lines added to hours rows for readability.
   - Instagram and Facebook links styled as prominent brand-green

@@ -21,6 +21,34 @@ import type { LocationFull } from "@/lib/sanity";
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function MapEmbed({ embedSrc, name }: { embedSrc: string; name: string }) {
   const [active, setActive] = useState(false)
 
@@ -74,6 +102,31 @@ const DEFAULTS = {
   facebook: "https://www.facebook.com/bulltoptaste/",
 }
 
+// Hardcoded against known hours:
+// Mon–Sat: 8:00am–9:00pm, Sun: 8:00am–8:00pm
+// Eastern Time. Flag as deferred when Sanity isOpen field is added.
+function getOpenStatus(): { isOpen: boolean; label: string } {
+  const now = new Date()
+  const et = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }))
+  const day = et.getDay() // 0 = Sunday
+  const hour = et.getHours()
+  const minute = et.getMinutes()
+  const time = hour + minute / 60
+
+  const opensAt = 8
+  const closesSat = 21 // 9pm
+  const closesSun = 20 // 8pm
+
+  const closingTime = day === 0 ? closesSun : closesSat
+  const isOpen = time >= opensAt && time < closingTime
+
+  if (isOpen) return { isOpen: true, label: "Open Now" }
+
+  // Next opening message
+  if (time < opensAt) return { isOpen: false, label: "Opens at 8:00 am" }
+  return { isOpen: false, label: "Closed for today" }
+}
+
 interface Props {
   location?: LocationFull | null
 }
@@ -101,7 +154,12 @@ export default function Location({ location }: Props) {
           <p className="text-brand-green mb-1 text-xs font-bold tracking-widest uppercase">
             Find Us
           </p>
-          <h2 className="font-serif text-5xl font-bold text-gray-900 md:text-6xl">Come Visit Us</h2>
+          <div className="flex flex-wrap items-center gap-4">
+            <h2 className="font-serif text-5xl font-bold text-gray-900 md:text-6xl">
+              Come Visit Us
+            </h2>
+            <OpenStatusBadge />
+          </div>
         </div>
 
         {/* Map — full width with overlaid address card */}
@@ -119,7 +177,8 @@ export default function Location({ location }: Props) {
             className="absolute bottom-6 left-6 rounded-xl border border-gray-100 bg-white p-6 shadow-lg"
             style={{ maxWidth: "280px" }}
           >
-            <h3 className="text-brand-green mb-1 font-serif text-xl font-bold">{name}</h3>
+            <h3 className="text-brand-green mb-0.5 font-serif text-xl font-bold">{name}</h3>
+            <p className="mb-3 text-sm text-gray-500">Royal Palm Beach, FL</p>
             <a
               href={directionsUrl}
               target="_blank"
@@ -217,6 +276,25 @@ export default function Location({ location }: Props) {
   )
 }
 
+function OpenStatusBadge() {
+  const { isOpen, label } = getOpenStatus()
+  return (
+    <span
+      className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-black tracking-widest uppercase ${isOpen ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-500"}`}
+    >
+      <span className="relative flex h-2 w-2">
+        {isOpen && (
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+        )}
+        <span
+          className={`relative inline-flex h-2 w-2 rounded-full ${isOpen ? "bg-green-500" : "bg-gray-400"}`}
+        />
+      </span>
+      {label}
+    </span>
+  )
+}
+
 function InstagramIcon() {
   return (
     <svg
@@ -239,7 +317,6 @@ function InstagramIcon() {
 function FacebookIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-
       <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
     </svg>
   )
