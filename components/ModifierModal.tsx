@@ -2,49 +2,13 @@
 
 "use client"
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react"
 
+import Image from "next/image"
 
+import type { CartItem, MenuItem, ModifierGroup, SelectedModifier } from "@/types"
 
-import Image from "next/image";
-
-
-
-import type { CartItem, MenuItem, ModifierGroup, SelectedModifier } from "@/types";
-
-
-
-import { useCart } from "@/context/CartContext";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import { useCart } from "@/context/CartContext"
 
 interface Props {
   item: MenuItem
@@ -174,6 +138,16 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
   // ── Selections ─────────────────────────────────────────────────────────────
   const [selections, setSelections] = useState<Selections>(() => {
     const empty = Object.fromEntries(groups.map((g, gi) => [groupKey(g, gi), new Set<string>()]))
+
+    // Auto-select single-option required groups
+    groups.forEach((g, gi) => {
+      const gKey = groupKey(g, gi)
+      if (g.required && g.options.length === 1 && inputMode(g) === "radio") {
+        const optKey = safeKey(g.options[0], `${gKey}-o0`)
+        empty[gKey] = new Set([optKey])
+      }
+    })
+
     if (!existingItem?.selectedModifiers) return empty
     const result = { ...empty }
     existingItem.selectedModifiers.forEach(mod => {
@@ -537,8 +511,20 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
                             )}
 
                             {/* ── Stepper (required max > 1) ── */}
+                            {/* ── Stepper (required max > 1) ── */}
                             {mode === "stepper" && (
-                              <div className="flex items-center gap-4 px-6 py-4">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (!atMax || isSelected) toggleStepper(gKey, optKey, group.max)
+                                }}
+                                disabled={atMax && !isSelected}
+                                className={`flex w-full items-center gap-4 px-6 py-4 text-left transition-colors ${
+                                  atMax && !isSelected
+                                    ? "cursor-not-allowed opacity-40"
+                                    : "hover:bg-gray-50"
+                                }`}
+                              >
                                 <span className="flex-1 text-base font-medium text-gray-800">
                                   {opt.name}
                                 </span>
@@ -547,24 +533,21 @@ export default function ModifierModal({ item, onClose, existingItem }: Props) {
                                     +${opt.priceAdjustment.toFixed(2)}
                                   </span>
                                 )}
-                                <button
-                                  type="button"
-                                  onClick={() => toggleStepper(gKey, optKey, group.max)}
-                                  disabled={atMax}
-                                  aria-label={isSelected ? `Remove ${opt.name}` : `Add ${opt.name}`}
+                                <span
+                                  aria-hidden="true"
                                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
                                     isSelected
                                       ? "border-brand-green bg-brand-green text-white"
                                       : atMax
-                                        ? "cursor-not-allowed border-gray-200 text-gray-300"
-                                        : "hover:border-brand-green hover:text-brand-green border-gray-400 text-gray-600"
+                                        ? "border-gray-200 text-gray-300"
+                                        : "border-gray-400 text-gray-600"
                                   }`}
                                 >
                                   <span className="text-lg leading-none font-light">
                                     {isSelected ? "−" : "+"}
                                   </span>
-                                </button>
-                              </div>
+                                </span>
+                              </button>
                             )}
 
                             {/* ── Checkbox (optional max > 1) ── */}

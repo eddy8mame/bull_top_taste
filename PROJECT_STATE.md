@@ -395,6 +395,14 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
+v2.6.2: ModifierModal UX improvements.
+  - Required groups with a single option now auto-select on modal open,
+  eliminating a forced but meaningless interaction.
+  - Edit mode is unaffected — existing selections always take precedence
+  over auto-select.
+  - Stepper option rows are now fully clickable; the +/− indicator is
+  purely visual, consistent with radio and checkbox row behavior.
+  
 * **v2.6.0 (Current):** Fixed tax rate threading through checkout pipeline. 
   taxRate now required in CheckoutBody and passed to server-side calculateTotals,
   replacing the DEFAULT_TAX_RATE hardcode. Renamed total → subtotal in
