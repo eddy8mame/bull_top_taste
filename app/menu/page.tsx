@@ -1,10 +1,30 @@
 // app/menu/page.tsx
-import { getActiveSpecials, getLocationFull, getMenuItems } from "@/lib/sanity"
+import { Suspense } from "react";
 
-import Cart from "@/components/Cart"
-import MenuPage from "@/components/MenuPage"
-import Nav from "@/components/Nav"
-import ScrollToTop from "@/components/ScrollToTop"
+
+
+import { getActiveSpecials, getLocationFull, getMenuItems } from "@/lib/sanity";
+
+
+
+import Cart from "@/components/Cart";
+import MenuPage from "@/components/MenuPage";
+import Nav from "@/components/Nav";
+import ScrollToTop from "@/components/ScrollToTop";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const revalidate = 3600
 
@@ -27,7 +47,9 @@ export default async function MenuRoute() {
     <>
       <ScrollToTop />
       <Nav location={location} />
-      <Cart location={location} />
+      <Suspense>
+        <Cart location={location} />
+      </Suspense>
 
       <main className="bg-brand-light min-h-screen">
         {/* Page header */}
