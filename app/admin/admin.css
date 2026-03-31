@@ -875,13 +875,26 @@
   background: #ffffff;
 }
 
-.admin-shell .receipt-label {
-  font-size: 12px;
-  color: #b0b0aa;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.admin-shell .receipt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 8px;
-  display: block;
+}
+.admin-shell .receipt-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--f-text2);
+}
+.admin-shell .receipt-checksum {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--f-text);
+  background: var(--f-border);
+  border-radius: 20px;
+  padding: 2px 8px;
 }
 
 .admin-shell .r-item {

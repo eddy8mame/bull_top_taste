@@ -100,6 +100,78 @@ import { FALLBACK_MENU } from "@/lib/sanity";
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ── Configurable age thresholds ────────────────────────────────────────────────
 // Adjust here — no other changes needed. Units: minutes.
 const WARNING_THRESHOLD_MINUTES = 7
@@ -116,6 +188,18 @@ const fetcher = (url: string) => fetch(url).then(r => r.json())
 // Falls back to "——" for cash / test orders that have no payment intent.
 function fmtOrderNum(stripePaymentIntentId?: string): string {
   return stripePaymentIntentId ? `#${stripePaymentIntentId.slice(-6).toUpperCase()}` : "——"
+}
+
+function fmtPhone(raw?: string): string {
+  if (!raw) return ""
+  const digits = raw.replace(/\D/g, "")
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`
+  }
+  if (digits.length === 11 && digits[0] === "1") {
+    return `(${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`
+  }
+  return raw // already formatted or unrecognised — return as-is
 }
 
 // Strip "+$X.XX" price annotations from a pre-formatted selections string.
@@ -727,13 +811,21 @@ function FloorModal({
           <div>
             <div className="m-name">{order.customerName}</div>
             <div className="m-num-badge">{fmtOrderNum(order.stripePaymentIntentId)}</div>
-            {order.customerPhone && <div className="m-phone">{order.customerPhone}</div>}
+            {order.customerPhone && (
+              <div className="m-phone">{fmtPhone(order.customerPhone)}</div>
+            )}{" "}
           </div>
           <div className={`m-age ${cls}`}>{fmtAge(ageS)}</div>
         </div>
 
         <div className="modal-body">
-          <span className="receipt-label">Order</span>
+          <div className="receipt-header">
+            <span className="receipt-label">Order</span>
+            <span className="receipt-checksum">
+              {order.items.reduce((n, i) => n + i.quantity, 0)} item
+              {order.items.reduce((n, i) => n + i.quantity, 0) !== 1 ? "s" : ""}
+            </span>
+          </div>
 
           {order.items.map((item: AdminOrderItem) => {
             const allMods = item.modifiers ?? []
@@ -832,7 +924,7 @@ function FloorModal({
 
         <div className="modal-foot">
           <button className="m-btn-cancel" onClick={onClose}>
-            Cancel
+            Close
           </button>
           <button className="m-btn-confirm" onClick={onConfirm}>
             Confirm pickup

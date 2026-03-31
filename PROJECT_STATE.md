@@ -395,7 +395,15 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.7.7:**:(Current): Floor view card and modal hierarchy overhaul.
+* **v2.7.7:**:(Current): Floor modal clarity and scannability improvements.
+  - Phone numbers formatted as (555) 123-1727 — chunked for instant
+  recall when staff need to call a no-show.
+  - Bag checksum pill added to modal receipt header showing total
+  item count flush-right opposite the Order label.
+  - Cancel button renamed to Close — removes ambiguity about whether
+  the action voids the order or merely dismisses the view.
+
+* **v2.7.7:**: Floor view card and modal hierarchy overhaul.
   - Customer name is now the most prominent element on floor cards
   and the receipt modal — FOH staff identify by name, not order ID.
   - Order number rendered as a small muted pill badge for reference
