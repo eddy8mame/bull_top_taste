@@ -48,285 +48,6 @@ import ModifierModal from "@/components/ModifierModal";
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 interface Props {
   location?: LocationFull | null
 }
@@ -421,7 +142,7 @@ export default function Cart({ location }: Props) {
 
             {/* Cart items + complement — scrollable middle */}
             <section className="min-h-0 flex-1 overflow-y-auto">
-              {items.map((item) => (
+              {items.map(item => (
                 <div
                   key={item.cartItemId}
                   className="mx-6 flex cursor-pointer items-start gap-4 border-t border-gray-100 py-4 transition-colors hover:bg-gray-50"
@@ -562,6 +283,10 @@ export default function Cart({ location }: Props) {
                             })
                           })
 
+                          const hasUpcharges = addons.length > 0
+                          const unitPrice = item.effectivePrice
+                          const lineTotal = unitPrice * item.quantity
+
                           return (
                             <>
                               {specs.length > 0 && (
@@ -574,7 +299,23 @@ export default function Cart({ location }: Props) {
                                   </span>
                                 </div>
                               )}
-                              {addons.length > 0 && <ul className="mt-1">{addons}</ul>}
+                              {hasUpcharges && <ul className="mt-1">{addons}</ul>}
+                              {/* Divider + line total */}
+                              {(hasUpcharges || item.quantity > 1) && (
+                                <>
+                                  <div className="mt-2 border-t border-gray-100" />
+                                  <div className="mt-1.5 flex items-baseline justify-between gap-2">
+                                    <span className="text-brand-muted text-xs">
+                                      {item.quantity > 1
+                                        ? `${item.quantity} × $${unitPrice.toFixed(2)}`
+                                        : ""}
+                                    </span>
+                                    <span className="text-xs font-black text-gray-900">
+                                      ${lineTotal.toFixed(2)}
+                                    </span>
+                                  </div>
+                                </>
+                              )}
                             </>
                           )
                         })()}
@@ -587,9 +328,6 @@ export default function Cart({ location }: Props) {
                       </p>
                     )}
 
-                    <p className="mt-2 text-base font-bold text-gray-900">
-                      ${(item.effectivePrice * item.quantity).toFixed(2)}
-                    </p>
                   </div>
                 </div>
               ))}

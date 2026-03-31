@@ -395,7 +395,17 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.7.2:** (Current):Cart layout overhaul.
+* **v2.7.3:**:(Current): Cart receipt transparency improvements.
+  - Line total with multiplier row added below add-ons when quantity
+  exceeds 1 or upcharges are present.
+  - Hidden when single quantity with no upcharges — avoids redundancy.
+  - Eliminates unit/line total cognitive disconnect on multi-quantity items.
+
+* **v2.7.2:**:(Corrected): Base price anchored to spec line.
+  - Price sits alongside size/protein/sides descriptor rather than
+  the item name, matching the visual receipt hierarchy.
+
+* **v2.7.2:**:Cart layout overhaul.
   - Header simplified to "Your Bag".
   - Subtotal, tax note, and checkout CTA permanently pinned to bottom.
   - Items and complement section scroll in middle area independently.
