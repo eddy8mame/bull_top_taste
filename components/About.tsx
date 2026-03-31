@@ -66,7 +66,13 @@ export default function About({ location }: Props) {
           <div className="relative aspect-4/5 overflow-hidden rounded-2xl border-8 border-white shadow-2xl">
             {" "}
             {imageUrl ? (
-              <Image src={imageUrl} alt={heading} fill className="object-cover" />
+              <Image
+                src={imageUrl}
+                alt={heading}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
             ) : (
               <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-gray-100 p-8 text-center">
                 <span className="text-5xl">📸</span>

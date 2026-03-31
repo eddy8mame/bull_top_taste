@@ -326,7 +326,7 @@ export default function Cart({ location }: Props) {
                     <h3 className="font-serif text-xl font-bold text-gray-900">
                       Complement your cart
                     </h3>
-                    {location.complementItems.length > PAGE_SIZE && (
+                    {(location?.complementItems?.length ?? 0) > PAGE_SIZE && (
                       <div className="flex items-center gap-1">
                         <button
                           type="button"

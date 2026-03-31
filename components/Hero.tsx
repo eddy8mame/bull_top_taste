@@ -48,7 +48,7 @@ export default function Hero({ location }: Props) {
             </h1>
             <a
               href="/menu"
-              className="rounded-md bg-brand-green hover:bg-brand-green-dark inline-block px-10 py-4 text-sm font-black tracking-widest text-white uppercase shadow-xl transition-all active:scale-95"
+              className="bg-brand-green hover:bg-brand-green-dark inline-block rounded-md px-10 py-4 text-sm font-black tracking-widest text-white uppercase shadow-xl transition-all active:scale-95"
             >
               Explore the Menu
             </a>
@@ -80,6 +80,7 @@ export default function Hero({ location }: Props) {
                       alt={location.restaurantName ?? "Hero image"}
                       fill
                       priority
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       className="object-cover"
                     />
                   </div>
