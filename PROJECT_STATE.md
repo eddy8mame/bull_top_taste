@@ -395,7 +395,13 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.7.0:** (Current): Nav refinements.
+* **v2.7.1:** (Current):Cart complement filter and tax note.
+  - Complement your cart section now excludes items already in the
+  cart — avoids prompting duplicates, surfaces genuine attachments.
+  - Section hides entirely when no unselected complement items remain.
+  - Tax note added beneath subtotal for checkout expectation-setting.
+
+* **v2.7.0:**: Nav refinements.
   - Link spacing increased for better horizontal distribution.
   - Hover underline added — lighter than active state for clear
   visual hierarchy between hovered and selected.

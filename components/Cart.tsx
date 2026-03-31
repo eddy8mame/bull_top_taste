@@ -2,20 +2,144 @@
 
 "use client"
 
-import { useRef, useState } from "react"
+import { useRef, useState } from "react";
 
-import Image from "next/image"
-import { useRouter } from "next/navigation"
 
-import "mapbox-gl/dist/mapbox-gl.css"
 
-import type { CartItem, MenuItem } from "@/types"
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-import type { LocationFull } from "@/lib/sanity"
 
-import { useCart } from "@/context/CartContext"
 
-import ModifierModal from "@/components/ModifierModal"
+import "mapbox-gl/dist/mapbox-gl.css";
+
+
+
+import type { CartItem, MenuItem } from "@/types";
+
+
+
+import type { LocationFull } from "@/lib/sanity";
+
+
+
+import { useCart } from "@/context/CartContext";
+
+
+
+import ModifierModal from "@/components/ModifierModal";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 interface Props {
   location?: LocationFull | null
@@ -288,122 +412,130 @@ export default function Cart({ location }: Props) {
             </section>
 
             {/* Complement your cart */}
-            {location?.complementItems && location.complementItems.length > 0 && (
-              <div className="mt-4 border-t border-gray-100 px-6 pt-4 pb-2">
-                <div className="mb-3 flex items-center justify-between">
-                  <h3 className="font-serif text-xl font-bold text-gray-900">
-                    Complement your cart
-                  </h3>
-                  {location.complementItems.length > PAGE_SIZE && (
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        aria-label="Scroll left"
-                        onClick={() => scrollComplement("prev")}
-                        className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white transition-colors hover:bg-gray-50"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="h-4 w-4 text-gray-600"
+            {(() => {
+              const filtered = (location?.complementItems ?? []).filter(
+                item => !items.some(cartItem => cartItem._id === item._id)
+              )
+              return filtered.length > 0 ? (
+                <div className="mt-4 border-t border-gray-100 px-6 pt-4 pb-2">
+                  <div className="mb-3 flex items-center justify-between">
+                    <h3 className="font-serif text-xl font-bold text-gray-900">
+                      Complement your cart
+                    </h3>
+                    {location.complementItems.length > PAGE_SIZE && (
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          aria-label="Scroll left"
+                          onClick={() => scrollComplement("prev")}
+                          className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white transition-colors hover:bg-gray-50"
                         >
-                          <polyline points="15 18 9 12 15 6" />
-                        </svg>
-                      </button>
-                      <button
-                        type="button"
-                        aria-label="Scroll right"
-                        onClick={() => scrollComplement("next")}
-                        className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white transition-colors hover:bg-gray-50"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="h-4 w-4 text-gray-600"
-                        >
-                          <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <div
-                  ref={complementScrollRef}
-                  className="grid auto-cols-[calc(25%-6px)] grid-flow-col gap-3 overflow-x-auto pb-2"
-                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-                >
-                  {location.complementItems.map(item => {
-                    const hasRequired = item.modifierGroups?.some(g => g.required) ?? false
-                    return (
-                      <div
-                        key={item._id}
-                        className="flex flex-col overflow-hidden rounded-xl border border-gray-100"
-                      >
-                        <div className="relative h-20 w-full bg-gray-50">
-                          {item.imageUrl ? (
-                            <Image
-                              src={item.imageUrl}
-                              alt={item.name}
-                              fill
-                              className="object-cover"
-                              sizes="25vw"
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center text-2xl">
-                              🍽️
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex flex-1 flex-col gap-1 p-2">
-                          <p className="line-clamp-2 text-xs leading-snug font-semibold text-gray-900">
-                            {item.name}
-                          </p>
-                          <p className="text-brand-muted text-xs">
-                            {item.price !== null ? `$${item.price?.toFixed(2)}` : "Market price"}
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (hasRequired) {
-                                setQuickAddItem(item)
-                              } else {
-                                addItem({
-                                  ...item,
-                                  cartItemId: `${item._id}-${Date.now()}`,
-                                  quantity: 1,
-                                  effectivePrice: item.price ?? 0,
-                                  selectedModifiers: undefined,
-                                })
-                              }
-                            }}
-                            className="bg-brand-green hover:bg-brand-green-dark mt-auto flex w-full items-center justify-center rounded-lg py-1.5 text-xs font-semibold text-white transition-colors"
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="h-4 w-4 text-gray-600"
                           >
-                            {hasRequired ? "Customize" : "+ Add"}
-                          </button>
-                        </div>
+                            <polyline points="15 18 9 12 15 6" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Scroll right"
+                          onClick={() => scrollComplement("next")}
+                          className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white transition-colors hover:bg-gray-50"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="h-4 w-4 text-gray-600"
+                          >
+                            <polyline points="9 18 15 12 9 6" />
+                          </svg>
+                        </button>
                       </div>
-                    )
-                  })}
+                    )}
+                  </div>
+                  <div
+                    ref={complementScrollRef}
+                    className="grid auto-cols-[calc(25%-6px)] grid-flow-col gap-3 overflow-x-auto pb-2"
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                  >
+                    {filtered.map(item => {
+                      const hasRequired = item.modifierGroups?.some(g => g.required) ?? false
+                      return (
+                        <div
+                          key={item._id}
+                          className="flex flex-col overflow-hidden rounded-xl border border-gray-100"
+                        >
+                          <div className="relative h-20 w-full bg-gray-50">
+                            {item.imageUrl ? (
+                              <Image
+                                src={item.imageUrl}
+                                alt={item.name}
+                                fill
+                                className="object-cover"
+                                sizes="25vw"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-2xl">
+                                🍽️
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex flex-1 flex-col gap-1 p-2">
+                            <p className="line-clamp-2 text-xs leading-snug font-semibold text-gray-900">
+                              {item.name}
+                            </p>
+                            <p className="text-brand-muted text-xs">
+                              {item.price !== null ? `$${item.price?.toFixed(2)}` : "Market price"}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (hasRequired) {
+                                  setQuickAddItem(item)
+                                } else {
+                                  addItem({
+                                    ...item,
+                                    cartItemId: `${item._id}-${Date.now()}`,
+                                    quantity: 1,
+                                    effectivePrice: item.price ?? 0,
+                                    selectedModifiers: undefined,
+                                  })
+                                }
+                              }}
+                              className="bg-brand-green hover:bg-brand-green-dark mt-auto flex w-full items-center justify-center rounded-lg py-1.5 text-xs font-semibold text-white transition-colors"
+                            >
+                              {hasRequired ? "Customize" : "+ Add"}
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              ) : null
+            })()}
 
             {/* Subtotal */}
-            <div className="mx-6 mt-4 flex items-center justify-between border-t-2 border-gray-100 pt-6">
-              <span className="font-serif text-xl font-bold text-gray-900">Subtotal</span>
-              <span className="text-brand-green font-serif text-2xl font-extrabold">
-                ${subTotal.toFixed(2)}
-              </span>
+            <div className="mx-6 mt-4 border-t-2 border-gray-100 pt-6">
+              <div className="flex items-center justify-between">
+                <span className="font-serif text-xl font-bold text-gray-900">Subtotal</span>
+                <span className="text-brand-green font-serif text-2xl font-extrabold">
+                  ${subTotal.toFixed(2)}
+                </span>
+              </div>
+              <p className="mt-1.5 text-xs text-gray-400">Taxes and fees calculated at checkout.</p>
             </div>
 
             {/* CTA */}

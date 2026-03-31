@@ -11,7 +11,7 @@ export default function CartFab() {
     <button
       onClick={() => setIsOpen(true)}
       aria-label={`View cart — ${count} item${count !== 1 ? "s" : ""}`}
-      className="bg-brand-green fixed right-6 bottom-6 z-50 flex h-20 w-20 flex-col items-center justify-center rounded-full shadow-2xl transition-transform hover:scale-105 active:scale-95"
+      className="bg-brand-green fixed right-6 bottom-6 z-50 flex h-20 w-20 flex-col items-center justify-center rounded-full shadow-2xl transition-transform hover:scale-105 active:scale-95 md:hidden"
     >
       {/* Badge */}
       <span className="bg-brand-cart-badge absolute -top-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold text-white">
@@ -31,10 +31,6 @@ export default function CartFab() {
           clipRule="evenodd"
         />
       </svg>
-
-      <span className="mt-1 text-[10px] font-black tracking-widest text-white uppercase">
-        View Cart
-      </span>
     </button>
   )
 }
