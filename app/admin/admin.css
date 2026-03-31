@@ -417,6 +417,12 @@
 .admin-shell .k-age.crit {
   background: var(--k-crit-bg);
   color: var(--k-red);
+  animation: k-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes k-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 .admin-shell .k-type-badge {
@@ -457,9 +463,23 @@
   margin-bottom: 2px;
 }
 .admin-shell .k-qty {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--k-amber);
+  font-size: 13px;
+  font-weight: 800;
+  color: #161614;
+  background: var(--k-amber);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0;
+}
+.admin-shell .k-qty-single {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--k-text2);
   flex-shrink: 0;
 }
 .admin-shell .k-iname {
@@ -483,6 +503,17 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-right: 4px;
+}
+
+.admin-shell .k-allergy {
+  margin: 4px 12px 6px;
+  padding: 6px 10px;
+  background: #FDE047;
+  color: #000000;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 5px;
+  line-height: 1.4;
 }
 
 .admin-shell .k-note {

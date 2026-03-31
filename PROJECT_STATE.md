@@ -395,6 +395,18 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
+* **v2.7.6:**:(Current): Kitchen display safety and scannability overhaul.
+  - Age timer format changed to minutes only (7m) — M:SS precision
+  reserved for floor view where pass time granularity matters.
+  - Critical age badge pulses at 15+ minutes to flag bottlenecks
+  across the line; warn threshold remains static amber.
+  - Quantity rendered as circular amber badge for multi-quantity
+  tickets — gold circle is a deliberate semantic signal meaning
+  "stop and count." Single items use muted plain text.
+  - Special instructions block redesigned as a high-contrast yellow
+  ⚠️ warning — violently breaks the dark kitchen aesthetic to
+  ensure allergy and dietary notes cannot be missed.
+
 * **v2.7.5:**:(Current): Checkout UX improvements.
   - Order Summary accordion — collapsed by default showing total and
   item count, expandable to verify full order details.

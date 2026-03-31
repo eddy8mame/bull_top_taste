@@ -2,13 +2,67 @@
 
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react";
 
-import useSWR from "swr"
 
-import type { AdminOrder, AdminOrderItem, OrderStatus } from "@/types"
 
-import { FALLBACK_MENU } from "@/lib/sanity"
+import useSWR from "swr";
+
+
+
+import type { AdminOrder, AdminOrderItem, OrderStatus } from "@/types";
+
+
+
+import { FALLBACK_MENU } from "@/lib/sanity";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ── Configurable age thresholds ────────────────────────────────────────────────
 // Adjust here — no other changes needed. Units: minutes.
@@ -95,8 +149,7 @@ function getAgeSeconds(order: AdminOrder, now: number): number {
 
 function fmtAge(seconds: number): string {
   const m = Math.floor(seconds / 60)
-  const s = seconds % 60
-  return `${m}:${s.toString().padStart(2, "0")}`
+  return `${m}m`
 }
 
 function ageCls(seconds: number): "ok" | "warn" | "crit" {
@@ -466,7 +519,11 @@ function KitchenCard({
         {order.items.map((item: AdminOrderItem) => (
           <div key={item._key} className="k-ticket-item">
             <div className="k-item-header">
-              <span className="k-qty">{item.quantity}×</span>
+              {item.quantity > 1 ? (
+                <span className="k-qty">{item.quantity}×</span>
+              ) : (
+                <span className="k-qty-single">1×</span>
+              )}
               <span className="k-iname">{item.itemName}</span>
             </div>
 
@@ -522,14 +579,9 @@ function KitchenCard({
               )
             })()}
 
-            {/* Special instructions */}
+            {/* Special instructions — high contrast allergy warning */}
             {item.specialInstructions && (
-              <div className="k-specs">
-                <span className="k-spec">
-                  <span className="k-spec-label">Note:</span>
-                  {item.specialInstructions}
-                </span>
-              </div>
+              <div className="k-allergy">{item.specialInstructions}</div>
             )}
           </div>
         ))}
