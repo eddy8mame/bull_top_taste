@@ -107,7 +107,10 @@ export default function Cart({ location }: Props) {
               It looks like you haven&apos;t added anything to your order yet
             </p>
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                setIsOpen(false)
+                router.push("/menu")
+              }}
               className="bg-brand-green hover:bg-brand-green-dark w-full rounded-xl py-5 text-base font-black tracking-widest text-white uppercase transition-all active:scale-[0.98]"
             >
               Browse the Menu

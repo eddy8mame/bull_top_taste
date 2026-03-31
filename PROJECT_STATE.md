@@ -395,7 +395,12 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.8.0:**:(Current):Menu page logo and cart data fixed.
+* **v2.8.1:**:(Current): Nav Menu link behavior on /menu page.
+  - Menu link stays on /menu when already there rather than
+  navigating to homepage /#menu section.
+  - Menu nav item correctly highlighted as active on /menu page.
+
+* **v2.8.0:**: Menu page logo and cart data fixed.
   - Location data now fetched on /menu page — logo, restaurant name,
   and complement items consistent with homepage.
 

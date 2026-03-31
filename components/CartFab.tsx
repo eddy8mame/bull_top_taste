@@ -1,11 +1,18 @@
 "use client"
 
+import { useEffect, useState } from "react"
+
 import { useCart } from "@/context/CartContext"
 
 export default function CartFab() {
   const { count, isOpen, setIsOpen } = useCart()
+  const [isMounted, setIsMounted] = useState(false)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
-  if (count === 0 || isOpen) return null
+  if (!isMounted || count === 0 || isOpen) return null
 
   return (
     <button

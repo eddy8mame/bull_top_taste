@@ -4,6 +4,7 @@ import { getActiveSpecials, getLocationFull, getMenuItems } from "@/lib/sanity"
 import Cart from "@/components/Cart"
 import MenuPage from "@/components/MenuPage"
 import Nav from "@/components/Nav"
+import ScrollToTop from "@/components/ScrollToTop"
 
 export const revalidate = 3600
 
@@ -24,6 +25,7 @@ export default async function MenuRoute() {
 
   return (
     <>
+      <ScrollToTop />
       <Nav location={location} />
       <Cart location={location} />
 

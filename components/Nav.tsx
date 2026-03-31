@@ -24,8 +24,10 @@ export default function Nav({ location }: Props) {
   const [activeSection, setActiveSection] = useState<string>("")
   const pathname = usePathname()
   const isHome = pathname === "/"
+  const isMenuPage = pathname === "/menu"
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     setIsMounted(true)
   }, [])
 
@@ -90,8 +92,9 @@ export default function Nav({ location }: Props) {
               { hash: "catering", label: "Catering", id: "catering" },
               { hash: "about", label: "Our Story", id: "about" },
             ].map(({ hash, label, id }) => {
-              const href = isHome ? `#${hash}` : `/#${hash}`
-              const isActive = isHome && activeSection === id
+              const isMenuLink = id === "menu"
+              const href = isMenuPage && isMenuLink ? "/menu" : isHome ? `#${hash}` : `/#${hash}`
+              const isActive = (isHome && activeSection === id) || (isMenuPage && isMenuLink)
               return (
                 <li key={label}>
                   <a
