@@ -64,6 +64,42 @@ import { FALLBACK_MENU } from "@/lib/sanity";
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ── Configurable age thresholds ────────────────────────────────────────────────
 // Adjust here — no other changes needed. Units: minutes.
 const WARNING_THRESHOLD_MINUTES = 7
@@ -628,17 +664,16 @@ function FloorCard({
   return (
     <div className={`f-card${cls !== "ok" ? ` ${cls}` : ""}`} onClick={onClick}>
       <div className="f-card-header">
-        <div>
-          <div className="f-order-num">{fmtOrderNum(order.stripePaymentIntentId)}</div>
-          <div className="f-customer">{order.customerName}</div>
-        </div>
+        <div className="f-customer">{order.customerName}</div>
         <div className={`f-age${cls !== "ok" ? ` ${cls}` : ""}`}>{fmtAge(ageS)}</div>
       </div>
 
       <div className="f-card-body">
+        <div className="f-order-num-badge">{fmtOrderNum(order.stripePaymentIntentId)}</div>
         <div className="f-item-count">
           {itemCount} item{itemCount !== 1 ? "s" : ""}
         </div>
+        <div className="f-waiting">Waiting: {fmtAge(ageS)}</div>
       </div>
 
       <div className="f-card-footer">
@@ -646,6 +681,8 @@ function FloorCard({
       </div>
     </div>
   )
+
+
 }
 
 // ── Floor Receipt Modal ────────────────────────────────────────────────────────
@@ -688,8 +725,8 @@ function FloorModal({
       <div className="modal">
         <div className="modal-head">
           <div>
-            <div className="m-num">{fmtOrderNum(order.stripePaymentIntentId)}</div>
             <div className="m-name">{order.customerName}</div>
+            <div className="m-num-badge">{fmtOrderNum(order.stripePaymentIntentId)}</div>
             {order.customerPhone && <div className="m-phone">{order.customerPhone}</div>}
           </div>
           <div className={`m-age ${cls}`}>{fmtAge(ageS)}</div>

@@ -395,7 +395,16 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.7.6:**:(Current): Kitchen display safety and scannability overhaul.
+* **v2.7.7:**:(Current): Floor view card and modal hierarchy overhaul.
+  - Customer name is now the most prominent element on floor cards
+  and the receipt modal — FOH staff identify by name, not order ID.
+  - Order number rendered as a small muted pill badge for reference
+  without competing with the customer name for attention.
+  - Item count bolded for instant bag checksum before handoff.
+  - Waiting timer added to floor card showing elapsed time in the
+  ready column — enables proactive food quality management.
+
+* **v2.7.6:**: Kitchen display safety and scannability overhaul.
   - Age timer format changed to minutes only (7m) — M:SS precision
   reserved for floor view where pass time granularity matters.
   - Critical age badge pulses at 15+ minutes to flag bottlenecks

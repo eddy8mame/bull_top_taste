@@ -712,20 +712,23 @@
   justify-content: space-between;
   gap: 8px;
 }
-.admin-shell .f-order-num {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1a1a18;
-  letter-spacing: 0.04em;
-  margin-bottom: 2px;
-}
 .admin-shell .f-customer {
-  font-size: 16px;
-  font-weight: 500;
-  color: #1a1a18;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--f-text);
   line-height: 1.2;
 }
-
+.admin-shell .f-order-num-badge {
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--f-text2);
+  background: var(--f-border);
+  border-radius: 20px;
+  padding: 2px 8px;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
 .admin-shell .f-age {
   flex-shrink: 0;
   font-size: 12px;
@@ -750,8 +753,15 @@
   flex: 1;
 }
 .admin-shell .f-item-count {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--f-text);
+}
+.admin-shell .f-waiting {
   font-size: 12px;
-  color: #6b6b66;
+  font-weight: 500;
+  color: var(--f-text2);
+  margin-top: 4px;
 }
 .admin-shell .f-card-footer {
   padding: 8px 12px 10px;
@@ -812,20 +822,27 @@
   flex-shrink: 0;
   background: #ffffff;
 }
-.admin-shell .m-num {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1a1a18;
-  letter-spacing: 0.04em;
-  margin-bottom: 2px;
-}
 .admin-shell .m-name {
-  font-size: 18px;
-  font-weight: 500;
-  color: #1a1a18;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--f-text);
+  line-height: 1.2;
+  margin-bottom: 4px;
 }
+.admin-shell .m-num-badge {
+  display: inline-block;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--f-text2);
+  background: var(--f-border);
+  border-radius: 20px;
+  padding: 2px 8px;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
 .admin-shell .m-phone {
-  font-size: 12px;
+  font-size: 16px;
   color: #6b6b66;
   margin-top: 2px;
 }
@@ -859,7 +876,7 @@
 }
 
 .admin-shell .receipt-label {
-  font-size: 10px;
+  font-size: 12px;
   color: #b0b0aa;
   letter-spacing: 0.06em;
   text-transform: uppercase;
