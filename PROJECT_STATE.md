@@ -395,6 +395,14 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
+* **v2.7.0:** (Current): Nav refinements.
+  - Link spacing increased for better horizontal distribution.
+  - Hover underline added — lighter than active state for clear
+  visual hierarchy between hovered and selected.
+  - Cart icon with item count badge added left of Order Online button,
+  visible only when cart has items.
+  - Nav padding increased for better logo breathing room.
+
 * **v2.6.6:**: Location section refinements.
   - Pulsing Open Now / Closed badge added next to section heading,
   hardcoded against known hours in ET. Deferred to Sanity field.
