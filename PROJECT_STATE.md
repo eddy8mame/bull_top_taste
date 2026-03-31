@@ -395,7 +395,14 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.7.4:**:(Current): Checkout page refinements.
+* **v2.7.5:**:(Current): Checkout UX improvements.
+  - Order Summary accordion — collapsed by default showing total and
+  item count, expandable to verify full order details.
+  - Mobile sticky Pay button pinned to bottom of viewport — always
+  reachable without scrolling past the payment form.
+  - Desktop retains inline submit button; mobile uses sticky footer.
+
+* **v2.7.4:**: Checkout page refinements.
   - "Edit Order" link added to Order Summary header for low-friction
   return to menu without feeling like abandonment.
   - Right column confirmed sticky — payment form follows scroll

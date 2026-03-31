@@ -2,17 +2,41 @@
 
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react";
 
-import Image from "next/image"
-import { useRouter } from "next/navigation"
 
-import type { CartItem, SelectedModifier } from "@/types"
 
-import type { LocationFull } from "@/lib/sanity"
-import { DEFAULT_TAX_RATE, calculateTotals } from "@/lib/tax"
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-import { useCart } from "@/context/CartContext"
+
+
+import type { CartItem, SelectedModifier } from "@/types";
+
+
+
+import type { LocationFull } from "@/lib/sanity";
+import { DEFAULT_TAX_RATE, calculateTotals } from "@/lib/tax";
+
+
+
+import { useCart } from "@/context/CartContext";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 interface Props {
   location?: LocationFull | null
@@ -119,6 +143,8 @@ export default function CheckoutClient({ location }: Props) {
   const [error, setError] = useState<string | null>(null)
   const [attempted, setAttempted] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [summaryOpen, setSummaryOpen] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
   useEffect(() => {
     setIsMounted(true)
   }, [])
@@ -213,7 +239,8 @@ export default function CheckoutClient({ location }: Props) {
         </button>
       </div>
 
-      <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 px-4 py-8 md:grid-cols-2">
+      <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 px-4 py-8 pb-28 md:grid-cols-2 md:pb-8">
+        {" "}
         {/* ── Left column — Order summary ──────────────────────────────── */}
         <div className="flex flex-col gap-4">
           {/* Pickup location */}
@@ -283,28 +310,63 @@ export default function CheckoutClient({ location }: Props) {
             </div>
           )}
 
-          {/* Order items */}
-          <div className="rounded-xl bg-white p-6 shadow-[0_8px_24px_rgba(24,29,25,0.06)]">
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="font-serif text-xl font-bold text-gray-900">Order Summary</h2>
-              <button
-                type="button"
-                onClick={() => router.push("/?cart=open")}
-                className="text-brand-green text-xs font-bold underline underline-offset-2 transition-opacity hover:opacity-70"
-              >
-                Edit Order
-              </button>
-            </div>{" "}
-            <div className="divide-y divide-gray-100">
-              {items.map(item => (
-                <OrderItemRow key={item.cartItemId} item={item} />
-              ))}
-            </div>
+          {/* Order items — accordion */}
+          <div className="rounded-xl bg-white shadow-[0_8px_24px_rgba(24,29,25,0.06)]">
+            <button
+              type="button"
+              onClick={() => setSummaryOpen(v => !v)}
+              className="flex w-full items-center justify-between px-6 py-5"
+            >
+              <div className="flex items-baseline gap-2">
+                <h2 className="font-serif text-xl font-bold text-gray-900">Order Summary</h2>
+                <span className="text-sm text-gray-400">
+                  ({items.reduce((n, i) => n + i.quantity, 0)} item
+                  {items.reduce((n, i) => n + i.quantity, 0) !== 1 ? "s" : ""})
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-brand-green font-serif font-bold">
+                  ${grandTotal.toFixed(2)}
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${summaryOpen ? "rotate-180" : ""}`}
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
+            </button>
+
+            {summaryOpen && (
+              <div className="border-t border-gray-100 px-6 pb-5">
+                <div className="mb-3 flex justify-end pt-3">
+                  <button
+                    type="button"
+                    onClick={() => router.push("/?cart=open")}
+                    className="text-brand-green text-xs font-bold underline underline-offset-2 transition-opacity hover:opacity-70"
+                  >
+                    Edit Order
+                  </button>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  {items.map(item => (
+                    <OrderItemRow key={item.cartItemId} item={item} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
         {/* ── Right column — Contact + Payment ───────────────────── */}
         <div className="sticky top-6">
           <form
+            ref={formRef}
             noValidate
             onSubmit={handleCheckout}
             className="flex flex-col gap-6 rounded-xl bg-white p-6 shadow-[0_8px_24px_rgba(24,29,25,0.06)]"
@@ -434,15 +496,27 @@ export default function CheckoutClient({ location }: Props) {
 
             {error && <p className="text-center text-xs text-red-600">{error}</p>}
 
+            {/* Desktop submit — hidden on mobile where sticky footer takes over */}
             <button
               type="submit"
               disabled={loading}
-              className="bg-brand-green hover:bg-brand-green-dark w-full rounded-xl py-5 text-base font-black tracking-widest text-white uppercase transition-all active:scale-[0.98] disabled:opacity-60"
+              className="bg-brand-green hover:bg-brand-green-dark hidden w-full rounded-xl py-5 text-base font-black tracking-widest text-white uppercase transition-all active:scale-[0.98] disabled:opacity-60 md:block"
             >
               {loading ? "Redirecting to payment…" : "Proceed to Payment"}
             </button>
           </form>
         </div>
+      </div>
+      {/* Mobile sticky footer */}
+      <div className="fixed right-0 bottom-0 left-0 z-50 border-t border-gray-100 bg-white px-4 py-4 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] md:hidden">
+        <button
+          type="button"
+          disabled={loading}
+          onClick={() => formRef.current?.requestSubmit()}
+          className="bg-brand-green hover:bg-brand-green-dark w-full rounded-xl py-4 text-base font-black tracking-widest text-white uppercase transition-all active:scale-[0.98] disabled:opacity-60"
+        >
+          {loading ? "Redirecting to payment…" : `Pay $${grandTotal.toFixed(2)}`}
+        </button>
       </div>
     </div>
   )
