@@ -285,7 +285,16 @@ export default function CheckoutClient({ location }: Props) {
 
           {/* Order items */}
           <div className="rounded-xl bg-white p-6 shadow-[0_8px_24px_rgba(24,29,25,0.06)]">
-            <h2 className="mb-5 font-serif text-xl font-bold text-gray-900">Order Summary</h2>
+            <div className="mb-5 flex items-center justify-between">
+              <h2 className="font-serif text-xl font-bold text-gray-900">Order Summary</h2>
+              <button
+                type="button"
+                onClick={() => router.push("/?cart=open")}
+                className="text-brand-green text-xs font-bold underline underline-offset-2 transition-opacity hover:opacity-70"
+              >
+                Edit Order
+              </button>
+            </div>{" "}
             <div className="divide-y divide-gray-100">
               {items.map(item => (
                 <OrderItemRow key={item.cartItemId} item={item} />

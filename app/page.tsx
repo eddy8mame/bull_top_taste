@@ -1,38 +1,19 @@
 // app/page.tsx
-import { getActiveSpecials, getLocationFull, getMenuItems } from "@/lib/sanity";
+import { Suspense } from "react"
 
+import { getActiveSpecials, getLocationFull, getMenuItems } from "@/lib/sanity"
 
-
-import About from "@/components/About";
-import Cart from "@/components/Cart";
-import CartFab from "@/components/CartFab";
-import Catering from "@/components/Catering";
-import Footer from "@/components/Footer";
-import Hero from "@/components/Hero";
-import Location from "@/components/Location";
-import Menu from "@/components/Menu";
-import Nav from "@/components/Nav";
-import ReservationForm from "@/components/ReservationForm";
-import Testimonials from "@/components/Testimonials";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import About from "@/components/About"
+import Cart from "@/components/Cart"
+import CartFab from "@/components/CartFab"
+import Catering from "@/components/Catering"
+import Footer from "@/components/Footer"
+import Hero from "@/components/Hero"
+import Location from "@/components/Location"
+import Menu from "@/components/Menu"
+import Nav from "@/components/Nav"
+import ReservationForm from "@/components/ReservationForm"
+import Testimonials from "@/components/Testimonials"
 
 export const revalidate = 3600 // ISR: revalidate CMS content every hour
 
@@ -50,7 +31,9 @@ export default async function Home() {
   return (
     <>
       <Nav location={location} />
-      <Cart location={location} />
+      <Suspense>
+        <Cart location={location} />
+      </Suspense>
       <CartFab />
       <main>
         {/* Hero → Menu → Reviews -> Location & Hours → Catering → About */}

@@ -395,6 +395,11 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
+* **v2.7.4:**:(Current): Checkout page refinements.
+  - "Edit Order" link added to Order Summary header for low-friction
+  return to menu without feeling like abandonment.
+  - Right column confirmed sticky — payment form follows scroll
+
 * **v2.7.3:**:(Current): Cart receipt transparency improvements.
   - Line total with multiplier row added below add-ons when quantity
   exceeds 1 or upcharges are present.

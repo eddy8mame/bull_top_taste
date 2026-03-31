@@ -2,51 +2,20 @@
 
 "use client"
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react"
 
+import Image from "next/image"
+import { useRouter, useSearchParams } from "next/navigation"
 
+import "mapbox-gl/dist/mapbox-gl.css"
 
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import type { CartItem, MenuItem } from "@/types"
 
+import type { LocationFull } from "@/lib/sanity"
 
+import { useCart } from "@/context/CartContext"
 
-import "mapbox-gl/dist/mapbox-gl.css";
-
-
-
-import type { CartItem, MenuItem } from "@/types";
-
-
-
-import type { LocationFull } from "@/lib/sanity";
-
-
-
-import { useCart } from "@/context/CartContext";
-
-
-
-import ModifierModal from "@/components/ModifierModal";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import ModifierModal from "@/components/ModifierModal"
 
 interface Props {
   location?: LocationFull | null
@@ -59,6 +28,17 @@ export default function Cart({ location }: Props) {
   const [quickAddItem, setQuickAddItem] = useState<MenuItem | null>(null)
   const [editingItem, setEditingItem] = useState<CartItem | null>(null)
   const complementScrollRef = useRef<HTMLDivElement>(null)
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get("cart") === "open") {
+      setIsOpen(true)
+
+      // Clean up the URL immediately so the cart doesn't reopen on a page refresh
+      // The scroll: false ensures the user doesn't jump back to the top of the page
+      router.replace("/", { scroll: false })
+    }
+  }, [searchParams, setIsOpen, router])
 
   const PAGE_SIZE = 4
 
@@ -327,7 +307,6 @@ export default function Cart({ location }: Props) {
                         &quot;{item.specialInstructions}&quot;
                       </p>
                     )}
-
                   </div>
                 </div>
               ))}
