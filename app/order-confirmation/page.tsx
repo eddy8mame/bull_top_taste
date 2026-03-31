@@ -62,7 +62,7 @@ export default async function OrderConfirmation({ searchParams }: Props) {
             {location?.restaurantName ?? "Bull Top Taste"}
           </span>
           <Link
-            href="/"
+            href="/menu"
             className="text-sm font-bold text-gray-900 underline underline-offset-2 transition-opacity hover:opacity-70"
           >
             Return to Menu

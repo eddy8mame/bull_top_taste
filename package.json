@@ -13,6 +13,7 @@
     "@sanity/image-url": "^2.0.3",
     "@stripe/stripe-js": "^8.10.0",
     "@types/mapbox-gl": "^3.4.1",
+    "@vercel/analytics": "^2.0.1",
     "canvas-confetti": "^1.9.4",
     "mapbox-gl": "^3.20.0",
     "next": "16.1.7",
