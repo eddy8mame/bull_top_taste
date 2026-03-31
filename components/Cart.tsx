@@ -141,6 +141,192 @@ import ModifierModal from "@/components/ModifierModal";
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 interface Props {
   location?: LocationFull | null
 }
@@ -227,25 +413,18 @@ export default function Cart({ location }: Props) {
             </button>
           </div>
         ) : (
-          <div className="flex flex-1 flex-col">
+          <div className="flex flex-1 flex-col overflow-hidden">
             {/* Header */}
-            <div className="px-6 pt-2 pb-6">
-              <p className="mb-1 text-xs font-bold tracking-widest text-gray-900 uppercase">
-                Your Bag From
-              </p>
-              <h1 className="font-serif text-4xl font-bold text-gray-900">
-                {location?.restaurantName ?? "Bull Top Taste"}
-              </h1>
+            <div className="shrink-0 border-b border-gray-100 px-6 py-4">
+              <h1 className="font-serif text-2xl font-bold text-gray-900">Your Bag</h1>
             </div>
 
-            {/* Cart items */}
-            <section className="flex-1 overflow-y-auto">
-              {items.map((item, index) => (
+            {/* Cart items + complement — scrollable middle */}
+            <section className="min-h-0 flex-1 overflow-y-auto">
+              {items.map((item) => (
                 <div
                   key={item.cartItemId}
-                  className={`mx-6 flex cursor-pointer items-start gap-4 border-t border-gray-100 py-4 transition-colors hover:bg-gray-50 ${
-                    index === items.length - 1 ? "" : ""
-                  }`}
+                  className="mx-6 flex cursor-pointer items-start gap-4 border-t border-gray-100 py-4 transition-colors hover:bg-gray-50"
                   onClick={() => setEditingItem(item)}
                 >
                   {/* Thumbnail */}
@@ -386,9 +565,14 @@ export default function Cart({ location }: Props) {
                           return (
                             <>
                               {specs.length > 0 && (
-                                <p className="text-brand-muted text-xs leading-relaxed">
-                                  {specs.join(" · ")}
-                                </p>
+                                <div className="flex items-baseline justify-between gap-2">
+                                  <p className="text-brand-muted text-xs leading-relaxed">
+                                    {specs.join(" · ")}
+                                  </p>
+                                  <span className="shrink-0 text-xs font-bold text-gray-900">
+                                    ${item.price != null ? item.price.toFixed(2) : "—"}
+                                  </span>
+                                </div>
                               )}
                               {addons.length > 0 && <ul className="mt-1">{addons}</ul>}
                             </>
@@ -527,19 +711,17 @@ export default function Cart({ location }: Props) {
               ) : null
             })()}
 
-            {/* Subtotal */}
-            <div className="mx-6 mt-4 border-t-2 border-gray-100 pt-6">
+            {/* Pinned footer */}
+            <div className="shrink-0 border-t-2 border-gray-100 bg-white px-6 pt-5 pb-8">
               <div className="flex items-center justify-between">
                 <span className="font-serif text-xl font-bold text-gray-900">Subtotal</span>
                 <span className="text-brand-green font-serif text-2xl font-extrabold">
                   ${subTotal.toFixed(2)}
                 </span>
               </div>
-              <p className="mt-1.5 text-xs text-gray-400">Taxes and fees calculated at checkout.</p>
-            </div>
-
-            {/* CTA */}
-            <div className="px-6 pt-5 pb-8">
+              <p className="mt-1.5 mb-5 text-xs text-gray-400">
+                Taxes and fees calculated at checkout.
+              </p>
               <button
                 type="button"
                 onClick={() => {

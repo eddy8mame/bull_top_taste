@@ -395,7 +395,14 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.7.1:** (Current):Cart complement filter and tax note.
+* **v2.7.2:** (Current):Cart layout overhaul.
+  - Header simplified to "Your Bag".
+  - Subtotal, tax note, and checkout CTA permanently pinned to bottom.
+  - Items and complement section scroll in middle area independently.
+  - Base price right-aligned on same line as item name.
+  - Bottom item total removed to avoid price duplication.
+
+* **v2.7.1:**:Cart complement filter and tax note.
   - Complement your cart section now excludes items already in the
   cart — avoids prompting duplicates, surfaces genuine attachments.
   - Section hides entirely when no unselected complement items remain.
