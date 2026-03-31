@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from "react"
 
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 
@@ -62,7 +63,18 @@ export default function Nav({ location }: Props) {
           {/* Branding */}
           <Link href="/" className="flex shrink-0 items-center gap-2">
             {logoUrl ? (
-              <img src={logoUrl} alt={restaurantName} className="h-9 w-auto object-contain" />
+              <div className="relative h-9 w-32">
+                {" "}
+                {/* Container defines the bounds */}
+                <Image
+                  src={logoUrl}
+                  alt={`${restaurantName} Logo`}
+                  fill
+                  priority // Crucial: Tells Next.js to preload this asset for LCP
+                  className="object-contain object-left"
+                  sizes="(max-width: 768px) 100px, 128px"
+                />
+              </div>
             ) : (
               <span className="text-brand-green font-serif text-xl leading-none font-bold italic">
                 {restaurantName}

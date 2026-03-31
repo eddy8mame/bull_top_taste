@@ -1,5 +1,5 @@
 // app/menu/page.tsx
-import { getActiveSpecials, getMenuItems } from "@/lib/sanity"
+import { getActiveSpecials, getLocationFull, getMenuItems } from "@/lib/sanity"
 
 import Cart from "@/components/Cart"
 import MenuPage from "@/components/MenuPage"
@@ -13,13 +13,19 @@ export const metadata = {
     "Browse our full menu of authentic Jamaican dishes — jerk chicken, oxtail, curried goat, fish, patties, and more.",
 }
 
+const DEFAULT_SLUG = process.env.SANITY_LOCATION_SLUG ?? "bull-top-taste-rpb"
+
 export default async function MenuRoute() {
-  const [items, specials] = await Promise.all([getMenuItems(), getActiveSpecials()])
+  const [items, specials, location] = await Promise.all([
+    getMenuItems(),
+    getActiveSpecials(),
+    getLocationFull(DEFAULT_SLUG),
+  ])
 
   return (
     <>
-      <Nav location={null} />
-      <Cart location={null} />
+      <Nav location={location} />
+      <Cart location={location} />
 
       <main className="bg-brand-light min-h-screen">
         {/* Page header */}

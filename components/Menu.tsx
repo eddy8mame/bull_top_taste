@@ -2,85 +2,14 @@
 
 "use client"
 
-import { useCallback, useState } from "react";
+import { useCallback, useState } from "react"
 
+import Image from "next/image"
+import Link from "next/link"
 
+import type { MenuItem, Special } from "@/types"
 
-import Image from "next/image";
-import Link from "next/link";
-
-
-
-import type { CartItem, MenuItem, Special } from "@/types";
-
-
-
-import { useCart } from "@/context/CartContext";
-
-
-
-import ModifierModal from "@/components/ModifierModal";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import ModifierModal from "@/components/ModifierModal"
 
 interface Props {
   items: MenuItem[]
@@ -90,7 +19,6 @@ interface Props {
 const TEASER_COUNT = 6
 
 export default function Menu({ items, specials }: Props) {
-  const { addItem } = useCart()
   const [modalItem, setModalItem] = useState<MenuItem | null>(null)
 
   // Show top-ordered items first; fall back to natural order
@@ -238,7 +166,6 @@ export default function Menu({ items, specials }: Props) {
               className="bg-brand-green hover:bg-brand-green-dark inline-flex items-center gap-2 rounded-xl px-10 py-4 text-sm font-black tracking-widest text-white uppercase shadow-md transition-all active:scale-95"
             >
               View Full Menu
-
             </Link>
           </div>
         </div>

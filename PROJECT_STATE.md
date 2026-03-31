@@ -395,7 +395,11 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.7.7:**:(Current): Order Online button conditional behavior.
+* **v2.8.0:**:(Current):Menu page logo and cart data fixed.
+  - Location data now fetched on /menu page — logo, restaurant name,
+  and complement items consistent with homepage.
+
+* **v2.7.7:**: Order Online button conditional behavior.
   - Empty cart: navigates directly to menu section.
   - Cart with items: opens cart drawer as before.
   - Removes mandatory empty state interstitial from conversion funnel.
