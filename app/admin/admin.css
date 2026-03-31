@@ -1098,6 +1098,19 @@
 }
 
 /* Metric cards */
+.admin-shell .o-kpi-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--o-text2);
+  margin-bottom: 8px;
+  margin-top: 20px;
+}
+.admin-shell .o-kpi-group-label:first-of-type {
+  margin-top: 0;
+}
+
 .admin-shell .o-metrics-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

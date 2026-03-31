@@ -2,13 +2,31 @@
 
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react";
 
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
-import type { AdminOrder, AdminOrderItem } from "@/types"
 
-import { InfoIcon } from "@/components/admin/InfoIcon"
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+
+
+
+import type { AdminOrder, AdminOrderItem } from "@/types";
+
+
+
+import { InfoIcon } from "@/components/admin/InfoIcon";
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -406,6 +424,8 @@ export default function OfficeDashboard() {
         {activeSection === "overview" && (
           <>
             {/* 4 KPI cards */}
+            {/* Group A — Business Health */}
+            <p className="o-kpi-group-label">Business Health</p>
             <div className="o-metrics-grid">
               {[
                 {
@@ -423,11 +443,21 @@ export default function OfficeDashboard() {
                   value: `$${monthKpi.avg.toFixed(2)}`,
                   tip: "Average order value this month (total revenue divided by number of orders).",
                 },
-                {
-                  label: "Avg pickup lag",
-                  value: lifeKpi.avgLag,
-                  tip: "How long orders sit at the counter after being marked ready before the customer picks them up.",
-                },
+              ].map(({ label, value, tip }) => (
+                <div key={label} className="o-metric-card">
+                  <div className="o-metric-label" style={{ display: "flex", alignItems: "center" }}>
+                    {label}
+                    <InfoIcon tip={tip} />
+                  </div>
+                  <div className="o-metric-value">{value}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Group B — Throughput */}
+            <p className="o-kpi-group-label">Throughput</p>
+            <div className="o-metrics-grid">
+              {[
                 {
                   label: "Avg queue time",
                   value: monthKpi.avgQueueTime,
@@ -437,6 +467,11 @@ export default function OfficeDashboard() {
                   label: "Avg prep time",
                   value: monthKpi.avgPrepTime,
                   tip: "How long the kitchen spends actively making the order. Measured from when the kitchen taps Start to when the food is marked ready.",
+                },
+                {
+                  label: "Avg pickup lag",
+                  value: lifeKpi.avgLag,
+                  tip: "How long orders sit at the counter after being marked ready before the customer picks them up.",
                 },
               ].map(({ label, value, tip }) => (
                 <div key={label} className="o-metric-card">

@@ -2,109 +2,14 @@
 
 "use client"
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
 
+import type { LocationFull } from "@/lib/sanity"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-
-
-import type { LocationFull } from "@/lib/sanity";
-
-
-
-import { useCart } from "@/context/CartContext";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import { useCart } from "@/context/CartContext"
 
 interface Props {
   location?: LocationFull | null
@@ -112,6 +17,7 @@ interface Props {
 
 export default function Nav({ location }: Props) {
   const { count, setIsOpen } = useCart()
+  const router = useRouter()
 
   const [isMounted, setIsMounted] = useState(false)
   const [activeSection, setActiveSection] = useState<string>("")
@@ -231,7 +137,7 @@ export default function Nav({ location }: Props) {
               </button>
             )}
             <button
-              onClick={() => setIsOpen(true)}
+              onClick={() => (count > 0 ? setIsOpen(true) : router.push("/menu"))}
               className="from-brand-green to-brand-green-dark relative flex items-center gap-2 rounded-md bg-linear-to-r px-5 py-2.5 text-xs font-black tracking-widest text-white uppercase shadow-md transition-opacity hover:opacity-90 active:scale-95"
             >
               Order Online

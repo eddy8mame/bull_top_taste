@@ -395,7 +395,12 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
-* **v2.7.7:**:(Current): Floor modal clarity and scannability improvements.
+* **v2.7.7:**:(Current): Order Online button conditional behavior.
+  - Empty cart: navigates directly to menu section.
+  - Cart with items: opens cart drawer as before.
+  - Removes mandatory empty state interstitial from conversion funnel.
+
+* **v2.7.7:**: Floor modal clarity and scannability improvements.
   - Phone numbers formatted as (555) 123-1727 — chunked for instant
   recall when staff need to call a no-show.
   - Bag checksum pill added to modal receipt header showing total
