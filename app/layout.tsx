@@ -1,42 +1,30 @@
 // app/layout.tsx
-import type { Metadata } from "next";
-import { Cormorant_Garamond,
-// ── Midnight ────────────────────────────────────────────────────────────────
-DM_Sans,
-// ── Tropical (default) ──────────────────────────────────────────────────────
-Inter, Lora,
-// ── Editorial ───────────────────────────────────────────────────────────────
-Manrope, Merriweather, Newsreader,
-// ── Spice ───────────────────────────────────────────────────────────────────
-Nunito,
-// ── Ocean ───────────────────────────────────────────────────────────────────
-Outfit, Playfair_Display } from "next/font/google";
+import type { Metadata } from "next"
+import {
+  Cormorant_Garamond,
+  // ── Midnight ────────────────────────────────────────────────────────────────
+  DM_Sans,
+  // ── Tropical (default) ──────────────────────────────────────────────────────
+  Inter,
+  Lora,
+  // ── Editorial ───────────────────────────────────────────────────────────────
+  Manrope,
+  Merriweather,
+  Newsreader,
+  // ── Spice ───────────────────────────────────────────────────────────────────
+  Nunito,
+  // ── Ocean ───────────────────────────────────────────────────────────────────
+  Outfit,
+  Playfair_Display,
+} from "next/font/google"
 
+import { Analytics } from "@vercel/analytics/next"
 
+import { getLocationBySlug } from "@/lib/sanity"
 
-import { getLocationBySlug } from "@/lib/sanity";
+import { CartProvider } from "@/context/CartContext"
 
-
-
-import { CartProvider } from "@/context/CartContext";
-
-
-
-import "./globals.css";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import "./globals.css"
 
 // ─── Font definitions ─────────────────────────────────────────────────────────
 // All ten fonts are loaded at build time. next/font sets each one as a CSS
@@ -161,6 +149,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="antialiased">
         <CartProvider>{children}</CartProvider>
       </body>
+      <Analytics />
     </html>
   )
 }

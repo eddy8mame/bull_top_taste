@@ -1,8 +1,6 @@
 // app/page.tsx
 import { Suspense } from "react"
 
-import { Analytics } from "@vercel/analytics/next"
-
 import { getActiveSpecials, getLocationFull, getMenuItems } from "@/lib/sanity"
 
 import About from "@/components/About"
@@ -53,7 +51,6 @@ export default async function Home() {
         <About location={location} />
       </main>
       <Footer location={location} />
-      <Analytics />
     </>
   )
 }
