@@ -2,15 +2,59 @@
 
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react";
 
-import Image from "next/image"
 
-import type { CartItem, MenuItem, Special } from "@/types"
 
-import { useCart } from "@/context/CartContext"
+import Image from "next/image";
 
-import ModifierModal from "@/components/ModifierModal"
+
+
+import type { CartItem, MenuItem, Special } from "@/types";
+
+
+
+import { useCart } from "@/context/CartContext";
+
+
+
+import ModifierModal from "@/components/ModifierModal";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 interface Props {
   items: MenuItem[]
@@ -154,20 +198,31 @@ export default function MenuPage({ items, specials }: Props) {
 
   // Group items: section → category → items
   // Preserves insertion order so the menu stays in the sequence Sanity returns
+  const SECTION_ORDER = ["Featured Items", "Sides", "Drinks", "Beverages"]
+
   const sections = Array.from(
     items.reduce((sMap, item) => {
       const sKey = item.section ?? "Menu"
       if (!sMap.has(sKey)) sMap.set(sKey, new Map<string, MenuItem[]>())
       const cMap = sMap.get(sKey)!
-      const cKey = item.category ?? "" // empty string = no sub-category
+      const cKey = item.category ?? ""
       if (!cMap.has(cKey)) cMap.set(cKey, [])
       cMap.get(cKey)!.push(item)
       return sMap
     }, new Map<string, Map<string, MenuItem[]>>())
-  )
+  ).sort(([a], [b]) => {
+    const ai = SECTION_ORDER.indexOf(a)
+    const bi = SECTION_ORDER.indexOf(b)
+    if (ai === -1 && bi === -1) return 0
+    if (ai === -1) return 1
+    if (bi === -1) return -1
+    return ai - bi
+  })
+
+  const EXCLUDE_FROM_MOST_ORDERED = ["Drinks", "Sides", "Beverages"]
 
   const mostOrdered = [...items]
-    .filter(i => (i.orderCount ?? 0) > 0)
+    .filter(i => (i.orderCount ?? 0) > 0 && !EXCLUDE_FROM_MOST_ORDERED.includes(i.section ?? ""))
     .sort((a, b) => (b.orderCount ?? 0) - (a.orderCount ?? 0))
     .slice(0, MOST_ORDERED_COUNT)
 

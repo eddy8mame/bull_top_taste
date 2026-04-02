@@ -2,31 +2,13 @@
 
 "use client"
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react"
 
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
+import type { AdminOrder, AdminOrderItem } from "@/types"
 
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-
-
-
-import type { AdminOrder, AdminOrderItem } from "@/types";
-
-
-
-import { InfoIcon } from "@/components/admin/InfoIcon";
-
-
-
-
-
-
-
-
-
-
-
-
+import { InfoIcon } from "@/components/admin/InfoIcon"
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -279,8 +261,8 @@ function deriveAddonUptake(orders: AdminOrder[]): AddonUptakeRow[] {
 // `location._id → location.restaurantName`. The `active` flag becomes
 // whether the tenant env var resolves to that document.
 const LOCATIONS = [
-  { id: "wpb", label: "West Palm Beach, FL", active: true },
-  { id: "rpb", label: "Royal Palm Beach, FL", active: false },
+  { id: "wpb", label: "West Palm Beach, FL", active: false },
+  { id: "rpb", label: "Royal Palm Beach, FL", active: true },
   { id: "all", label: "All Locations", active: false },
 ]
 
@@ -296,7 +278,7 @@ const TABS: { id: Section; label: string }[] = [
 export default function OfficeDashboard() {
   const [orders, setOrders] = useState<AdminOrder[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedLocation, setSelectedLocation] = useState("wpb")
+  const [selectedLocation, setSelectedLocation] = useState("rpb")
   const [activeSection, setActiveSection] = useState<Section>("overview")
   const [kitchenOpen, setKitchenOpen] = useState<boolean | null>(null)
   const [togglingKitchen, setTogglingKitchen] = useState(false)

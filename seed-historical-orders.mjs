@@ -1,5 +1,14 @@
-import { createClient } from "@sanity/client"
-import dotenv from "dotenv"
+// seed-historical-orders.mjs
+import { createClient } from "@sanity/client";
+import dotenv from "dotenv";
+
+
+
+
+
+
+
+
 
 dotenv.config({ path: ".env.local" })
 
@@ -149,7 +158,7 @@ function generateModifiers() {
 // ── Main Execution ──────────────────────────────────────────────────────────
 async function seedOrders() {
   // Hardcoded to your specific active location
-  const locationId = "693176e9-a0f2-4b47-b1a1-afb3e6941f1a"
+  const locationId = "108830e7-492c-4ccf-8c70-8b7e2a4dc34e"
 
   console.log(`Starting historical generation of ${ORDER_COUNT} test orders...`)
 

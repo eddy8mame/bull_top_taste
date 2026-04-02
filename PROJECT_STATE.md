@@ -395,6 +395,12 @@ Two-pass renderer: first pass builds `subSelsByParent` from records with `parent
 
 
 ## System
+* **v2.8.2:**:(Current): Menu section and featured grid fixes.
+  - Drinks and sides excluded from Most Ordered and homepage
+  featured grid — only mains appear as featured items.
+  - Menu page section order now follows defined sequence:
+  Featured Items, Sides, Drinks
+
 * **v2.8.1:**:(Current): Nav Menu link behavior on /menu page.
   - Menu link stays on /menu when already there rather than
   navigating to homepage /#menu section.

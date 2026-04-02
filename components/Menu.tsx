@@ -2,14 +2,33 @@
 
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useState } from "react";
 
-import Image from "next/image"
-import Link from "next/link"
 
-import type { MenuItem, Special } from "@/types"
 
-import ModifierModal from "@/components/ModifierModal"
+import Image from "next/image";
+import Link from "next/link";
+
+
+
+import type { MenuItem, Special } from "@/types";
+
+
+
+import ModifierModal from "@/components/ModifierModal";
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 interface Props {
   items: MenuItem[]
@@ -22,7 +41,10 @@ export default function Menu({ items, specials }: Props) {
   const [modalItem, setModalItem] = useState<MenuItem | null>(null)
 
   // Show top-ordered items first; fall back to natural order
+  const EXCLUDE_FROM_FEATURED = ["Drinks", "Sides", "Beverages"]
+
   const featured = [...items]
+    .filter(i => !EXCLUDE_FROM_FEATURED.includes(i.section ?? ""))
     .sort((a, b) => (b.orderCount ?? 0) - (a.orderCount ?? 0))
     .slice(0, TEASER_COUNT)
 

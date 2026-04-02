@@ -1,3 +1,7 @@
+// seed-orders.mjs
+// Generates realistic mock orders for Bull Top Taste — Royal Palm Beach
+// Run: node seed-orders.mjs
+// Produces: 300 historical completed orders (30 days) + 9 active orders
 import { createClient } from "@sanity/client"
 import dotenv from "dotenv"
 
@@ -11,195 +15,505 @@ const client = createClient({
   apiVersion: "2024-03-29",
 })
 
-const ORDER_COUNT = 75
+// ── Config ────────────────────────────────────────────────────────────────────
+const LOCATION_ID = "108830e7-492c-4ccf-8c70-8b7e2a4dc34e" // Royal Palm Beach
+const HISTORICAL_COUNT = 300
+const TAX_RATE = 1.07 // Palm Beach County 7%
+const BATCH_SIZE = 50
 
-// ── Variance Pools ──────────────────────────────────────────────────────────
-const STATUSES = ["pending", "pending", "kitchen", "kitchen", "kitchen", "floor", "completed"]
-const INSTRUCTIONS = [
-  "Extra spicy",
-  "Allergy: Peanuts",
-  "Sauce on the side",
-  "No utensils",
-  null,
-  null,
-  null,
-  null,
-]
-
+// ── Menu Items (real Sanity refs) ─────────────────────────────────────────────
 const MENU_ITEMS = [
-  { ref: "235f1ebe-b16e-4923-a33e-137b6f6762e8", name: "Oxtails", price: 23.99 },
-  { ref: "mock-ref-jerk", name: "Jerk Chicken", price: 13.99 },
-  { ref: "mock-ref-curry", name: "Curried Goat", price: 14.99 },
-  { ref: "mock-ref-stew", name: "Stew Chicken", price: 12.99 },
+  {
+    ref: "235f1ebe-b16e-4923-a33e-137b6f6762e8",
+    name: "Oxtails",
+    price: 23.99,
+    largeMod: 4,
+    weight: 15,
+  },
+  {
+    ref: "690c69a2-7dae-489d-8d4e-1789e6264f36",
+    name: "Jerk Chicken",
+    price: 14,
+    largeMod: 2,
+    weight: 25,
+  },
+  {
+    ref: "03b7bc2e-5e41-4d0b-bd41-72c3cdf229d5",
+    name: "Curry Chicken",
+    price: 14,
+    largeMod: 2,
+    weight: 20,
+  },
+  {
+    ref: "23672e7a-ae3a-4e14-a1e3-d2b546a46480",
+    name: "Stew Chicken",
+    price: 14,
+    largeMod: 2,
+    weight: 20,
+  },
+  {
+    ref: "bb551bac-a4eb-4efd-b84a-9e19a7c5b7fd",
+    name: "Fried Chicken",
+    price: 14,
+    largeMod: 2,
+    weight: 15,
+  },
+  {
+    ref: "cd770c28-0fe6-4218-b17e-5dd27e11cb1a",
+    name: "Curry Goat",
+    price: 16.5,
+    largeMod: 3.5,
+    weight: 5,
+  },
 ]
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-const getRandom = arr => arr[Math.floor(Math.random() * arr.length)]
-const randomId = () => Math.random().toString(36).slice(2, 8).toLowerCase()
+// Complement items — low attach rate to reflect reality
+const COMPLEMENT_ITEMS = [
+  { ref: "d0a22311-dce3-4de9-ba24-5ba96c8d13ba", name: "Spicy Beef Patty", price: 3, weight: 60 },
+  {
+    ref: "9b3d67bd-3c62-4e91-a75e-2747be9bf33d",
+    name: "Pineapple Guava Juice",
+    price: 3.5,
+    weight: 40,
+  },
+]
 
-const getRelativeTime = minutesAgo => {
-  const date = new Date()
-  date.setMinutes(date.getMinutes() - minutesAgo)
+// ── South Florida name pools ───────────────────────────────────────────────────
+const FIRST_NAMES = [
+  "Marcus",
+  "Destiny",
+  "Andre",
+  "Keisha",
+  "Devon",
+  "Latoya",
+  "Darnell",
+  "Shaniqua",
+  "Tyrone",
+  "Monique",
+  "Jamal",
+  "Tanisha",
+  "Rasheed",
+  "Brianna",
+  "Antoine",
+  "Jasmine",
+  "Malik",
+  "Shanice",
+  "Terrence",
+  "Alicia",
+  "Dwayne",
+  "Nichelle",
+  "Jerome",
+  "Tiffany",
+  "Carlos",
+  "Maria",
+  "Miguel",
+  "Sofia",
+  "Juan",
+  "Isabella",
+  "Luis",
+  "Gabriela",
+  "Roberto",
+  "Valentina",
+  "Diego",
+  "Camila",
+  "Ricardo",
+  "Daniela",
+  "Eduardo",
+  "Lucia",
+  "James",
+  "Ashley",
+  "Robert",
+  "Jennifer",
+  "Michael",
+  "Amanda",
+  "David",
+  "Stephanie",
+  "Kevin",
+  "Nicole",
+  "Brian",
+  "Michelle",
+  "Jason",
+  "Danielle",
+  "Ryan",
+  "Amber",
+  "Kwame",
+  "Asha",
+  "Kofi",
+  "Abena",
+  "Olu",
+  "Adaeze",
+  "Chidi",
+  "Ngozi",
+]
+
+const LAST_NAMES = [
+  "Williams",
+  "Johnson",
+  "Brown",
+  "Davis",
+  "Wilson",
+  "Anderson",
+  "Thomas",
+  "Jackson",
+  "White",
+  "Harris",
+  "Martin",
+  "Thompson",
+  "Garcia",
+  "Martinez",
+  "Rodriguez",
+  "Lopez",
+  "Gonzalez",
+  "Hernandez",
+  "Perez",
+  "Torres",
+  "Campbell",
+  "Mitchell",
+  "Carter",
+  "Roberts",
+  "Phillips",
+  "Evans",
+  "Turner",
+  "Parker",
+  "Collins",
+  "Edwards",
+  "Stewart",
+  "Morris",
+  "Jean",
+  "Pierre",
+  "Baptiste",
+  "Desir",
+  "Charles",
+  "Henry",
+  "Louis",
+  "Paul",
+  "Mensah",
+  "Asante",
+  "Osei",
+  "Boateng",
+  "Owusu",
+  "Adjei",
+  "Acheampong",
+  "Darko",
+]
+
+const EMAIL_DOMAINS = [
+  "gmail.com",
+  "yahoo.com",
+  "outlook.com",
+  "hotmail.com",
+  "icloud.com",
+  "aol.com",
+  "comcast.net",
+  "bellsouth.net",
+  "att.net",
+]
+
+const AREA_CODES = ["561", "954", "786", "305"]
+
+const SIDE_COMBOS = [
+  "White Rice, Cabbage Slaw",
+  "Rice & Peas, Cabbage Slaw",
+  "White Rice, Plantain-Sweet",
+  "Rice & Peas, Lettuce Mix",
+  "White Rice, Lettuce Mix",
+  "Rice & Peas, Plantain-Sweet",
+]
+
+const SPECIAL_INSTRUCTIONS = [
+  "Extra spicy please",
+  "Sauce on the side",
+  "No onions",
+  "Well done",
+  "Extra rice",
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+]
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const sleep = ms => new Promise(r => setTimeout(r, ms))
+const randomId = () => Math.random().toString(36).slice(2, 9)
+const getRandom = arr => arr[Math.floor(Math.random() * arr.length)]
+
+function weightedRandom(items) {
+  const total = items.reduce((s, i) => s + i.weight, 0)
+  let rand = Math.random() * total
+  for (const item of items) {
+    rand -= item.weight
+    if (rand <= 0) return item
+  }
+  return items[items.length - 1]
+}
+
+function randomName() {
+  return `${getRandom(FIRST_NAMES)} ${getRandom(LAST_NAMES)}`
+}
+
+function randomEmail(name) {
+  const clean = name.toLowerCase().replace(" ", ".")
+  const suffix = Math.random() > 0.5 ? Math.floor(Math.random() * 99) : ""
+  return `${clean}${suffix}@${getRandom(EMAIL_DOMAINS)}`
+}
+
+function randomPhone() {
+  const area = getRandom(AREA_CODES)
+  const mid = Math.floor(Math.random() * 900) + 100
+  const end = Math.floor(Math.random() * 9000) + 1000
+  return `${area}${mid}${end}`
+}
+
+function addMins(isoDate, mins) {
+  return new Date(new Date(isoDate).getTime() + mins * 60000).toISOString()
+}
+
+// ── Timestamp generators ───────────────────────────────────────────────────────
+function historicalTimestamp() {
+  const now = new Date()
+  const daysAgo = Math.floor(Math.random() * 30) + 1
+  const date = new Date(now)
+  date.setDate(date.getDate() - daysAgo)
+
+  const r = Math.random()
+  let hour
+  if (r < 0.1)
+    hour = Math.floor(Math.random() * 3) + 8 // 8-10am  (10%)
+  else if (r < 0.4)
+    hour = Math.floor(Math.random() * 3) + 11 // 11am-1pm (30%)
+  else if (r < 0.5)
+    hour = Math.floor(Math.random() * 3) + 14 // 2-4pm   (10%)
+  else hour = Math.floor(Math.random() * 4) + 17 // 5-8pm   (50%)
+
+  date.setHours(hour, Math.floor(Math.random() * 60), 0, 0)
   return date.toISOString()
 }
 
-// ── Dynamic Modifier Generator ──────────────────────────────────────────────
-function generateModifiers() {
-  const modifiers = []
-  let upchargeTotal = 0
+function activeTimestamp(minutesAgo) {
+  return new Date(Date.now() - minutesAgo * 60000).toISOString()
+}
 
-  // 1. Size Choice
-  if (Math.random() > 0.5) {
+// ── Order item builder ────────────────────────────────────────────────────────
+function buildItem(idx) {
+  const menuItem = weightedRandom(MENU_ITEMS)
+  const qty = Math.random() < 0.7 ? 1 : Math.random() < 0.7 ? 2 : 3
+  const modifiers = []
+  let upcharge = 0
+
+  // Size Choice — only for items that have a large variant
+  if (menuItem.largeMod) {
+    const isLarge = Math.random() < 0.4
     modifiers.push({
       _type: "modifierSelection",
       _key: `mod-${randomId()}`,
       groupName: "Size Choice",
-      selections: "Large +$3.50",
+      selections: isLarge ? `Large +$${menuItem.largeMod.toFixed(2)}` : "Small",
     })
-    upchargeTotal += 3.5
-  } else {
-    modifiers.push({
-      _type: "modifierSelection",
-      _key: `mod-${randomId()}`,
-      groupName: "Size Choice",
-      selections: "Small",
-    })
+    if (isLarge) upcharge += menuItem.largeMod
   }
 
-  // 2. Side Choice
-  const sides = [
-    "Rice & Peas, Cabbage Slaw",
-    "White Rice, Plantain-Sweet",
-    "Rice & Peas, Lettuce Mix",
-    "White Rice, Cabbage Slaw",
-  ]
+  // Protein Choice
+  const protein =
+    menuItem.name === "Oxtails" ? "Beef" : menuItem.name === "Curry Goat" ? "Goat" : "Chicken"
+  modifiers.push({
+    _type: "modifierSelection",
+    _key: `mod-${randomId()}`,
+    groupName: "Protein Choice",
+    selections: protein,
+  })
+
+  // Side Choice
   modifiers.push({
     _type: "modifierSelection",
     _key: `mod-${randomId()}`,
     groupName: "Side Choice",
-    selections: getRandom(sides),
+    selections: getRandom(SIDE_COMBOS),
   })
 
-  // 3. Sauce Additions
-  if (Math.random() > 0.7) {
-    const sauces = [
-      "Jerk Sauce +$0.75",
-      "Fry Chicken Sauce +$0.75",
-      "Jerk Sauce +$0.75, Fry Chicken Sauce +$0.75",
-    ]
-    const selection = getRandom(sauces)
+  // Sauce Additions — 25% chance
+  if (Math.random() < 0.25) {
+    const saucePick = Math.random()
+    let sauceStr, sauceCharge
+    if (saucePick < 0.4) {
+      sauceStr = "Jerk Sauce +$0.75"
+      sauceCharge = 0.75
+    } else if (saucePick < 0.7) {
+      sauceStr = "Fry Chicken Sauce +$0.75"
+      sauceCharge = 0.75
+    } else {
+      sauceStr = "Jerk Sauce +$0.75, Fry Chicken Sauce +$0.75"
+      sauceCharge = 1.5
+    }
     modifiers.push({
       _type: "modifierSelection",
       _key: `mod-${randomId()}`,
       groupName: "Sauce Additions",
-      selections: selection,
+      selections: sauceStr,
     })
-    upchargeTotal += (selection.match(/\+\$0\.75/g) || []).length * 0.75
+    upcharge += sauceCharge
   }
 
-  // 4. Recommended Sides & Apps
-  if (Math.random() > 0.8) {
+  // Recommended Sides & Apps — 15% chance (low to reflect reality)
+  if (Math.random() < 0.15) {
     const apps = [
-      { text: "Plantain (Small) +$6.98", price: 6.98 },
-      { text: "Plantain (Large) +$8.98", price: 8.98 },
-      { text: "Cabbage +$4.99", price: 4.99 },
+      { text: "Plantain (8 Oz) +$6.98", price: 6.98 },
+      { text: "Plantain (16 Oz) +$11.90", price: 11.9 },
+      { text: "Cabbage (8 Oz) +$4.99", price: 4.99 },
+      { text: "Cow Foot (16 Oz) +$27.00", price: 27.0 },
     ]
     const app = getRandom(apps)
     modifiers.push({
       _type: "modifierSelection",
       _key: `mod-${randomId()}`,
-      groupName: "Recommended Sides & Apps",
+      groupName: "Recommended Sides and Apps",
       selections: app.text,
     })
-    upchargeTotal += app.price
+    upcharge += app.price
   }
 
-  return { modifiers, upchargeTotal }
+  const effectivePrice = Number((menuItem.price + upcharge).toFixed(2))
+
+  return {
+    _type: "orderItem",
+    _key: `item-${randomId()}-${idx}`,
+    itemName: menuItem.name,
+    menuItemRef: menuItem.ref,
+    quantity: qty,
+    basePrice: menuItem.price,
+    effectivePrice,
+    modifiers,
+    specialInstructions: getRandom(SPECIAL_INSTRUCTIONS) || undefined,
+  }
 }
 
-// ── Main Execution ──────────────────────────────────────────────────────────
-async function seedOrders() {
-  // Hardcoding the exact location ID your frontend is scoped to
-  const locationId = "693176e9-a0f2-4b47-b1a1-afb3e6941f1a"
+function buildOrder({ status, createdAt, confirmedAt, startedAt, readyAt, pickedUpAt }) {
+  const name = randomName()
+  const itemCount = Math.random() < 0.6 ? 1 : Math.random() < 0.7 ? 2 : 3
+  const items = Array.from({ length: itemCount }, (_, i) => buildItem(i))
 
-  console.log(`Starting generation of ${ORDER_COUNT} test orders...`)
-
-  for (let i = 1; i <= ORDER_COUNT; i++) {
-    const status = getRandom(STATUSES)
-    const orderAgeMins = Math.floor(Math.random() * 45) + 5
-
-    const createdAt = getRelativeTime(orderAgeMins)
-    const confirmedAt = getRelativeTime(orderAgeMins - 1)
-    const startedAt = ["kitchen", "floor", "completed"].includes(status)
-      ? getRelativeTime(orderAgeMins - 5)
-      : undefined
-    const readyAt = ["floor", "completed"].includes(status)
-      ? getRelativeTime(orderAgeMins - 20)
-      : undefined
-    const pickedUpAt = status === "completed" ? getRelativeTime(orderAgeMins - 25) : undefined
-
-    const itemCount = Math.floor(Math.random() * 3) + 1
-    const items = Array.from({ length: itemCount }).map((_, idx) => {
-      const menuItem = getRandom(MENU_ITEMS)
-      const qty = Math.floor(Math.random() * 3) + 1
-
-      const { modifiers, upchargeTotal } = generateModifiers()
-      const effectivePrice = menuItem.price + upchargeTotal
-
-      return {
-        _type: "orderItem", // <-- This is the crucial missing piece
-        _key: `item-${randomId()}-${idx}`,
-        basePrice: menuItem.price,
-        effectivePrice: Number(effectivePrice.toFixed(2)),
-        itemName: menuItem.name,
-        menuItemRef: menuItem.ref,
-        modifiers: modifiers,
-        quantity: qty,
-        specialInstructions: getRandom(INSTRUCTIONS),
-      }
+  // Complement item — ~12% attach rate to reflect reality
+  if (Math.random() < 0.12) {
+    const comp = weightedRandom(COMPLEMENT_ITEMS)
+    items.push({
+      _type: "orderItem",
+      _key: `item-${randomId()}-comp`,
+      itemName: comp.name,
+      menuItemRef: comp.ref,
+      quantity: 1,
+      basePrice: comp.price,
+      effectivePrice: comp.price,
+      modifiers: [],
     })
+  }
 
-    const total = items.reduce((sum, item) => sum + item.effectivePrice * item.quantity, 0)
-    const grandTotal = Number((total * 1.07).toFixed(2))
+  const subtotal = items.reduce((s, i) => s + i.effectivePrice * i.quantity, 0)
+  const total = Number((subtotal * TAX_RATE).toFixed(2))
 
-    const mockOrder = {
-      _type: "order",
-      location: {
-        _ref: locationId,
-        _type: "reference",
-      },
-      status: status,
-      type: "pickup",
+  return {
+    _type: "order",
+    location: { _type: "reference", _ref: LOCATION_ID },
+    status,
+    type: "pickup",
+    customerName: name,
+    customerEmail: randomEmail(name),
+    customerPhone: randomPhone(),
+    items,
+    total,
+    createdAt,
+    ...(confirmedAt && { confirmedAt }),
+    ...(startedAt && { startedAt }),
+    ...(readyAt && { readyAt }),
+    ...(pickedUpAt && { pickedUpAt }),
+    stripePaymentIntentId: `pi_test_${randomId()}${randomId()}`,
+    stripeSessionId: `cs_test_${randomId()}${randomId()}`,
+  }
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
+async function seed() {
+  console.log(`\n🌱 Seeding Bull Top Taste — Royal Palm Beach`)
+  console.log(`   Tax rate: 7% | Batch size: ${BATCH_SIZE} | Historical: ${HISTORICAL_COUNT}\n`)
+
+  // 1. Historical completed orders — batched transactions
+  console.log(`📅 Creating ${HISTORICAL_COUNT} historical orders in batches of ${BATCH_SIZE}...`)
+
+  let transaction = client.transaction()
+  let batchCount = 0
+
+  for (let i = 1; i <= HISTORICAL_COUNT; i++) {
+    const createdAt = historicalTimestamp()
+    const confirmedAt = addMins(createdAt, 1)
+    const startedAt = addMins(createdAt, 5)
+    const readyAt = addMins(createdAt, 20)
+    const pickedUpAt = addMins(createdAt, 25)
+
+    const order = buildOrder({
+      status: "completed",
       createdAt,
-      ...(confirmedAt && { confirmedAt }),
-      ...(startedAt && { startedAt }),
-      ...(readyAt && { readyAt }),
-      ...(pickedUpAt && { pickedUpAt }),
+      confirmedAt,
+      startedAt,
+      readyAt,
+      pickedUpAt,
+    })
+    transaction.create(order)
+    batchCount++
 
-      customerName: `Test Customer ${randomId().toUpperCase()}`,
-      customerEmail: `test_${randomId()}@example.com`,
-      customerPhone: `555123${Math.floor(1000 + Math.random() * 9000)}`,
-      notes: getRandom(INSTRUCTIONS),
-
-      items: items,
-      total: grandTotal,
-      stripePaymentIntentId: `pi_test_${randomId()}${randomId()}`,
-      stripeSessionId: `cs_test_${randomId()}${randomId()}`,
+    if (batchCount === BATCH_SIZE || i === HISTORICAL_COUNT) {
+      try {
+        await transaction.commit()
+        console.log(`  ✓ Batch committed — ${i}/${HISTORICAL_COUNT} orders`)
+        transaction = client.transaction()
+        batchCount = 0
+        await sleep(300)
+      } catch (err) {
+        console.error(`  ✗ Batch failed at order ${i}:`, err.message)
+      }
     }
+  }
+
+  // 2. Active orders — individual creates for precise timestamp control
+  console.log(`\n🍽️  Creating active orders for kitchen demo...`)
+
+  const activeOrders = [
+    // Incoming (pending)
+    { status: "pending", minsAgo: 3 },
+    { status: "pending", minsAgo: 7 },
+    { status: "pending", minsAgo: 12 },
+    { status: "pending", minsAgo: 18 },
+    // Preparing (kitchen) — one approaching warn, one at crit
+    { status: "kitchen", minsAgo: 8, startOffset: 3 },
+    { status: "kitchen", minsAgo: 22, startOffset: 3 },
+    { status: "kitchen", minsAgo: 35, startOffset: 3 },
+    // Ready (floor)
+    { status: "floor", minsAgo: 15, startOffset: 3, readyOffset: 12 },
+    { status: "floor", minsAgo: 28, startOffset: 3, readyOffset: 12 },
+  ]
+
+  for (const config of activeOrders) {
+    const createdAt = activeTimestamp(config.minsAgo)
+    const confirmedAt = addMins(createdAt, 1)
+    const startedAt = config.startOffset ? addMins(createdAt, config.startOffset) : undefined
+    const readyAt = config.readyOffset ? addMins(createdAt, config.readyOffset) : undefined
+
+    const order = buildOrder({ status: config.status, createdAt, confirmedAt, startedAt, readyAt })
 
     try {
-      await client.create(mockOrder)
+      await client.create(order)
       console.log(
-        `[${i}/${ORDER_COUNT}] Created ${status.toUpperCase()} order ($${mockOrder.total})`
+        `  ✓ ${config.status.toUpperCase().padEnd(8)} — ${order.customerName} ($${order.total})`
       )
-      await sleep(Math.floor(Math.random() * 200) + 50)
-    } catch (error) {
-      console.error(`Failed to create order ${i}:`, error.message)
+      await sleep(150)
+    } catch (err) {
+      console.error(`  ✗ Failed:`, err.message)
     }
   }
 
-  console.log("✅ Test generation complete.")
+  console.log(`\n✅ Done — ${HISTORICAL_COUNT + activeOrders.length} total orders seeded`)
+  console.log(`   /admin        → kitchen dashboard with active orders`)
+  console.log(`   /admin/office → analytics with 30 days of history\n`)
 }
 
-seedOrders()
+seed()
